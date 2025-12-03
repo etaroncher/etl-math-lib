@@ -1,0 +1,6 @@
+# VS Build & Build artifacts
+build/
+
+# output
+lib/
+
