@@ -53,8 +53,6 @@ namespace ETL { namespace Math
         Matrix3x3 inverse() const;
         Matrix3x3& makeInverse();
 
-        static const Matrix3x3 Identity = Matrix3x3(Type(1));
-
     protected:
         const Type* const getRawData() const { return mData; }
 
@@ -68,8 +66,8 @@ namespace ETL { namespace Math
 
 
     /// Scalar * matrix operator 
-    template<typename Type>
-    Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& v2);
+    template<typename MatrixType, typename ScalarType>
+    Matrix3x3<MatrixType> operator*(ScalarType scalar, const Matrix3x3<MatrixType>& v2);
 
 
     /// Helpful aliases
@@ -80,6 +78,9 @@ namespace ETL { namespace Math
     /// Explicit template instantiatio (precompiled declaration)
     extern template class Matrix3x3<float>;
     extern template class Matrix3x3<double>;
+
+    extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>& v2);
+    extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& v2);
 
 
 }} /// namespace ETL::Math

@@ -41,7 +41,7 @@ namespace ETL { namespace Math
         Vector2& operator*=(Type scalar);
         Vector2& operator/=(Type scalar);
 
-        static Vector3<Type> zero();
+        //static Vector2<Type> zero();
 
     private:
 
@@ -53,8 +53,8 @@ namespace ETL { namespace Math
 
 
     /// Scalar * matrix operator (commutative property)
-    template<typename Type>
-    Vector2<Type> operator*(Type scalar, const Vector2<Type>& v2);
+    template<typename VectorType, typename ScalarType>
+    Vector2<VectorType> operator*(ScalarType scalar, const Vector2<VectorType>& v2);
 
 
     /// Cross prod
@@ -73,11 +73,15 @@ namespace ETL { namespace Math
 
     /// Explicit template instantiatio (precompiled declaration)
     extern template class Vector2<float>;
+    extern template class Vector2<double>;
     extern template class Vector2<int>;
     extern template class Vector2<unsigned int>;
 
-    extern template Vector2<float>        operator*(float        scalar, const Vector2<float>&        v2);
-    extern template Vector2<int>          operator*(int          scalar, const Vector2<int>&          v2);
-    extern template Vector2<unsigned int> operator*(unsigned int scalar, const Vector2<unsigned int>& v2);
+    extern template Vector2<float>        operator*(float  scalar, const Vector2<float>&        v2);
+    extern template Vector2<double>       operator*(double scalar, const Vector2<double>&       v2);
+    extern template Vector2<int>          operator*(float  scalar, const Vector2<int>&          v2);
+    extern template Vector2<int>          operator*(double scalar, const Vector2<int>&          v2);
+    extern template Vector2<unsigned int> operator*(float  scalar, const Vector2<unsigned int>& v2);
+    extern template Vector2<unsigned int> operator*(double scalar, const Vector2<unsigned int>& v2);
 
 }} /// namespace ETL::Math

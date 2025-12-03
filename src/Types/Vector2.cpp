@@ -7,8 +7,9 @@
 #include <Mathlib/Common/Common.h>
 #include <Mathlib/Common/TypeComparisons.h>
 #include <cmath>
+#include <stdexcept>
 
-namespace ETL { namespace Math
+namespace ETL::Math
 {
 
     /// <summary>
@@ -146,17 +147,11 @@ namespace ETL { namespace Math
     template<typename Type>
     Vector2<Type> Vector2<Type>::normalize() const
     {
-        Vector2 vec{ mX, mY };
-
         const Type lengthSq = lengthSquared();
-        if (!isZero(lengthSq))
-        {
-            const Type inv = Type(1) / Type(std::sqrt(lengthSq));
-            vec.mX *= inv;
-            vec.mY *= inv;
-        }
+        if (isZero(lengthSq))
+            throw std::runtime_error("Cannot normalize zero vector");
 
-        return vec;
+        return *this / Type(std::sqrt(lengthSq));
     }
 
 
@@ -169,12 +164,11 @@ namespace ETL { namespace Math
     Vector2<Type>& Vector2<Type>::makeNormalize()
     {
         const Type lengthSq = lengthSquared();
-        if (!isZero(lengthSq))
-        {
-            const Type inv = Type(1) / Type(std::sqrt(lengthSq));
-            mX *= inv;
-            mY *= inv;
-        }
+        if (isZero(lengthSq))
+            throw std::runtime_error("Cannot normalize zero vector");
+
+        *this /= Type(std::sqrt(lengthSq));
+        return *this;
     }
 
 
@@ -305,8 +299,8 @@ namespace ETL { namespace Math
     /// <param name="scalar"></param>
     /// <param name="vector"></param>
     /// <returns></returns>
-    template<typename Type>
-    Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector)
+    template<typename VectorType, typename ScalarType>
+    Vector2<VectorType> operator*(ScalarType scalar, const Vector2<VectorType>& vector)
     {
         return vector * scalar;
     }
@@ -345,8 +339,11 @@ namespace ETL { namespace Math
     template class Vector2<int>;
     template class Vector2<unsigned int>;
 
-    template Vector2<float>        operator*(float        scalar, const Vector2<float>& v2);
-    template Vector2<int>          operator*(int          scalar, const Vector2<int>& v2);
-    template Vector2<unsigned int> operator*(unsigned int scalar, const Vector2<unsigned int>& v2);
+    template Vector2<float>        operator*(float  scalar, const Vector2<float>& v2);
+    template Vector2<double>       operator*(double scalar, const Vector2<double>& v2);
+    template Vector2<int>          operator*(float  scalar, const Vector2<int>& v2);
+    template Vector2<int>          operator*(double scalar, const Vector2<int>& v2);
+    template Vector2<unsigned int> operator*(float  scalar, const Vector2<unsigned int>& v2);
+    template Vector2<unsigned int> operator*(double scalar, const Vector2<unsigned int>& v2);
 
-}} /// namespace ETL::Math
+} /// namespace ETL::Math

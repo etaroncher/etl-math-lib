@@ -438,8 +438,8 @@ namespace ETL { namespace Math
     /// <param name="scalar"></param>
     /// <param name="matrix"></param>
     /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix)
+    template<typename MatrixType, typename ScalarType>
+    Matrix3x3<MatrixType> operator*(ScalarType scalar, const Matrix3x3<MatrixType>& matrix)
     {
         return matrix * scalar;
     }
@@ -448,5 +448,8 @@ namespace ETL { namespace Math
     /// Explicit template instantiation (precompiled declaration)
     template class Matrix3x3<float>;
     template class Matrix3x3<double>;
+
+    template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>& v2);
+    template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& v2);
 
 }} /// namespace ETL::Math

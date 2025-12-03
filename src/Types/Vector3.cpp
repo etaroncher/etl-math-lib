@@ -7,6 +7,7 @@
 #include <Mathlib/Common/Common.h>
 #include <Mathlib/Common/TypeComparisons.h>
 #include <cmath>
+#include <stdexcept>
 
 namespace ETL { namespace Math
 {
@@ -175,7 +176,7 @@ namespace ETL { namespace Math
         if (isZero(lengthSq))
             throw std::runtime_error("Cannot normalize zero vector");
 
-        return *this / Type(std::sqrt(lengthSq))
+        return *this / Type(std::sqrt(lengthSq));
     }
 
 
@@ -329,8 +330,8 @@ namespace ETL { namespace Math
     /// <param name="scalar"></param>
     /// <param name="vector"></param>
     /// <returns></returns>
-    template<typename Type>
-    Vector3<Type> operator*(Type scalar, const Vector3<Type>& vector)
+    template<typename VectorType, typename ScalarType>
+    Vector3<VectorType> operator*(ScalarType scalar, const Vector3<VectorType>& vector)
     {
         return vector * scalar;
     }

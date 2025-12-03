@@ -43,8 +43,6 @@ namespace ETL { namespace Math
         Vector3& operator*=(Type scalar);
         Vector3& operator/=(Type scalar);
 
-        static const inline Vector3 Zero = Vector3(Type(0));
-
     private:
 
         union {
@@ -56,8 +54,8 @@ namespace ETL { namespace Math
 
 
     /// Scalar * matrix operator (commutative property)
-    template<typename Type>
-    Vector3<Type> operator*(Type scalar, const Vector3<Type>& v2);
+    template<typename VectorType, typename ScalarType>
+    Vector3<VectorType> operator*(ScalarType scalar, const Vector3<VectorType>& v2);
 
 
     /// Common Vector opperations

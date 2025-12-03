@@ -1,0 +1,25 @@
+# MathLib/src/Types/CMakeLists.txt
+
+# Source files
+set(MODULE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Vector2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Vector3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Matrix3x3.cpp
+)
+
+# Header files
+set(MODULE_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Vector2.h
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Vector3.h
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Matrix3x3.h
+)
+
+# Header private files
+set(MODULE_HEADERS_PRIVATE
+
+)
+
+# Append to MATHLIB_SOURCES & MATHLIB_HEADERS
+set(MATHLIB_SOURCES         ${MATHLIB_SOURCES}         ${MODULE_SOURCES}         PARENT_SCOPE)
+set(MATHLIB_HEADERS         ${MATHLIB_HEADERS}         ${MODULE_HEADERS}         PARENT_SCOPE)
+set(MATHLIB_HEADERS_PRIVATE ${MATHLIB_HEADERS_PRIVATE} ${MODULE_HEADERS_PRIVATE} PARENT_SCOPE)
