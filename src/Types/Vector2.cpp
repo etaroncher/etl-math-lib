@@ -224,9 +224,17 @@ namespace ETL::Math
     Vector2<Type> Vector2<Type>::operator/(Type scalar) const
     {
         ETLMATH_ASSERT(!isZero(scalar), "Vector2 division by 0");
-        const Type inv = Type(1) / scalar;
-        return Vector2<Type>{ mX * inv,
-                              mY * inv };
+
+        if constexpr (std::is_floating_point_v<Type>)
+        {
+            const Type inv = Type(1) / scalar;
+            return Vector2<Type>{ mX * inv, mY * inv };
+        }
+        else
+        {
+            /// integer division, divide to avoid truncation errors
+            return Vector2<Type>{ mX / scalar, mY / scalar };
+        }
     }
 
 
@@ -285,9 +293,20 @@ namespace ETL::Math
     Vector2<Type>& Vector2<Type>::operator/=(Type scalar)
     {
         ETLMATH_ASSERT(!isZero(scalar), "Vector2 division by 0");
-        const Type inv = Type(1) / scalar;
-        mX *= inv;
-        mY *= inv;
+
+        if constexpr (std::is_floating_point_v<Type>)
+        {
+            const Type inv = Type(1) / scalar;
+            mX *= inv;
+            mY *= inv;
+        }
+        else
+        {
+            /// integer division, divide to avoid truncation errors
+            mX /= scalar;
+            mY /= scalar;
+        }
+
         return *this;
     }
 
@@ -325,8 +344,8 @@ namespace ETL::Math
     /// <param name="scalar"></param>
     /// <param name="vector"></param>
     /// <returns></returns>
-    template<typename VectorType, typename ScalarType>
-    Vector2<VectorType> operator*(ScalarType scalar, const Vector2<VectorType>& vector)
+    template<typename Type>
+    Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector)
     {
         return vector * scalar;
     }
@@ -362,14 +381,19 @@ namespace ETL::Math
 
     /// Explicit template instantiation (precompiled declaration)
     template class Vector2<float>;
+    template class Vector2<double>;
     template class Vector2<int>;
-    template class Vector2<unsigned int>;
 
-    template Vector2<float>        operator*(float  scalar, const Vector2<float>& v2);
-    template Vector2<double>       operator*(double scalar, const Vector2<double>& v2);
-    template Vector2<int>          operator*(float  scalar, const Vector2<int>& v2);
-    template Vector2<int>          operator*(double scalar, const Vector2<int>& v2);
-    template Vector2<unsigned int> operator*(float  scalar, const Vector2<unsigned int>& v2);
-    template Vector2<unsigned int> operator*(double scalar, const Vector2<unsigned int>& v2);
+    template Vector2<float>  operator*(float  scalar, const Vector2<float>&  vector);
+    template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
+    template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
+
+    template float  cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double cross(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    template float  dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double dot(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
 } /// namespace ETL::Math

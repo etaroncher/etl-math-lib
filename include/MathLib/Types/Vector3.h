@@ -80,8 +80,8 @@ namespace ETL::Math
 
 
     /// Scalar * matrix operator (commutative property)
-    template<typename VectorType, typename ScalarType>
-    Vector3<VectorType> operator*(ScalarType scalar, const Vector3<VectorType>& v2);
+    template<typename Type>
+    Vector3<Type> operator*(Type scalar, const Vector3<Type>& vector);
 
 
     /// Common Vector opperations
@@ -95,13 +95,24 @@ namespace ETL::Math
     /// Helpful aliases
     using Vec3  = Vector3<float>;
     using Vec3d = Vector3<double>;
+    using Vec3i = Vector3<int>;
 
 
     /// Explicit template instantiatio (precompiled declaration)
     extern template class Vector3<float>;
     extern template class Vector3<double>;
+    extern template class Vector3<int>;
 
-    extern template Vector3<float>  operator*(float  scalar, const Vector3<float>&  v2);
-    extern template Vector3<double> operator*(double scalar, const Vector3<double>& v2);
+    extern template Vector3<float>  operator*(float  scalar, const Vector3<float>&  vector);
+    extern template Vector3<double> operator*(double scalar, const Vector3<double>& vector);
+    extern template Vector3<int>    operator*(int    scalar, const Vector3<int>&    vector);
+
+    extern template Vector3<float>  cross(const Vector3<float>&  v1, const Vector3<float>&  v2);
+    extern template Vector3<double> cross(const Vector3<double>& v1, const Vector3<double>& v2);
+    extern template Vector3<int>    cross(const Vector3<int>&    v1, const Vector3<int>&    v2);
+
+    extern template float  dot(const Vector3<float>&  v1, const Vector3<float>&  v2);
+    extern template double dot(const Vector3<double>& v1, const Vector3<double>& v2);
+    extern template int    dot(const Vector3<int>&    v1, const Vector3<int>&    v2);
 
 } /// namespace ETL::Math

@@ -49,10 +49,12 @@ namespace ETL::Math
         Matrix3x3     operator*(const Matrix3x3& other) const;
         Vector3<Type> operator*(const Vector3<Type>& vector) const;
         Matrix3x3     operator*(Type scalar) const;
+        Matrix3x3     operator/(Type scalar) const;
         Matrix3x3&    operator+=(const Matrix3x3& other);
         Matrix3x3&    operator-=(const Matrix3x3& other);
         Matrix3x3&    operator*=(const Matrix3x3& other);
         Matrix3x3&    operator*=(Type scalar);
+        Matrix3x3&    operator/=(Type scalar);
         bool          operator==(const Matrix3x3& other) const;
         bool          operator!=(const Matrix3x3& other) const;
 
@@ -92,21 +94,23 @@ namespace ETL::Math
 
 
     /// Scalar * matrix operator 
-    template<typename MatrixType, typename ScalarType>
-    Matrix3x3<MatrixType> operator*(ScalarType scalar, const Matrix3x3<MatrixType>& matrix);
+    template<typename Type>
+    Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix);
 
 
     /// Helpful aliases
     using Mat3  = Matrix3x3<float>;
     using Mat3d = Matrix3x3<double>;
+    using Mat3i = Matrix3x3<int>;
 
 
     /// Explicit template instantiatio (precompiled declaration)
     extern template class Matrix3x3<float>;
     extern template class Matrix3x3<double>;
+    extern template class Matrix3x3<int>;
 
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
-
+    extern template Matrix3x3<int>    operator*(int    scalar, const Matrix3x3<int>&    matrix);
 
 } /// namespace ETL::Math

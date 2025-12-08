@@ -6,6 +6,7 @@
 #include <MathLib/Types/Matrix3x3.h>
 #include <MathLib/Common/Common.h>
 #include <MathLib/Common/TypeComparisons.h>
+#include <algorithm>
 #include <cmath>
 
 namespace ETL::Math
@@ -290,6 +291,34 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Scalar division operator (This / scalar)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::operator/(Type scalar) const
+    {
+        ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
+
+        if constexpr (std::is_floating_point_v<Type>)
+        {
+            const Type inv = Type(1) / scalar;
+            return Matrix3x3<Type>{ m00 * inv, m01 * inv, m02 * inv,
+                                    m10 * inv, m11 * inv, m12 * inv,
+                                    m20 * inv, m21 * inv, m22 * inv };
+        }
+        else
+        {
+            /// integer division, divide to avoid truncation errors
+            return Matrix3x3<Type>{ m00 / scalar, m01 / scalar, m02 / scalar,
+                                    m10 / scalar, m11 / scalar, m12 / scalar,
+                                    m20 / scalar, m21 / scalar, m22 / scalar };
+        }
+    }
+
+
+    /// <summary>
     /// Addition assignment operator
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -322,7 +351,7 @@ namespace ETL::Math
 
 
     /// <summary>
-    /// Matrix multiplication operator (This * Other)
+    /// Matrix multiplication operator (This *= Other)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="other"></param>
@@ -337,7 +366,7 @@ namespace ETL::Math
 
 
     /// <summary>
-    /// Scalar multiplication assignment operator (This * scalar)
+    /// Scalar multiplication assignment operator (This *= scalar)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="scalar"></param>
@@ -347,6 +376,34 @@ namespace ETL::Math
     {
         for (int i = 0; i < 9; ++i)
             mData[i] *= scalar;
+
+        return *this;
+    }
+
+
+    /// <summary>
+    /// Scalar division assignment operator (This /= scalar)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type>& Matrix3x3<Type>::operator/=(Type scalar)
+    {
+        ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
+
+        if constexpr (std::is_floating_point_v<Type>)
+        {
+            const Type inv = Type(1) / scalar;
+            for (int i = 0; i < 9; ++i)
+                mData[i] *= inv;
+        }
+        else
+        {
+            /// integer division, divide to avoid truncation errors
+            for (int i = 0; i < 9; ++i)
+                mData[i] /= scalar;
+        }
 
         return *this;
     }
@@ -594,8 +651,8 @@ namespace ETL::Math
     /// <param name="scalar"></param>
     /// <param name="matrix"></param>
     /// <returns></returns>
-    template<typename MatrixType, typename ScalarType>
-    Matrix3x3<MatrixType> operator*(ScalarType scalar, const Matrix3x3<MatrixType>& matrix)
+    template<typename Type>
+    Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix)
     {
         return matrix * scalar;
     }
@@ -604,8 +661,10 @@ namespace ETL::Math
     /// Explicit template instantiation (precompiled declaration)
     template class Matrix3x3<float>;
     template class Matrix3x3<double>;
+    template class Matrix3x3<int>;
 
-    template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>& v2);
-    template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& v2);
+    template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
+    template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
+    template Matrix3x3<int>    operator*(int    scalar, const Matrix3x3<int>&    matrix);
 
 } /// namespace ETL::Math

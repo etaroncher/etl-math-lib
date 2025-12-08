@@ -75,9 +75,8 @@ namespace ETL::Math
 
 
     /// Scalar * matrix operator (commutative property)
-    template<typename VectorType, typename ScalarType>
-    Vector2<VectorType> operator*(ScalarType scalar, const Vector2<VectorType>& vector);
-
+    template<typename Type>
+    Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector);
 
     /// Cross prod
     template<typename Type>
@@ -90,6 +89,7 @@ namespace ETL::Math
 
     /// Helpful aliases
     using Vec2  = Vector2<float>;
+    using Vec2d = Vector2<double>;
     using Vec2i = Vector2<int>;
 
 
@@ -97,13 +97,17 @@ namespace ETL::Math
     extern template class Vector2<float>;
     extern template class Vector2<double>;
     extern template class Vector2<int>;
-    extern template class Vector2<unsigned int>;
 
-    extern template Vector2<float>        operator*(float  scalar, const Vector2<float>&        vector);
-    extern template Vector2<double>       operator*(double scalar, const Vector2<double>&       vector);
-    extern template Vector2<int>          operator*(float  scalar, const Vector2<int>&          vector);
-    extern template Vector2<int>          operator*(double scalar, const Vector2<int>&          vector);
-    extern template Vector2<unsigned int> operator*(float  scalar, const Vector2<unsigned int>& vector);
-    extern template Vector2<unsigned int> operator*(double scalar, const Vector2<unsigned int>& vector);
+    extern template Vector2<float>  operator*(float  scalar, const Vector2<float>&  vector);
+    extern template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
+    extern template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
+
+    extern template float  cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double cross(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    extern template float  dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double dot(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
 } /// namespace ETL::Math
