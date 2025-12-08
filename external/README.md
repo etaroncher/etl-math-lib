@@ -1,13 +1,13 @@
 # External Dependencies
 
-## Catch2 v2.13.10
-- **File:** catch2-v2.13.10/catch.hpp
-- **Size:** ~600 KB
+## Catch2 v3.11.0
+- **Files:** catch2/v3.11.0/catch_amalgamated.hpp & .cpp
+- **Size:** ~950 KB
 - **License:** BSL-1.0
-- **Downloaded from:** https://github.com/catchorg/Catch2/releases/tag/v2.13.10
-- **Date added:** 2024-12-08
+- **Downloaded from:** https://github.com/catchorg/Catch2/releases/tag/v3.11.0/
+- **Date added:** 2025-12-08
 
-Single header unit testing framework. No installation or build required.
+Unit testing framework. No installation or build required.
 
 ### Updating Catch2
 
