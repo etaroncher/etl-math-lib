@@ -17,7 +17,7 @@ namespace ETL::Math
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     template<typename Type>
-    Vector2<Type>::Vector2() : mData{ Type(0), Type(0) } {}
+    constexpr Vector2<Type>::Vector2() : mData{ Type(0), Type(0) } {}
 
 
     /// <summary>
@@ -26,7 +26,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="val"></param>
     template<typename Type>
-    Vector2<Type>::Vector2(Type val) : mData{ val, val } {}
+    constexpr Vector2<Type>::Vector2(Type val) : mData{ val, val } {}
 
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace ETL::Math
     /// <param name="x"></param>
     /// <param name="y"></param>
     template<typename Type>
-    Vector2<Type>::Vector2(Type x, Type y) : mData{ x, y } {}
+    constexpr Vector2<Type>::Vector2(Type x, Type y) : mData{ x, y } {}
 
 
     /// <summary>
@@ -289,6 +289,32 @@ namespace ETL::Math
         mX *= inv;
         mY *= inv;
         return *this;
+    }
+
+
+    /// <summary>
+    /// Equality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Vector2<Type>::operator==(const Vector2<Type>& other) const
+    {
+        return std::equal(mData, mData + 2, other.mData);
+    }
+
+
+    /// <summary>
+    /// Inequality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Vector2<Type>::operator!=(const Vector2<Type>& other) const
+    {
+        return !(*this == other);
     }
 
 

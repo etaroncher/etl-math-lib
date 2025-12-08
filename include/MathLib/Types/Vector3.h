@@ -1,10 +1,10 @@
-///----------------------------------------------------------------------------
+﻿///----------------------------------------------------------------------------
 /// ETL - MathLib
 /// Vector3.h
 ///----------------------------------------------------------------------------
 #pragma once
 
-namespace ETL { namespace Math
+namespace ETL::Math
 {
 
     template<typename Type>
@@ -12,10 +12,19 @@ namespace ETL { namespace Math
     {
     public:
 
-        Vector3();
-        Vector3(Type val);
-        Vector3(Type x, Type y, Type z);
+        /// Constructors
+        constexpr Vector3();
+        constexpr Vector3(Type val);
+        constexpr Vector3(Type x, Type y, Type z);
 
+        /// Copy, Move & Destructor (default)
+        Vector3(const Vector3&) = default;
+        Vector3(Vector3&&) noexcept = default;
+        Vector3& operator=(const Vector3&) = default;
+        Vector3& operator=(Vector3&&) noexcept = default;
+        ~Vector3() = default;
+
+        /// Access methods
         Type x() const;
         Type y() const;
         Type z() const;
@@ -27,21 +36,38 @@ namespace ETL { namespace Math
         Type& operator[](int index);
         Type  operator[](int index) const;
 
-        Type length() const;
-        Type lengthSquared() const;
-
-        Vector3  normalize() const;
-        Vector3& makeNormalize();
-
-        Vector3 operator+(const Vector3& other) const;
-        Vector3 operator-(const Vector3& other) const;
-        Vector3 operator*(Type scalar) const;
-        Vector3 operator/(Type scalar) const;
-
+        /// Operators
+        Vector3  operator+(const Vector3& other) const;
+        Vector3  operator-(const Vector3& other) const;
+        Vector3  operator*(Type scalar) const;
+        Vector3  operator/(Type scalar) const;
         Vector3& operator+=(const Vector3& other);
         Vector3& operator-=(const Vector3& other);
         Vector3& operator*=(Type scalar);
         Vector3& operator/=(Type scalar);
+        bool     operator==(const Vector3& other) const;
+        bool     operator!=(const Vector3& other) const;
+
+        /// Vector methods 
+        Type     length() const;
+        Type     lengthSquared() const;
+        Vector3  normalize() const;
+        Vector3& makeNormalize();
+
+        /// Common constants
+        static constexpr Vector3<Type> zero()  { return { Type(0), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> one()   { return { Type(1), Type(1), Type(1) }; }
+        static constexpr Vector3<Type> unitX() { return { Type(1), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> unitY() { return { Type(0), Type(1), Type(0) }; }
+        static constexpr Vector3<Type> unitZ() { return { Type(0), Type(0), Type(1) }; }
+
+        /// Semantic aliases
+        static constexpr Vector3<Type> up()      { return unitY(); }
+        static constexpr Vector3<Type> down()    { return { Type(0), Type(-1), Type(0) }; }
+        static constexpr Vector3<Type> left()    { return { Type(-1), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> right()   { return unitX(); }
+        static constexpr Vector3<Type> forward() { return { Type(0), Type(0), Type(-1) }; }
+        static constexpr Vector3<Type> back()    { return unitZ(); }
 
     private:
 
@@ -78,4 +104,4 @@ namespace ETL { namespace Math
     extern template Vector3<float>  operator*(float  scalar, const Vector3<float>&  v2);
     extern template Vector3<double> operator*(double scalar, const Vector3<double>& v2);
 
-}} /// namespace ETL::Math
+} /// namespace ETL::Math

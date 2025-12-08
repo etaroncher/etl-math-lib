@@ -8,7 +8,7 @@
 #include <MathLib/Common/TypeComparisons.h>
 #include <cmath>
 
-namespace ETL { namespace Math
+namespace ETL::Math
 {
 
 
@@ -17,7 +17,7 @@ namespace ETL { namespace Math
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     template<typename Type>
-    Matrix3x3<Type>::Matrix3x3()
+    constexpr Matrix3x3<Type>::Matrix3x3()
         : mData{ Type(1), Type(0), Type(0), Type(0), Type(1), Type(0), Type(0), Type(0), Type(1) } {}
 
 
@@ -27,7 +27,7 @@ namespace ETL { namespace Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="val"></param>
     template<typename Type>
-    Matrix3x3<Type>::Matrix3x3(Type val)
+    constexpr Matrix3x3<Type>::Matrix3x3(Type val)
         : mData{ val, Type(0), Type(0), Type(0), val, Type(0), Type(0), Type(0), val } {}
 
 
@@ -38,7 +38,7 @@ namespace ETL { namespace Math
     /// <param name="x"></param>
     /// <param name="y"></param>
     template<typename Type>
-    Matrix3x3<Type>::Matrix3x3(Type v00, Type v01, Type v02,
+    constexpr Matrix3x3<Type>::Matrix3x3(Type v00, Type v01, Type v02,
                                Type v10, Type v11, Type v12,
                                Type v20, Type v21, Type v22)
         : mData{ v00, v10, v20, v01, v11, v21, v02, v12, v22 } {}
@@ -353,6 +353,32 @@ namespace ETL { namespace Math
 
 
     /// <summary>
+    /// Equality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Matrix3x3<Type>::operator==(const Matrix3x3<Type>& other) const
+    {
+        return std::equal(mData, mData + 9, other.mData);
+    }
+
+
+    /// <summary>
+    /// Inequality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Matrix3x3<Type>::operator!=(const Matrix3x3<Type>& other) const
+    {
+        return !(*this == other);
+    }
+
+
+    /// <summary>
     /// Computes matrix determinant
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -432,6 +458,136 @@ namespace ETL { namespace Math
 
 
     /// <summary>
+    /// Construct Scale Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::scale(Type s)
+    {
+        return Matrix3x3<Type>{ s };
+    }
+
+
+    /// <summary>
+    /// Construct Scale Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="sx"></param>
+    /// <param name="sy"></param>
+    /// <param name="sz"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::scale(Type sx, Type sy, Type sz)
+    {
+        return Matrix3x3<Type>{ sx, Type(0), Type(0), Type(0), sy, Type(0), Type(0), Type(0), sz };
+    }
+
+
+    /// <summary>
+    /// Construct Scale Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::scale(const Vector3<Type>& s)
+    {
+        return Matrix3x3<Type>{ s.x(), Type(0), Type(0), Type(0), s.y(), Type(0), Type(0), Type(0), s.z() };
+    }
+
+
+
+    /// <summary>
+    /// Construct Rotation X Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::rotationX(Type angleRadians)
+    {
+        const Type cos = std::cos(angleRadians);
+        const Type sin = std::sin(angleRadians);
+        return Matrix3x3<Type>{ Type(1), Type(0), Type(0),
+                                Type(0),     cos,    -sin,
+                                Type(0),     sin,     cos };
+    }
+
+
+    /// <summary>
+    /// Construct Rotation Y Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::rotationY(Type angleRadians)
+    {
+        const Type cos = std::cos(angleRadians);
+        const Type sin = std::sin(angleRadians);
+        return Matrix3x3<Type>{     cos, Type(0),     sin,
+                                Type(0), Type(1), Type(0),
+                                   -sin, Type(0),     cos };
+    }
+
+
+    /// <summary>
+    /// Construct Rotation Z Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::rotationZ(Type angleRadians)
+    {
+        const Type cos = std::cos(angleRadians);
+        const Type sin = std::sin(angleRadians);
+        return Matrix3x3<Type>{    cos,    -sin, Type(0),
+                                   sin,     cos, Type(0),
+                               Type(0), Type(0), Type(1) };
+    }
+
+
+    /// <summary>
+    /// Construct Rotation Matrix around arbitrary index
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <param name="axis"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::rotation(Type angleRadians, const Vector3<Type>& axis)
+    {
+        const Vector3<Type> a = axis.normalize();
+        const Type c = std::cos(angleRadians);
+        const Type s = std::sin(angleRadians);
+        const Type t = Type(1) - c;
+
+        return Matrix3x3<Type>{
+            t * a.x() * a.x() + c,         t * a.x() * a.y() - s * a.z(), t * a.x() * a.z() + s * a.y(),
+            t * a.x() * a.y() + s * a.z(), t * a.y() * a.y() + c,         t * a.y() * a.z() - s * a.x(),
+            t * a.x() * a.z() - s * a.y(), t * a.y() * a.z() + s * a.x(), t * a.z() * a.z() + c         };
+    }
+
+
+    /// <summary>
+    /// Construct Rotation Matrix from pitch yaw and roll
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <param name="axis"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::rotationEuler(Type pitch, Type yaw, Type roll)
+    {
+        // TODO
+        return Matrix3x3<Type>{  };
+    }
+
+
+    /// <summary>
     /// Scalar * Matrix multiplication operator, for commutative
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -452,4 +608,4 @@ namespace ETL { namespace Math
     template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>& v2);
     template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& v2);
 
-}} /// namespace ETL::Math
+} /// namespace ETL::Math

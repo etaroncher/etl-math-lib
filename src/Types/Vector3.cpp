@@ -9,7 +9,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace ETL { namespace Math
+namespace ETL::Math
 {
 
     /// <summary>
@@ -17,7 +17,7 @@ namespace ETL { namespace Math
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     template<typename Type>
-    Vector3<Type>::Vector3() : mData{ Type(0), Type(0), Type(0) } {}
+    constexpr Vector3<Type>::Vector3() : mData{ Type(0), Type(0), Type(0) } {}
 
 
     /// <summary>
@@ -26,7 +26,7 @@ namespace ETL { namespace Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="val"></param>
     template<typename Type>
-    Vector3<Type>::Vector3(Type val) : mData{ val, val, val } {}
+    constexpr Vector3<Type>::Vector3(Type val) : mData{ val, val, val } {}
 
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace ETL { namespace Math
     /// <param name="y"></param>
     /// <param name="z"></param>
     template<typename Type>
-    Vector3<Type>::Vector3(Type x, Type y, Type z) : mData{ x,   y,   z } {}
+    constexpr Vector3<Type>::Vector3(Type x, Type y, Type z) : mData{ x,   y,   z } {}
 
 
     /// <summary>
@@ -324,6 +324,32 @@ namespace ETL { namespace Math
 
 
     /// <summary>
+    /// Equality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Vector3<Type>::operator==(const Vector3<Type>& other) const
+    {
+        return std::equal(mData, mData + 3, other.mData);
+    }
+
+
+    /// <summary>
+    /// Inequality operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    bool Vector3<Type>::operator!=(const Vector3<Type>& other) const
+    {
+        return !(*this == other);
+    }
+
+
+    /// <summary>
     /// Scalar * Vector multiplication operator, for commutative
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -374,4 +400,4 @@ namespace ETL { namespace Math
     template Vector3<float>  operator*(float  scalar, const Vector3<float>& v2);
     template Vector3<double> operator*(double scalar, const Vector3<double>& v2);
 
-}} /// namespace ETL::Math
+} /// namespace ETL::Math

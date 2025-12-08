@@ -15,28 +15,32 @@ namespace ETL { namespace Math
     /// Vector2
 
     template<typename T>
-    bool isZero(const Vector2<T>& vec, T epsilon) {
+    bool isZero(const Vector2<T>& vec, T epsilon)
+    {
         return isZero(vec.x(), epsilon) &&
                isZero(vec.y(), epsilon);
     }
 
     template<typename T>
-    bool isEqual(const Vector2<T>& a, const Vector2<T>& b, T epsilon) {
+    bool isEqual(const Vector2<T>& a, const Vector2<T>& b, T epsilon)
+    {
         return isEqual(a.x(), b.x(), epsilon) &&
-            isEqual(a.y(), b.y(), epsilon);
+               isEqual(a.y(), b.y(), epsilon);
     }
 
     /// Vector3
 
     template<typename T>
-    bool isZero(const Vector3<T>& vec, T epsilon) {
+    bool isZero(const Vector3<T>& vec, T epsilon)
+    {
         return isZero(vec.x(), epsilon) &&
                isZero(vec.y(), epsilon) &&
                isZero(vec.z(), epsilon);
     }
 
     template<typename T>
-    bool isEqual(const Vector3<T>& a, const Vector3<T>& b, T epsilon) {
+    bool isEqual(const Vector3<T>& a, const Vector3<T>& b, T epsilon)
+    {
         return isEqual(a.x(), b.x(), epsilon) &&
                isEqual(a.y(), b.y(), epsilon) &&
                isEqual(a.z(), b.z(), epsilon);
@@ -45,22 +49,22 @@ namespace ETL { namespace Math
     /// Matrix3x3
 
     template<typename T>
-    bool isZero(const Matrix3x3<T>& mat, T epsilon) {
-        for (int i = 0; i < 9; ++i) {
-            if (!isZero<T>(mat[i], epsilon)) {
+    bool isZero(const Matrix3x3<T>& mat, T epsilon)
+    {
+        for (int i = 0; i < 9; ++i)
+            if (!isZero<T>(mat[i], epsilon))
                 return false;
-            }
-        }
+
         return true;
     }
 
     template<typename T>
-    bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, T epsilon) {
-        for (int i = 0; i < 9; ++i) {
-            if (!isEqual(a[i], b[i], epsilon)) {
+    bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, T epsilon)
+    {
+        for (int i = 0; i < 9; ++i)
+            if (!isEqual(a[i], b[i], epsilon))
                 return false;
-            }
-        }
+
         return true;
     }
 
