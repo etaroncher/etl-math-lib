@@ -70,21 +70,27 @@ namespace ETL { namespace Math
 
 
     /// Explicit template instantiation definitions
-
+    /// Vector2
     template bool isZero(const Vector2<int>&, int);
-    template bool isZero(const Vector2<unsigned int>&, unsigned int);
+    template bool isZero(const Vector2<double>&, double);
+    template bool isZero(const Vector2<float>&, float);
+
+    template bool isEqual(const Vector2<int>&, const Vector2<int>&, int);
+    template bool isEqual(const Vector2<double>&, const Vector2<double>&, double);
+    template bool isEqual(const Vector2<float>&, const Vector2<float>&, float);
+
+    /// Vector3
     template bool isZero(const Vector3<float>&, float);
     template bool isZero(const Vector3<double>&, double);
+
+    template bool isEqual(const Vector3<float>&, const Vector3<float>&, float);
+    template bool isEqual(const Vector3<double>&, const Vector3<double>&, double);
+
+    /// Matrix3x3
     template bool isZero(const Matrix3x3<float>&, float);
     template bool isZero(const Matrix3x3<double>&, double);
 
-    template bool isEqual(const Vector2<int>&, const Vector2<int>&, int);
-    template bool isEqual(const Vector2<unsigned int>&, const Vector2<unsigned int>&, unsigned int);
-    template bool isEqual(const Vector3<float>&, const Vector3<float>&, float);
-    template bool isEqual(const Vector3<double>&, const Vector3<double>&, double);
     template bool isEqual(const Matrix3x3<float>&, const Matrix3x3<float>&, float);
     template bool isEqual(const Matrix3x3<double>&, const Matrix3x3<double>&, double);
-
-
 
 }} /// namespace ETL::Math
