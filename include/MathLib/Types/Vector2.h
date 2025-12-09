@@ -4,6 +4,8 @@
 ///----------------------------------------------------------------------------
 #pragma once
 
+#include <concepts>
+
 namespace ETL::Math
 {
 
@@ -50,8 +52,8 @@ namespace ETL::Math
         Type length() const;
         Type lengthSquared() const;
 
-        Vector2  normalize() const;
-        Vector2& makeNormalize();
+        Vector2  normalize() const requires std::floating_point<Type>;
+        Vector2& makeNormalize() requires std::floating_point<Type>;
 
         /// Common constants
         static constexpr Vector2<Type> zero()  { return { Type(0), Type(0) }; }
@@ -72,6 +74,11 @@ namespace ETL::Math
             Type mData[2];
         };
     };
+
+
+    /// Deduction guide
+    template<typename Type> Vector2(Type)       -> Vector2<Type>;
+    template<typename Type> Vector2(Type, Type) -> Vector2<Type>;
 
 
     /// Scalar * matrix operator (commutative property)

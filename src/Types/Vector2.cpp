@@ -145,7 +145,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> Vector2<Type>::normalize() const
+    Vector2<Type> Vector2<Type>::normalize() const requires std::floating_point<Type>
     {
         const Type lengthSq = lengthSquared();
         if (isZero(lengthSq))
@@ -161,7 +161,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type>& Vector2<Type>::makeNormalize()
+    Vector2<Type>& Vector2<Type>::makeNormalize() requires std::floating_point<Type>
     {
         const Type lengthSq = lengthSquared();
         if (isZero(lengthSq))

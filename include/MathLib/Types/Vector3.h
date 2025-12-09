@@ -4,6 +4,8 @@
 ///----------------------------------------------------------------------------
 #pragma once
 
+#include <concepts>
+
 namespace ETL::Math
 {
 
@@ -51,8 +53,8 @@ namespace ETL::Math
         /// Vector methods 
         Type     length() const;
         Type     lengthSquared() const;
-        Vector3  normalize() const;
-        Vector3& makeNormalize();
+        Vector3  normalize() const requires std::floating_point<Type>;
+        Vector3& makeNormalize() requires std::floating_point<Type>;
 
         /// Common constants
         static constexpr Vector3<Type> zero()  { return { Type(0), Type(0), Type(0) }; }
@@ -79,10 +81,14 @@ namespace ETL::Math
     };
 
 
+    /// Deduction guide
+    template<typename Type> Vector3(Type)             -> Vector3<Type>;
+    template<typename Type> Vector3(Type, Type, Type) -> Vector3<Type>;
+
+
     /// Scalar * matrix operator (commutative property)
     template<typename Type>
     Vector3<Type> operator*(Type scalar, const Vector3<Type>& vector);
-
 
     /// Common Vector opperations
     template<typename Type>
