@@ -5,6 +5,8 @@
 #pragma once
 
 #include <MathLib/Types/Vector3.h>
+#include <MathLib/Types/Vector2.h>
+#include <concepts>
 
 namespace ETL::Math
 {
@@ -13,6 +15,13 @@ namespace ETL::Math
     class Matrix3x3
     {
     public:
+
+        /// Static 2D Transform Factories
+        static constexpr Matrix3x3 Zero();
+        static constexpr Matrix3x3 Identity();
+        static Matrix3x3 Scale(double sX, double sY);
+        static Matrix3x3 Rotation(double angleRad);
+        static Matrix3x3 Translation(Type tX, Type tY);
 
         /// Constructors
         constexpr Matrix3x3();
@@ -58,28 +67,28 @@ namespace ETL::Math
         bool          operator==(const Matrix3x3& other) const;
         bool          operator!=(const Matrix3x3& other) const;
 
+        /// 2D Vector Transformations
+        Vector2<Type> transformPoint(const Vector2<Type>& point) const;
+        void          transformPoint(Vector2<Type>& inOutPoint) const;
+        Vector2<Type> transformDirection(const Vector2<Type>& direction) const;
+        void          transformDirection(Vector2<Type>& inOutDirection) const;
+
+        /// 2D Transformations (post multiply: this *= other)
+        Matrix3x3&    scale(double sX, double sY);
+        Matrix3x3&    rotate(double angleRad);
+        Matrix3x3&    translate(Type tX, Type tY);
+
+        /// 2D Transformations Decomposition
+        Vector2<double> getScale() const;
+        double          getRotation() const;
+        Vector2<Type>   getTranslation() const;
+
         /// Matrix methods
         Type       determinant() const;
         Matrix3x3  transpose() const;
         Matrix3x3& makeTranspose();
         Matrix3x3  inverse() const;
         Matrix3x3& makeInverse();
-
-        /// Common constants
-        static constexpr Matrix3x3 zero()     { return {}; }
-        static constexpr Matrix3x3 identity() { return { Type(1) }; }
-
-        /// Scale Matrices
-        static Matrix3x3 scale(Type s);
-        static Matrix3x3 scale(Type sx, Type sy, Type sz);
-        static Matrix3x3 scale(const Vector3<Type>& s);
-
-        /// Rotation Matrices
-        static Matrix3x3 rotationX(Type angleRadians);
-        static Matrix3x3 rotationY(Type angleRadians);
-        static Matrix3x3 rotationZ(Type angleRadians);
-        static Matrix3x3 rotation (Type angleRadians, const Vector3<Type>& axis);
-        static Matrix3x3 rotationEuler(Type pitch, Type yaw, Type roll);
 
     protected:
         const Type* const getRawData() const { return mData; }
@@ -91,6 +100,14 @@ namespace ETL::Math
             Type mData[9];                                                /// Named access
         };
     };
+
+
+    /// Deduction guide
+    template<typename Type>
+    Matrix3x3(Type) -> Matrix3x3<Type>;
+
+    template<typename Type>
+    Matrix3x3(Type, Type, Type, Type, Type, Type, Type, Type, Type) -> Matrix3x3<Type>;
 
 
     /// Scalar * matrix operator 

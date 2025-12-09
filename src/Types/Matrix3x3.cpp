@@ -6,20 +6,132 @@
 #include <MathLib/Types/Matrix3x3.h>
 #include <MathLib/Common/Common.h>
 #include <MathLib/Common/TypeComparisons.h>
-#include <algorithm>
+#include <array>
 #include <cmath>
 
 namespace ETL::Math
 {
+    namespace
+    {
+        static const int COL_SIZE = 3;
+        static const int NUM_ELEM = 9;
+
+        /// Define the precision for Fixed Point math (2^16 = 65536)
+        static constexpr int FIXED_SHIFT = 16;
+        static constexpr int FIXED_ONE = 1 << FIXED_SHIFT;
+
+        /// Helper to convert float to fixed point safely
+        template<typename T>
+        constexpr int ToFixed(T val)
+        {
+            return static_cast<int>(val * FIXED_ONE);
+        }
+    }
 
 
     /// <summary>
-    /// Default Constructor Identity matrix
+    /// Zero Matrix Factory
     /// </summary>
     /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
     template<typename Type>
-    constexpr Matrix3x3<Type>::Matrix3x3()
-        : mData{ Type(1), Type(0), Type(0), Type(0), Type(1), Type(0), Type(0), Type(0), Type(1) } {}
+    constexpr Matrix3x3<Type> Matrix3x3<Type>::Zero()
+    {
+        return Matrix3x3<Type>{ Type(0) };
+    }
+
+
+    /// <summary>
+    /// Identity Matrix Factory
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    constexpr Matrix3x3<Type> Matrix3x3<Type>::Identity()
+    {
+        return Matrix3x3<Type>{ std::integral<Type> ? FIXED_ONE : Type(1) };
+    }
+
+
+    /// <summary>
+    /// 2D Transform Factory - Scale Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="sX"></param>
+    /// <param name="sY"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::Scale(double sX, double sY)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            return Matrix3x3<Type>{ ToFixed(sX),     Type(0),   Type(0),
+                                        Type(0), ToFixed(sY),   Type(0),
+                                        Type(0),     Type(0), FIXED_ONE };
+        }
+        else
+        {
+            return Matrix3x3<Type>{ Type(sX), Type(0),  Type(0),
+                                    Type(0),  Type(sY), Type(0),
+                                    Type(0),  Type(0),  Type(1) };
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Transform Factory -  Rotation Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRadians"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::Rotation(double angleRadians)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const Type cos = ToFixed(std::cos(angleRadians));
+            const Type sin = ToFixed(std::sin(angleRadians));
+
+            return Matrix3x3<Type>{    cos,    -sin, Type(0),
+                                       sin,     cos, Type(0),
+                                   Type(0), Type(0), FIXED_ONE };
+        }
+        else
+        {
+            const Type cos = std::cos(angleRadians);
+            const Type sin = std::sin(angleRadians);
+
+            return Matrix3x3<Type>{    cos,    -sin, Type(0),
+                                       sin,     cos, Type(0),
+                                   Type(0), Type(0), Type(1) };
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Transform Factory - Translation Matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="tX"></param>
+    /// <param name="tY"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type> Matrix3x3<Type>::Translation(Type tX, Type tY)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            /// Note that translation is NOT scaled by fixed point shift
+            return Matrix3x3<Type>{ FIXED_ONE,   Type(0), ToFixed<Type>(tX),
+                                      Type(0), FIXED_ONE, ToFixed<Type>(tY),
+                                      Type(0),   Type(0),         FIXED_ONE };
+        }
+        else
+        {
+            return Matrix3x3<Type>{ Type(1), Type(0),      tX,
+                                    Type(0), Type(1),      tY,
+                                    Type(0), Type(0), Type(1) };
+        }
+    }
 
 
     /// <summary>
@@ -40,8 +152,8 @@ namespace ETL::Math
     /// <param name="y"></param>
     template<typename Type>
     constexpr Matrix3x3<Type>::Matrix3x3(Type v00, Type v01, Type v02,
-                               Type v10, Type v11, Type v12,
-                               Type v20, Type v21, Type v22)
+                                         Type v10, Type v11, Type v12,
+                                         Type v20, Type v21, Type v22)
         : mData{ v00, v10, v20, v01, v11, v21, v02, v12, v22 } {}
 
 
@@ -54,10 +166,10 @@ namespace ETL::Math
     template<typename Type>
     Type Matrix3x3<Type>::operator()(int row, int col) const
     {
-        ETLMATH_ASSERT(row >= 0 && row < 3, "Matrix3x3 out of bounds ROW acces");
-        ETLMATH_ASSERT(col >= 0 && col < 3, "Matrix3x3 out of bounds COL acces");
+        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW acces");
+        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL acces");
 
-        return mData[row*3+col];
+        return mData[col*COL_SIZE + row];
     }
 
 
@@ -70,10 +182,10 @@ namespace ETL::Math
     template<typename Type>
     Type& Matrix3x3<Type>::operator()(int row, int col)
     {
-        ETLMATH_ASSERT(row >= 0 && row < 3, "Matrix3x3 out of bounds ROW acces");
-        ETLMATH_ASSERT(col >= 0 && col < 3, "Matrix3x3 out of bounds COL acces");
+        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW acces");
+        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL acces");
 
-        return mData[row * 3 + col];
+        return mData[col*COL_SIZE + row];
     }
 
 
@@ -86,7 +198,7 @@ namespace ETL::Math
     template<typename Type>
     Type Matrix3x3<Type>::operator[](int elem) const
     {
-        ETLMATH_ASSERT(elem >= 0 && elem < 9, "Matrix3x3 out of bounds ELEM acces");
+        ETLMATH_ASSERT(elem >= 0 && elem < NUM_ELEM, "Matrix3x3 out of bounds ELEM acces");
 
         return mData[elem];
     }
@@ -101,7 +213,7 @@ namespace ETL::Math
     template<typename Type>
     Type& Matrix3x3<Type>::operator[](int elem)
     {
-        ETLMATH_ASSERT(elem >= 0 && elem < 9, "Matrix3x3 out of bounds ELEM acces");
+        ETLMATH_ASSERT(elem >= 0 && elem < NUM_ELEM, "Matrix3x3 out of bounds ELEM acces");
 
         return mData[elem];
     }
@@ -116,9 +228,9 @@ namespace ETL::Math
     template<typename Type>
     Vector3<Type> Matrix3x3<Type>::getCol(int col) const
     {
-        ETLMATH_ASSERT(col >= 0 && col < 3, "Matrix3x3 out of bounds COL acces");
+        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL acces");
 
-        return { mData[col*3], mData[col*3 + 1], mData[col*3 + 2] };
+        return Vector3<Type>{ mData[col*COL_SIZE + 0], mData[col*COL_SIZE + 1], mData[col*COL_SIZE + 2] };
     }
 
 
@@ -131,9 +243,9 @@ namespace ETL::Math
     template<typename Type>
     Vector3<Type> Matrix3x3<Type>::getRow(int row) const
     {
-        ETLMATH_ASSERT(row >= 0 && row < 3, "Matrix3x3 out of bounds ROW acces");
+        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW acces");
 
-        return { mData[row], mData[3 + row], mData[6 + row] };
+        return Vector3<Type>{ mData[0*COL_SIZE + row], mData[1*COL_SIZE + row], mData[2*COL_SIZE + row] };
     }
 
 
@@ -146,11 +258,11 @@ namespace ETL::Math
     template<typename Type>
     void Matrix3x3<Type>::setCol(int col, const Vector3<Type>& value)
     {
-        ETLMATH_ASSERT(col >= 0 && col < 3, "Matrix3x3 out of bounds COL acces");
+        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL acces");
 
-        mData[col * 3]     = value.x();
-        mData[col * 3 + 1] = value.y();
-        mData[col * 3 + 2] = value.z();
+        mData[col*COL_SIZE + 0] = value.x();
+        mData[col*COL_SIZE + 1] = value.y();
+        mData[col*COL_SIZE + 2] = value.z();
     }
 
 
@@ -163,11 +275,11 @@ namespace ETL::Math
     template<typename Type>
     void Matrix3x3<Type>::setRow(int row, const Vector3<Type>& value)
     {
-        ETLMATH_ASSERT(row >= 0 && row < 3, "Matrix3x3 out of bounds ROW acces");
+        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW acces");
 
-        mData[row]     = value.x();
-        mData[3 + row] = value.y();
-        mData[6 + row] = value.z();
+        mData[0*COL_SIZE + row] = value.x();
+        mData[1*COL_SIZE + row] = value.y();
+        mData[2*COL_SIZE + row] = value.z();
     }
 
 
@@ -182,11 +294,11 @@ namespace ETL::Math
     template<typename Type>
     void Matrix3x3<Type>::setCol(int col, Type c0, Type c1, Type c2)
     {
-        ETLMATH_ASSERT(col >= 0 && col < 3, "Matrix3x3 out of bounds COL acces");
+        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL acces");
 
-        mData[col * 3]     = c0;
-        mData[col * 3 + 1] = c1;
-        mData[col * 3 + 2] = c2;
+        mData[col*COL_SIZE + 0] = c0;
+        mData[col*COL_SIZE + 1] = c1;
+        mData[col*COL_SIZE + 2] = c2;
     }
 
 
@@ -201,11 +313,11 @@ namespace ETL::Math
     template<typename Type>
     void Matrix3x3<Type>::setRow(int row, Type r0, Type r1, Type r2)
     {
-        ETLMATH_ASSERT(row >= 0 && row < 3, "Matrix3x3 out of bounds ROW acces");
+        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW acces");
 
-        mData[row]     = r0;
-        mData[3 + row] = r1;
-        mData[6 + row] = r2;
+        mData[0*COL_SIZE + row] = r0;
+        mData[1*COL_SIZE + row] = r1;
+        mData[2*COL_SIZE + row] = r2;
     }
 
 
@@ -240,7 +352,7 @@ namespace ETL::Math
 
 
     /// <summary>
-    /// Matrix multiplication operator (This * Other)
+    /// Matrix multiplication operator (Post multiply -> This * Other)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="other"></param>
@@ -248,20 +360,42 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type> Matrix3x3<Type>::operator*(const Matrix3x3& other) const
     {
-        return Matrix3x3<Type>{ m00*other.m00 + m01*other.m10 + m02*other.m20,   //m00
-                                m00*other.m01 + m01*other.m11 + m02*other.m21,   //m01
-                                m00*other.m02 + m01*other.m12 + m02*other.m22,   //m02
-                                m10*other.m00 + m11*other.m10 + m12*other.m20,   //m10
-                                m10*other.m01 + m11*other.m11 + m12*other.m21,   //m11
-                                m10*other.m02 + m11*other.m12 + m12*other.m22,   //m12
-                                m20*other.m00 + m21*other.m10 + m22*other.m20,   //m20
-                                m20*other.m01 + m21*other.m11 + m22*other.m21,   //m21
-                                m20*other.m02 + m21*other.m12 + m22*other.m22 }; //m22
+        if constexpr (std::integral<Type>)
+        {
+            Matrix3x3<Type> result;
+
+            for (int row = 0; row < COL_SIZE; ++row)
+            {
+                for (int col = 0; col < COL_SIZE; ++col)
+                {
+                    const int64_t sum = static_cast<int64_t>(mData[0*COL_SIZE + row]) * other.mData[col*COL_SIZE + 0]
+                                      + static_cast<int64_t>(mData[1*COL_SIZE + row]) * other.mData[col*COL_SIZE + 1]
+                                      + static_cast<int64_t>(mData[2*COL_SIZE + row]) * other.mData[col*COL_SIZE + 2];
+
+                    /// Bitshift result back to Fixed Point
+                    result[col*COL_SIZE + row] = static_cast<Type>(sum >> FIXED_SHIFT);
+                }
+            }
+
+            return result;
+        }
+        else
+        {
+            return Matrix3x3<Type>{ m00*other.m00 + m01*other.m10 + m02*other.m20,   //m00
+                                    m00*other.m01 + m01*other.m11 + m02*other.m21,   //m01
+                                    m00*other.m02 + m01*other.m12 + m02*other.m22,   //m02
+                                    m10*other.m00 + m11*other.m10 + m12*other.m20,   //m10
+                                    m10*other.m01 + m11*other.m11 + m12*other.m21,   //m11
+                                    m10*other.m02 + m11*other.m12 + m12*other.m22,   //m12
+                                    m20*other.m00 + m21*other.m10 + m22*other.m20,   //m20
+                                    m20*other.m01 + m21*other.m11 + m22*other.m21,   //m21
+                                    m20*other.m02 + m21*other.m12 + m22*other.m22 }; //m22
+        }
     }
 
 
     /// <summary>
-    /// Vector multiplication operator (This * Vector)
+    /// Vector multiplication operator (Post multiply -> This * Other)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="vector"></param>
@@ -276,7 +410,7 @@ namespace ETL::Math
 
 
     /// <summary>
-    /// Scalar multiplication operator (This * scalar)
+    /// Scalar multiplication operator (Post multiply -> This * Scalar)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="scalar"></param>
@@ -301,19 +435,19 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
 
-        if constexpr (std::is_floating_point_v<Type>)
+        if constexpr (std::integral<Type>)
         {
-            const Type inv = Type(1) / scalar;
-            return Matrix3x3<Type>{ m00 * inv, m01 * inv, m02 * inv,
-                                    m10 * inv, m11 * inv, m12 * inv,
-                                    m20 * inv, m21 * inv, m22 * inv };
+            /// integer division, divide to avoid truncation errors
+            return Matrix3x3<Type>{ m00/scalar, m01/scalar, m02/scalar,
+                                    m10/scalar, m11/scalar, m12/scalar,
+                                    m20/scalar, m21/scalar, m22/scalar };
         }
         else
         {
-            /// integer division, divide to avoid truncation errors
-            return Matrix3x3<Type>{ m00 / scalar, m01 / scalar, m02 / scalar,
-                                    m10 / scalar, m11 / scalar, m12 / scalar,
-                                    m20 / scalar, m21 / scalar, m22 / scalar };
+            const Type inv = Type(1) / scalar;
+            return Matrix3x3<Type>{ m00*inv, m01*inv, m02*inv,
+                                    m10*inv, m11*inv, m12*inv,
+                                    m20*inv, m21*inv, m22*inv };
         }
     }
 
@@ -327,7 +461,7 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type>& Matrix3x3<Type>::operator+=(const Matrix3x3& other)
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < NUM_ELEM; ++i)
             mData[i] += other.mData[i];
 
         return *this;
@@ -343,7 +477,7 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type>& Matrix3x3<Type>::operator-=(const Matrix3x3& other)
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < NUM_ELEM; ++i)
             mData[i] -= other.mData[i];
 
         return *this;
@@ -374,7 +508,7 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type>& Matrix3x3<Type>::operator*=(Type scalar)
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < NUM_ELEM; ++i)
             mData[i] *= scalar;
 
         return *this;
@@ -392,17 +526,18 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
 
-        if constexpr (std::is_floating_point_v<Type>)
+        if constexpr (std::integral<Type>)
         {
-            const Type inv = Type(1) / scalar;
-            for (int i = 0; i < 9; ++i)
-                mData[i] *= inv;
+            /// integer division, divide to avoid truncation errors
+            for (int i = 0; i < NUM_ELEM; ++i)
+                mData[i] /= scalar;
         }
         else
         {
-            /// integer division, divide to avoid truncation errors
-            for (int i = 0; i < 9; ++i)
-                mData[i] /= scalar;
+            /// Compute inverse and multiply (avoids extra divisions)
+            const Type inv = Type(1) / scalar;
+            for (int i = 0; i < NUM_ELEM; ++i)
+                mData[i] *= inv;
         }
 
         return *this;
@@ -418,7 +553,7 @@ namespace ETL::Math
     template<typename Type>
     bool Matrix3x3<Type>::operator==(const Matrix3x3<Type>& other) const
     {
-        return std::equal(mData, mData + 9, other.mData);
+        return std::equal(mData, mData + NUM_ELEM, other.mData);
     }
 
 
@@ -436,6 +571,231 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// 2D Vector Transformations - Point
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> Matrix3x3<Type>::transformPoint(const Vector2<Type>& point) const
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = point.x();
+            const int64_t y = point.y();
+            const int64_t resX = (x*m00 + y*m01 + m02) >> FIXED_SHIFT;
+            const int64_t resY = (x*m10 + y*m11 + m12) >> FIXED_SHIFT;
+
+            return Vector2<Type>{ static_cast<Type>(resX), static_cast<Type>(resY) };
+        }
+        else
+        {
+            return Vector2<Type>{ m00*point.x() + m01*point.y() + m02, m10*point.x() + m11*point.y() + m12 };
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Vector Transformations - Point
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="point"></param>
+    template<typename Type>
+    void Matrix3x3<Type>::transformPoint(Vector2<Type>& point) const
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = point.x();
+            const int64_t y = point.y();
+            const int64_t resX = (x*m00 + y*m01 + m02) >> FIXED_SHIFT;
+            const int64_t resY = (x*m10 + y*m11 + m12) >> FIXED_SHIFT;
+
+            point[0] = static_cast<Type>(resX);
+            point[1] = static_cast<Type>(resY);
+        }
+        else
+        {
+            Type x = point.x();
+            Type y = point.y();
+            point[0] = m00*x + m01*y + m02;
+            point[1] = m10*x + m11*y + m12;
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Vector Transformations - Direction
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> Matrix3x3<Type>::transformDirection(const Vector2<Type>& direction) const
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = direction.x();
+            const int64_t y = direction.y();
+            const int64_t resX = (x*m00 + y*m01) >> FIXED_SHIFT;
+            const int64_t resY = (x*m10 + y*m11) >> FIXED_SHIFT;
+
+            return Vector2<Type>{ static_cast<Type>(resX), static_cast<Type>(resY) };
+        }
+        else
+        {
+            return Vector2<Type>{ m00*direction.x() + m01*direction.y(), m10*direction.x() + m11*direction.y() };
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Vector Transformations - Direction
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="direction"></param>
+    template<typename Type>
+    void Matrix3x3<Type>::transformDirection(Vector2<Type>& direction) const
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = direction.x();
+            const int64_t y = direction.y();
+            const int64_t resX = (x*m00 + y*m01) >> FIXED_SHIFT;
+            const int64_t resY = (x*m10 + y*m11) >> FIXED_SHIFT;
+
+            direction[0] = static_cast<Type>(resX);
+            direction[1] = static_cast<Type>(resY);
+        }
+        else
+        {
+            Type x = direction.x();
+            Type y = direction.y();
+            direction[0] = m00*x + m01*y;
+            direction[1] = m10*x + m11*y;
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Transform - Scale this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="sX"></param>
+    /// <param name="sY"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type>& Matrix3x3<Type>::scale(double sX, double sY)
+    {
+        *this = (*this) * Matrix3x3<Type>::Scale(sX, sY);
+        return *this;
+    }
+
+
+    /// <summary>
+    /// 2D Transform - Rotate this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="angleRad"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type>& Matrix3x3<Type>::rotate(double angleRad)
+    {
+        *this = (*this) * Matrix3x3<Type>::Rotation(angleRad);
+        return *this;
+    }
+
+
+    /// <summary>
+    /// 2D Transform - Trnaslate this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="tX"></param>
+    /// <param name="tY"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Matrix3x3<Type>& Matrix3x3<Type>::translate(Type tX, Type tY)
+    {
+        *this = (*this) * Matrix3x3<Type>::Translation(tX, tY);
+        return *this;
+    }
+
+
+    /// <summary>
+    /// 2D Transform decomposition - get scale
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<double> Matrix3x3<Type>::getScale() const
+    {
+        /// Extract scale from length of basis vectors (column 0 and column 1)
+        if constexpr (std::integral<Type>)
+        {
+            /// Lenght is calculated using float, then convert back to the required Type.
+            /// The components are SCALED so length will be SCALED and thus it should be descaled.
+            const double sx_scaled = Vector2<double>(m00, m10).length();
+            const double sy_scaled = Vector2<double>(m01, m11).length();
+
+            return Vector2<double>{sx_scaled / FIXED_ONE, sy_scaled / FIXED_ONE};
+        }
+        else
+        {
+            return Vector2<double>{ Vector2<Type>(m00, m10).length(), Vector2<Type>(m01, m11).length() };
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Transform decomposition - get rotation
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    double Matrix3x3<Type>::getRotation() const
+    {
+        /// Extract angle from column 0 (normalized)
+        if constexpr (std::integral<Type>)
+        {
+            /// De-scale fixed-point components to get raw cos/sin values (as double).
+            const double cos = static_cast<double>(m00) / FIXED_ONE;
+            const double sin = static_cast<double>(m10) / FIXED_ONE;
+
+            /// Normalize and compute angle.
+            Vector2<double> firstCol{ cos,sin };
+            firstCol.makeNormalize();
+
+            return std::atan2(firstCol.y(), firstCol.x());
+        }
+        else
+        {
+            Vector2<Type> firstCol(m00, m10);
+            firstCol.makeNormalize();
+            return std::atan2(firstCol.y(), firstCol.x());
+        }
+    }
+
+
+    /// <summary>
+    /// 2D Transform decomposition - get translation
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> Matrix3x3<Type>::getTranslation() const
+    {
+        /// Extract translation from column 2 (normalized)
+        if constexpr (std::integral<Type>)
+        {
+            return Vector2<Type>{ m02 >> FIXED_SHIFT, m12 >> FIXED_SHIFT };
+        }
+        else
+        {
+            return Vector2<Type>{ m02, m02 };
+        }
+    }
+
+
+    /// <summary>
     /// Computes matrix determinant
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -443,7 +803,29 @@ namespace ETL::Math
     template<typename Type>
     Type Matrix3x3<Type>::determinant() const
     {
-        return m00*m11*m22 + m01*m12*m20 + m02*m10*m21 - m02*m11*m20 - m00*m12*m21 - m01*m10*m22;
+        if constexpr (std::integral<Type>)
+        {
+            /// 1. Calculate the determinant components using 64-bit integers.
+            /// Each term is scaled by (FIXED_ONE * FIXED_ONE * FIXED_ONE) = FIXED_ONE^3.
+            const int64_t det_cubed = static_cast<int64_t>(m00) * m11 * m22
+                                    + static_cast<int64_t>(m01) * m12 * m20
+                                    + static_cast<int64_t>(m02) * m10 * m21
+                                    - static_cast<int64_t>(m02) * m11 * m20
+                                    - static_cast<int64_t>(m00) * m12 * m21
+                                    - static_cast<int64_t>(m01) * m10 * m22;
+
+            /// 2. De-scale the result by FIXED_ONE^2 (2 * FIXED_SHIFT = 32 bits) 
+            /// to return a determinant scaled by FIXED_ONE.
+            static constexpr int DET_SHIFT = 2 * FIXED_SHIFT;
+
+            /// This value is the fixed-point determinant, ready for fixed-point division.
+            return static_cast<Type>(det_cubed >> DET_SHIFT);
+        }
+        else
+        {
+            return m00*m11*m22 + m01*m12*m20 + m02*m10*m21 - m02*m11*m20 - m00*m12*m21 - m01*m10*m22;
+        }
+        
     }
 
 
@@ -483,20 +865,49 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type> Matrix3x3<Type>::inverse() const
     {
-        const Type det = determinant();
+        const Type det = determinant(); /// Correctly scaled (FixedPoint) or raw (float/double)
 
-        if (det == Type(0))
+        if (isZero(det))
             return *this;
 
-        const Type invDet = Type(1) / det;
+        if constexpr (std::integral<Type>)
+        {
+            /// Calculate Adjugate elements safely using 64-bit integers.
+            /// This array is ESSENTIAL to prevent overflow (FX * FX = FX^2) due to double scale
+            const std::array<int64_t, NUM_ELEM> adjugate_64{
+                static_cast<int64_t>(m11) * m22 - static_cast<int64_t>(m12) * m21,
+                static_cast<int64_t>(m02) * m21 - static_cast<int64_t>(m01) * m22,
+                static_cast<int64_t>(m01) * m12 - static_cast<int64_t>(m02) * m11,
+                static_cast<int64_t>(m12) * m20 - static_cast<int64_t>(m10) * m22,
+                static_cast<int64_t>(m00) * m22 - static_cast<int64_t>(m02) * m20,
+                static_cast<int64_t>(m02) * m10 - static_cast<int64_t>(m00) * m12,
+                static_cast<int64_t>(m10) * m21 - static_cast<int64_t>(m11) * m20,
+                static_cast<int64_t>(m01) * m20 - static_cast<int64_t>(m00) * m21,
+                static_cast<int64_t>(m00) * m11 - static_cast<int64_t>(m01) * m10
+            };
 
-        Matrix3x3<Type> cofactorTransposed{
-            m11*m22-m12*m21, m02*m21-m01*m22, m01*m12-m02*m11,
-            m12*m20-m10*m22, m00*m22-m02*m20, m02*m10-m00*m12,
-            m10*m21-m11*m20, m01*m20-m00*m21, m00*m11-m01*m10
-        };
+            /// Cast back to Type only after dividing by "det".
+            /// Adj(FX^2) / Det(FX) = Result(FX) (result scaled only once, as expected)
+            return Matrix3x3<Type>{ static_cast<Type>(adjugate_64[0] / det),
+                                    static_cast<Type>(adjugate_64[1] / det),
+                                    static_cast<Type>(adjugate_64[2] / det),
+                                    static_cast<Type>(adjugate_64[3] / det),
+                                    static_cast<Type>(adjugate_64[4] / det),
+                                    static_cast<Type>(adjugate_64[5] / det),
+                                    static_cast<Type>(adjugate_64[6] / det),
+                                    static_cast<Type>(adjugate_64[7] / det),
+                                    static_cast<Type>(adjugate_64[8] / det) };
+        }
+        else
+        {
+            const Matrix3x3<Type> adjugate{
+                m11*m22 - m12*m21, m02*m21 - m01*m22, m01*m12 - m02*m11,
+                m12*m20 - m10*m22, m00*m22 - m02*m20, m02*m10 - m00*m12,
+                m10*m21 - m11*m20, m01*m20 - m00*m21, m00*m11 - m01*m10
+            };
 
-        return cofactorTransposed * invDet;
+            return adjugate / det;
+        }
     }
 
 
@@ -511,136 +922,6 @@ namespace ETL::Math
         *this = inverse();
 
         return *this;
-    }
-
-
-    /// <summary>
-    /// Construct Scale Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::scale(Type s)
-    {
-        return Matrix3x3<Type>{ s };
-    }
-
-
-    /// <summary>
-    /// Construct Scale Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="sx"></param>
-    /// <param name="sy"></param>
-    /// <param name="sz"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::scale(Type sx, Type sy, Type sz)
-    {
-        return Matrix3x3<Type>{ sx, Type(0), Type(0), Type(0), sy, Type(0), Type(0), Type(0), sz };
-    }
-
-
-    /// <summary>
-    /// Construct Scale Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::scale(const Vector3<Type>& s)
-    {
-        return Matrix3x3<Type>{ s.x(), Type(0), Type(0), Type(0), s.y(), Type(0), Type(0), Type(0), s.z() };
-    }
-
-
-
-    /// <summary>
-    /// Construct Rotation X Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="angleRadians"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::rotationX(Type angleRadians)
-    {
-        const Type cos = std::cos(angleRadians);
-        const Type sin = std::sin(angleRadians);
-        return Matrix3x3<Type>{ Type(1), Type(0), Type(0),
-                                Type(0),     cos,    -sin,
-                                Type(0),     sin,     cos };
-    }
-
-
-    /// <summary>
-    /// Construct Rotation Y Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="angleRadians"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::rotationY(Type angleRadians)
-    {
-        const Type cos = std::cos(angleRadians);
-        const Type sin = std::sin(angleRadians);
-        return Matrix3x3<Type>{     cos, Type(0),     sin,
-                                Type(0), Type(1), Type(0),
-                                   -sin, Type(0),     cos };
-    }
-
-
-    /// <summary>
-    /// Construct Rotation Z Matrix
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="angleRadians"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::rotationZ(Type angleRadians)
-    {
-        const Type cos = std::cos(angleRadians);
-        const Type sin = std::sin(angleRadians);
-        return Matrix3x3<Type>{    cos,    -sin, Type(0),
-                                   sin,     cos, Type(0),
-                               Type(0), Type(0), Type(1) };
-    }
-
-
-    /// <summary>
-    /// Construct Rotation Matrix around arbitrary index
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="angleRadians"></param>
-    /// <param name="axis"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::rotation(Type angleRadians, const Vector3<Type>& axis)
-    {
-        const Vector3<Type> a = axis.normalize();
-        const Type c = std::cos(angleRadians);
-        const Type s = std::sin(angleRadians);
-        const Type t = Type(1) - c;
-
-        return Matrix3x3<Type>{
-            t * a.x() * a.x() + c,         t * a.x() * a.y() - s * a.z(), t * a.x() * a.z() + s * a.y(),
-            t * a.x() * a.y() + s * a.z(), t * a.y() * a.y() + c,         t * a.y() * a.z() - s * a.x(),
-            t * a.x() * a.z() - s * a.y(), t * a.y() * a.z() + s * a.x(), t * a.z() * a.z() + c         };
-    }
-
-
-    /// <summary>
-    /// Construct Rotation Matrix from pitch yaw and roll
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="angleRadians"></param>
-    /// <param name="axis"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Matrix3x3<Type> Matrix3x3<Type>::rotationEuler(Type pitch, Type yaw, Type roll)
-    {
-        // TODO
-        return Matrix3x3<Type>{  };
     }
 
 
