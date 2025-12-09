@@ -6,18 +6,10 @@
 #include <MathLib/Types/Vector3.h>
 #include <Mathlib/Common/Common.h>
 #include <Mathlib/Common/TypeComparisons.h>
-#include <cmath>
 #include <stdexcept>
 
 namespace ETL::Math
 {
-
-    /// <summary>
-    /// Default Constructor
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    template<typename Type>
-    constexpr Vector3<Type>::Vector3() : mData{ Type(0), Type(0), Type(0) } {}
 
 
     /// <summary>

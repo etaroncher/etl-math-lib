@@ -6,19 +6,10 @@
 #include <MathLib/Types/Vector2.h>
 #include <Mathlib/Common/Common.h>
 #include <Mathlib/Common/TypeComparisons.h>
-#include <cmath>
 #include <stdexcept>
 
 namespace ETL::Math
 {
-
-    /// <summary>
-    /// Default Constructor
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    template<typename Type>
-    constexpr Vector2<Type>::Vector2() : mData{ Type(0), Type(0) } {}
-
 
     /// <summary>
     /// Same value constructor

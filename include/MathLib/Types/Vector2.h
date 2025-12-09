@@ -15,7 +15,7 @@ namespace ETL::Math
     public:
 
         /// Constructors
-        constexpr Vector2();
+        constexpr Vector2() = default;
         constexpr Vector2(Type val);
         constexpr Vector2(Type x, Type y);
 

@@ -6,7 +6,6 @@
 
 #include <MathLib/Types/Vector3.h>
 #include <MathLib/Types/Vector2.h>
-#include <concepts>
 
 namespace ETL::Math
 {
@@ -24,7 +23,7 @@ namespace ETL::Math
         static Matrix3x3 Translation(Type tX, Type tY);
 
         /// Constructors
-        constexpr Matrix3x3();
+        constexpr Matrix3x3() = default;
         constexpr Matrix3x3(Type val);
         constexpr Matrix3x3(Type v00, Type v01, Type v02,
                             Type v10, Type v11, Type v12,
