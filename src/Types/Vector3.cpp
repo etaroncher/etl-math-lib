@@ -6,6 +6,7 @@
 #include <MathLib/Types/Vector3.h>
 #include <Mathlib/Common/Common.h>
 #include <Mathlib/Common/TypeComparisons.h>
+#include <cmath>
 #include <stdexcept>
 
 namespace ETL::Math
