@@ -4,3 +4,6 @@ build/
 # output
 lib/
 
+# python cache
+__pycache__/
+

@@ -19,10 +19,10 @@ include_directories(${CMAKE_SOURCE_DIR}/private)
 add_subdirectory(src)
 
 # Option to enable/disable tests (useful for when library is used as subproject)
-option(MATHLIB_BUILD_TESTS "Build MathLib tests" ON)
+option(BUILD_TESTS "Build MathLib tests" ON)
 
 # Enable test and add test directory
-if(MATHLIB_BUILD_TESTS)
+if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
