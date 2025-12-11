@@ -40,7 +40,7 @@ Supports both standard floating-point (`float`, `double`) and fixed-point arithm
 ### ⚡ Performance-First Design
 - **Zero-cost abstractions** through modern C++ features
 - **Cache-friendly data layouts** minimizing memory overhead
-- **Inline-friendly operations** optimize away completely
+- **Frequently-used operations** optimize away completely
 
 ### 🔒 Type Safety
 - Strong type guarantees through C++23 template mechanisms
@@ -72,8 +72,8 @@ The project includes convenient build scripts for different platforms:
 **Windows:**
 ```batch
 # Run the batch script
-tools/generate.bat
-tools/build.bat
+tools/generate.bat --no-tests
+tools/build.bat --config Release
 ```
 
 **Linux/macOS:** (planned)
@@ -88,6 +88,13 @@ Alternatively, you can build directly with CMake:
 ```bash
 cmake -S . -B build
 cmake --build build --config Release
+```
+
+### Output
+
+The project will be generated in:
+```
+build/
 ```
 
 The compiled library will be placed in:
@@ -121,12 +128,12 @@ using ETL::Math;
 Vec2 position{10.0f, 20.0f};
 
 // Apply a transformation matrix
-Mat3x3 transform = Mat3x3::Rotation(45.0f);
+Mat3x3 transform = Mat3x3::Rotation(0.86);
 Vec2 transformed = transform * position;
 
 // Chain transformations
-Mat3x3 transform = Mat3x3::Identity();
-transform.translate(Vec3{1.f, 1.f, 1.f}).rotate(Vec3{0.f, PI, 0.f}).scale(Vec3{1.f, 2.f, 2.f});
+Mat3x3 transform2 = Mat3x3::Identity();
+transform2.translate(3.f, 4.f).rotate(0.5).scale(2.0, 2.0);
 ```
 
 ---
