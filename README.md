@@ -128,12 +128,12 @@ using ETL::Math;
 Vec2 position{10.0f, 20.0f};
 
 // Apply a transformation matrix
-Mat3x3 transform = Mat3x3::Rotation(0.86);
+Mat3x3 transform = Mat3x3::Rotation(0.86f);
 Vec2 transformed = transform * position;
 
 // Chain transformations
 Mat3x3 transform2 = Mat3x3::Identity();
-transform2.translate(3.f, 4.f).rotate(0.5).scale(2.0, 2.0);
+transform2.translate(3.f, 4.f).rotate(0.5f).scale(2.0f, 2.0f);
 ```
 
 ---
