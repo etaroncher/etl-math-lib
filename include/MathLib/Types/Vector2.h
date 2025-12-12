@@ -120,4 +120,4 @@ namespace ETL::Math
 
 } /// namespace ETL::Math
 
-#include "MathLib/Types/Vector2.inl"
+#include "inline/Vector2.inl"

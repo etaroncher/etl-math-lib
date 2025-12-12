@@ -12,13 +12,13 @@ set(MODULE_HEADERS
     ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Vector2.h
     ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Vector3.h
     ${CMAKE_SOURCE_DIR}/include/MathLib/Types/Matrix3x3.h
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/inline/Vector2.inl
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/inline/Vector3.inl
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Types/inline/Matrix3x3.inl
 )
 
 # Header private files
 set(MODULE_HEADERS_PRIVATE
-    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Vector2.inl
-    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Vector3.inl
-    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Matrix3x3.inl
 )
 
 # Append to MATHLIB_SOURCES & MATHLIB_HEADERS

@@ -125,4 +125,4 @@ namespace ETL::Math
 
 } /// namespace ETL::Math
 
-#include "MathLib/Types/Vector3.inl"
+#include "inline/Vector3.inl"

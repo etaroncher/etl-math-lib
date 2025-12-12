@@ -136,4 +136,4 @@ namespace ETL::Math
 
 } /// namespace ETL::Math
 
-#include "MathLib/Types/Matrix3x3.inl"
+#include "inline/Matrix3x3.inl"
