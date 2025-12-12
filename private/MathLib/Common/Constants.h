@@ -5,17 +5,16 @@
 
 #pragma once
 
-
 namespace ETL::Math
 {
-    // Or use constexpr (no .cpp needed)
+    /// Math Constants
     constexpr float  PI_F = 3.14159265358979323846f;
     constexpr double PI_D = 3.14159265358979323846;
     constexpr float  E_F  = 2.71828182845904523536f;
     constexpr double E_D  = 2.71828182845904523536;
 
-    // Convenience aliases
-    constexpr double PI = PI_F;
-    constexpr double E  = E_F;
+    /// Convenience aliases
+    constexpr double PI = PI_D;
+    constexpr double E  = E_D;
 
 } /// namespace ETL::Math

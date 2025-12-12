@@ -16,7 +16,7 @@ namespace ETL::Math
 
         /// Constructors
         constexpr Vector2() = default;
-        constexpr Vector2(Type val);
+        explicit constexpr Vector2(Type val);
         constexpr Vector2(Type x, Type y);
 
         /// Copy, Move & Destructor (default)
@@ -81,6 +81,12 @@ namespace ETL::Math
     template<typename Type> Vector2(Type, Type) -> Vector2<Type>;
 
 
+    /// Helpful aliases
+    using Vec2 = Vector2<float>;
+    using Vec2d = Vector2<double>;
+    using Vec2i = Vector2<int>;
+
+
     /// Scalar * matrix operator (commutative property)
     template<typename Type>
     Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector);
@@ -94,13 +100,7 @@ namespace ETL::Math
     Type dot(const Vector2<Type>& v1, const Vector2<Type>& v2);
 
 
-    /// Helpful aliases
-    using Vec2  = Vector2<float>;
-    using Vec2d = Vector2<double>;
-    using Vec2i = Vector2<int>;
-
-
-    /// Explicit template instantiatio (precompiled declaration)
+    /// Explicit template instantiation (precompiled declaration)
     extern template class Vector2<float>;
     extern template class Vector2<double>;
     extern template class Vector2<int>;
@@ -117,4 +117,7 @@ namespace ETL::Math
     extern template double dot(const Vector2<double>& v1, const Vector2<double>& v2);
     extern template int    dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
+
 } /// namespace ETL::Math
+
+#include "MathLib/Types/Vector2.inl"

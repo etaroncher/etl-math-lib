@@ -3,10 +3,10 @@
 /// FloatComparisons.cpp
 ///---------------------------------------------------------------------------- 
 
-#include <MathLib/Common/TypeComparisons.h>
-#include <MathLib/Types/Vector2.h>
-#include <MathLib/Types/Vector3.h>
-#include <MathLib/Types/Matrix3x3.h>
+#include "MathLib/Common/TypeComparisons.h"
+#include "MathLib/Types/Vector2.h"
+#include "MathLib/Types/Vector3.h"
+#include "MathLib/Types/Matrix3x3.h"
 
 
 namespace ETL { namespace Math
@@ -69,7 +69,9 @@ namespace ETL { namespace Math
     }
 
 
-    /// Explicit template instantiation definitions
+    ///------------------------------------------------------------------------------------------
+    /// Explicit template instantiations (precompiled declaration)
+
     /// Vector2
     template bool isZero(const Vector2<int>&,    int);
     template bool isZero(const Vector2<float>&,  float);

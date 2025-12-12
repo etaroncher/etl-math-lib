@@ -4,8 +4,8 @@
 ///---------------------------------------------------------------------------- 
 #pragma once
 
-#include <MathLib/Types/Vector3.h>
-#include <MathLib/Types/Vector2.h>
+#include "MathLib/Types/Vector3.h"
+#include "MathLib/Types/Vector2.h"
 
 namespace ETL::Math
 {
@@ -14,6 +14,9 @@ namespace ETL::Math
     class Matrix3x3
     {
     public:
+
+        static constexpr int COL_SIZE = 3;
+        static constexpr int NUM_ELEM = 9;
 
         /// Static 2D Transform Factories
         static constexpr Matrix3x3 Zero();
@@ -24,7 +27,7 @@ namespace ETL::Math
 
         /// Constructors
         constexpr Matrix3x3() = default;
-        constexpr Matrix3x3(Type val);
+        explicit constexpr Matrix3x3(Type val);
         constexpr Matrix3x3(Type v00, Type v01, Type v02,
                             Type v10, Type v11, Type v12,
                             Type v20, Type v21, Type v22);
@@ -44,10 +47,11 @@ namespace ETL::Math
 
         Vector3<Type> getCol(int col) const;
         Vector3<Type> getRow(int row) const;
+        void getCol(int col, Vector3<Type>& outValue) const;
+        void getRow(int row, Vector3<Type>& outValue) const;
 
         void setCol(int col, const Vector3<Type>& value);
         void setRow(int row, const Vector3<Type>& value);
-
         void setCol(int col, Type c0, Type c1, Type c2);
         void setRow(int row, Type r0, Type r1, Type r2);
 
@@ -109,18 +113,18 @@ namespace ETL::Math
     Matrix3x3(Type, Type, Type, Type, Type, Type, Type, Type, Type) -> Matrix3x3<Type>;
 
 
+    /// Helpful aliases
+    using Mat3 = Matrix3x3<float>;
+    using Mat3d = Matrix3x3<double>;
+    using Mat3i = Matrix3x3<int>;
+
+
     /// Scalar * matrix operator 
     template<typename Type>
     Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix);
 
 
-    /// Helpful aliases
-    using Mat3  = Matrix3x3<float>;
-    using Mat3d = Matrix3x3<double>;
-    using Mat3i = Matrix3x3<int>;
-
-
-    /// Explicit template instantiatio (precompiled declaration)
+    /// Explicit template instantiation (precompiled declaration)
     extern template class Matrix3x3<float>;
     extern template class Matrix3x3<double>;
     extern template class Matrix3x3<int>;
@@ -129,4 +133,7 @@ namespace ETL::Math
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
     extern template Matrix3x3<int>    operator*(int    scalar, const Matrix3x3<int>&    matrix);
 
+
 } /// namespace ETL::Math
+
+#include "MathLib/Types/Matrix3x3.inl"

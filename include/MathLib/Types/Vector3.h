@@ -16,7 +16,7 @@ namespace ETL::Math
 
         /// Constructors
         constexpr Vector3() = default;
-        constexpr Vector3(Type val);
+        explicit constexpr Vector3(Type val);
         constexpr Vector3(Type x, Type y, Type z);
 
         /// Copy, Move & Destructor (default)
@@ -86,25 +86,26 @@ namespace ETL::Math
     template<typename Type> Vector3(Type, Type, Type) -> Vector3<Type>;
 
 
-    /// Scalar * matrix operator (commutative property)
-    template<typename Type>
-    Vector3<Type> operator*(Type scalar, const Vector3<Type>& vector);
-
-    /// Common Vector opperations
-    template<typename Type>
-    Vector3<Type> cross     (const Vector3<Type>& v1, const Vector3<Type>& v2);
-
-    template<typename Type>
-    Type          dot       (const Vector3<Type>& v1, const Vector3<Type>& v2);
-
-
     /// Helpful aliases
-    using Vec3  = Vector3<float>;
+    using Vec3 = Vector3<float>;
     using Vec3d = Vector3<double>;
     using Vec3i = Vector3<int>;
 
 
-    /// Explicit template instantiatio (precompiled declaration)
+    /// Scalar * matrix operator (commutative property)
+    template<typename Type>
+    Vector3<Type> operator*(Type scalar, const Vector3<Type>& vector);
+
+    /// Cross prod
+    template<typename Type>
+    Vector3<Type> cross     (const Vector3<Type>& v1, const Vector3<Type>& v2);
+
+    /// Dot prod
+    template<typename Type>
+    Type          dot       (const Vector3<Type>& v1, const Vector3<Type>& v2);
+
+
+    /// Explicit template instantiation (precompiled declaration)
     extern template class Vector3<float>;
     extern template class Vector3<double>;
     extern template class Vector3<int>;
@@ -121,4 +122,7 @@ namespace ETL::Math
     extern template double dot(const Vector3<double>& v1, const Vector3<double>& v2);
     extern template int    dot(const Vector3<int>&    v1, const Vector3<int>&    v2);
 
+
 } /// namespace ETL::Math
+
+#include "MathLib/Types/Vector3.inl"

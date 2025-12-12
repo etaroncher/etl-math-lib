@@ -12,7 +12,8 @@ set(MODULE_HEADERS
 
 # Header private files
 set(MODULE_HEADERS_PRIVATE
-
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Common.h
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Constants.h
 )
 
 # Append to MATHLIB_SOURCES & MATHLIB_HEADERS

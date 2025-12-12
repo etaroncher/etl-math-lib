@@ -16,7 +16,9 @@ set(MODULE_HEADERS
 
 # Header private files
 set(MODULE_HEADERS_PRIVATE
-
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Vector2.inl
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Vector3.inl
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Types/Matrix3x3.inl
 )
 
 # Append to MATHLIB_SOURCES & MATHLIB_HEADERS
