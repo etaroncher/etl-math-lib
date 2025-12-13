@@ -8,7 +8,6 @@ add_subdirectory(Types)
 set(MATHLIB_HEADERS ${MATHLIB_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/MathLib/MathLib.h
     ${CMAKE_SOURCE_DIR}/include/MathLib/Version.h
-	PARENT_SCOPE
 )
 
 # List main private headers

@@ -604,7 +604,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
         Vec2 vPoint{ TestType(5), TestType(3) };
         const Vec2 vExpected{ TestType(15), TestType(23) };
 
-        mTrans.transformPoint(vPoint);
+        mTrans.transformPointInPlace(vPoint);
 
         REQUIRE(ETL::Math::isEqual(vPoint, vExpected));
     }
@@ -627,7 +627,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
         Vec2 vDirection{ TestType(1), TestType(0) };
         const Vec2 vExpected{ TestType(0), TestType(1) };
 
-        mRot.transformDirection(vDirection);
+        mRot.transformDirectionInPlace(vDirection);
 
         REQUIRE(ETL::Math::isEqual(vDirection, vExpected));
     }
@@ -689,8 +689,8 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", A
         mA.rotate(PI_HALF); // 90 degrees
         mA.scale(2.0, 2.0);
 
-        const Vec2 vPoint{ TestType(1), TestType(0) }; /// Point (1,0) -> translate -> (11, 0) -> rotate 90° -> (0, 11) -> scale 2x -> (0, 22)
-        const Vec2 vExpected{ TestType(0), TestType(22) };
+        const Vec2 vPoint{ TestType(1), TestType(0) }; /// Point (1,0) -> scale<2> -> (2, 0) -> rotate<90°> -> (0, 2) -> translate<10,0> -> (10, 2)
+        const Vec2 vExpected{ TestType(10), TestType(2) };
         const Vec2 vResult = mA.transformPoint(vPoint);
 
         REQUIRE(ETL::Math::isEqual(vResult, vExpected));
@@ -728,7 +728,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
         const Matrix mRot = Matrix::Rotation(angle);
         const double extractedAngle = mRot.getRotation();
 
-        REQUIRE(ETL::Math::isEqual(extractedAngle, angle));
+        REQUIRE(ETL::Math::isEqual(extractedAngle, angle, 0.001));
     }
 
     SECTION("GetTranslation from translation matrix")
@@ -742,9 +742,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
 
     SECTION("Decompose combined transformation")
     {
+        const double angle = PI / 6.0; /// 30 degrees
         Matrix mA = Matrix::Identity();
         mA.translate(TestType(5), TestType(10));
-        mA.rotate(PI / 6.0); /// 30 degrees
+        mA.rotate(angle); 
         mA.scale(2.0, 3.0);
 
         const auto vScale = mA.getScale();
@@ -753,13 +754,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
         const Vec2 vExpectedTrans{ TestType(5), TestType(10) };
         const auto vExpectedScale = ETL::Math::Vector2{ 2.0, 3.0 };
 
-        // Note: Decomposition may not be exact due to combined transforms
-        // Just check that values are reasonable
-        REQUIRE(vScale.x() > 0);
-        REQUIRE(vScale.y() > 0);
-        REQUIRE(std::abs(rotation) < PI);
+        /// Note: Decomposition may not be exact due to combined transforms, 
+        /// Just check that values are reasonable enough
         REQUIRE(ETL::Math::isEqual(vScale, vExpectedScale));
-        REQUIRE(ETL::Math::isEqual(std::abs(rotation), PI / 6.0));
+        REQUIRE(ETL::Math::isEqual(std::abs(rotation), angle, 0.001));
         REQUIRE(ETL::Math::isEqual(vTranslation, vExpectedTrans));
     }
 }

@@ -72,9 +72,9 @@ namespace ETL::Math
 
         /// 2D Vector Transformations
         Vector2<Type> transformPoint(const Vector2<Type>& point) const;
-        void          transformPoint(Vector2<Type>& inOutPoint) const;
+        void          transformPointInPlace(Vector2<Type>& inOutPoint) const;
         Vector2<Type> transformDirection(const Vector2<Type>& direction) const;
-        void          transformDirection(Vector2<Type>& inOutDirection) const;
+        void          transformDirectionInPlace(Vector2<Type>& inOutDirection) const;
 
         /// 2D Transformations (post multiply: this *= other)
         Matrix3x3&    scale(double sX, double sY);
@@ -98,9 +98,9 @@ namespace ETL::Math
 
     private:
         union {
-            struct { Type m00, m10, m20, m01, m11, m21, m02, m12, m22; }; /// 1D access
+            struct { Type m00, m10, m20, m01, m11, m21, m02, m12, m22; }; /// Named access
             Type m[3][3];                                                 /// 2D access
-            Type mData[9];                                                /// Named access
+            Type mData[9];                                                /// 1D access
         };
     };
 

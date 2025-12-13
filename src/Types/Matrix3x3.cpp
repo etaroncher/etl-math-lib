@@ -304,7 +304,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="point"></param>
     template<typename Type>
-    void Matrix3x3<Type>::transformPoint(Vector2<Type>& point) const
+    void Matrix3x3<Type>::transformPointInPlace(Vector2<Type>& point) const
     {
         if constexpr (std::integral<Type>)
         {
@@ -357,7 +357,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="direction"></param>
     template<typename Type>
-    void Matrix3x3<Type>::transformDirection(Vector2<Type>& direction) const
+    void Matrix3x3<Type>::transformDirectionInPlace(Vector2<Type>& direction) const
     {
         if constexpr (std::integral<Type>)
         {
@@ -493,7 +493,7 @@ namespace ETL::Math
         }
         else
         {
-            return Vector2<Type>{ m02, m02 };
+            return Vector2<Type>{ m02, m12 };
         }
     }
 
