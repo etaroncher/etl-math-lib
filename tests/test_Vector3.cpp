@@ -74,7 +74,7 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
         REQUIRE(res2 == res);
     }
 
-    SECTION("Substraction")
+    SECTION("Subtraction")
     {
         const Vector res = v2 - v1;
         REQUIRE(res.x() == TestType(3));
@@ -132,7 +132,7 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 Lenght", "[Vector3][geo]", int, float, double)
+TEMPLATE_TEST_CASE("Vector3 Length", "[Vector3][geo]", int, float, double)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 

@@ -19,8 +19,8 @@ namespace ETL::Math
         static constexpr int NUM_ELEM = 9;
 
         /// Static 2D Transform Factories
-        static constexpr Matrix3x3 Zero();
-        static constexpr Matrix3x3 Identity();
+        static constexpr Matrix3x3 Zero() { return Matrix3x3{ Type(0) }; }
+        static constexpr Matrix3x3 Identity() { return Matrix3x3{ Type(1) }; }
         static Matrix3x3 Scale(double sX, double sY);
         static Matrix3x3 Rotation(double angleRad);
         static Matrix3x3 Translation(Type tX, Type tY);

@@ -32,12 +32,20 @@ TEMPLATE_TEST_CASE("Vector2 Construction & Acces", "[Vector2][core]", int, float
         REQUIRE(v.x() == TestType(10));
         REQUIRE(v.y() == TestType(20));
 
-        // Array operator
         REQUIRE(v[0] == TestType(10));
         REQUIRE(v[1] == TestType(20));
 
         v[0] = TestType(5);
         REQUIRE(v.x() == TestType(5));
+    }
+
+    SECTION("Equality and inequality operators")
+    {
+        Vector vA{ TestType(3), TestType(4) };
+        Vector vB{ TestType(3), TestType(4) };
+        Vector vC{ TestType(4), TestType(3) };
+        REQUIRE(vA == vB);
+        REQUIRE(vA != vC);
     }
 }
 
@@ -60,7 +68,7 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
         REQUIRE(v3 == res);
     }
 
-    SECTION("Substraction")
+    SECTION("Subtraction")
     {
         const Vector res = v2 - v1;
         REQUIRE(res.x() == TestType(2));
@@ -105,7 +113,7 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
 }
 
 
-TEMPLATE_TEST_CASE("Vector2 Lenght", "[Vector2][geo]", int, float, double)
+TEMPLATE_TEST_CASE("Vector2 Length", "[Vector2][geo]", int, float, double)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 

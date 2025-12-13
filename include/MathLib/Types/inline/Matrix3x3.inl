@@ -11,39 +11,15 @@ namespace ETL::Math
 {
 
     /// <summary>
-    /// Zero Matrix Factory
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    constexpr Matrix3x3<Type> Matrix3x3<Type>::Zero()
-    {
-        return Matrix3x3<Type>{ Type(0) };
-    }
-
-
-    /// <summary>
-    /// Identity Matrix Factory
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    constexpr Matrix3x3<Type> Matrix3x3<Type>::Identity()
-    {
-        return Matrix3x3<Type>{ Type(1) };
-    }
-
-
-    /// <summary>
     /// Matrix diagonal constructor
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="val"></param>
     template<typename Type>
     constexpr Matrix3x3<Type>::Matrix3x3(Type val)
-        : mData{ ProcessValue<Type>(val), Type(0), Type(0),
-                 Type(0), ProcessValue<Type>(val), Type(0),
-                 Type(0), Type(0), ProcessValue<Type>(val) }
+        : mData{ ProcessValue<Type>(val), Type(0),                 Type(0),
+                 Type(0),                 ProcessValue<Type>(val), Type(0),
+                 Type(0),                 Type(0),                 ProcessValue<Type>(val) }
     {
     }
 
@@ -137,8 +113,8 @@ namespace ETL::Math
     Matrix3x3<Type> Matrix3x3<Type>::operator+(const Matrix3x3& other) const
     {
         return Matrix3x3<Type>{ m00 + other.m00, m01 + other.m01, m02 + other.m02,
-            m10 + other.m10, m11 + other.m11, m12 + other.m12,
-            m20 + other.m20, m21 + other.m21, m22 + other.m22 };
+                                m10 + other.m10, m11 + other.m11, m12 + other.m12,
+                                m20 + other.m20, m21 + other.m21, m22 + other.m22 };
     }
 
 
@@ -152,8 +128,8 @@ namespace ETL::Math
     Matrix3x3<Type> Matrix3x3<Type>::operator-(const Matrix3x3& other) const
     {
         return Matrix3x3<Type>{ m00 - other.m00, m01 - other.m01, m02 - other.m02,
-            m10 - other.m10, m11 - other.m11, m12 - other.m12,
-            m20 - other.m20, m21 - other.m21, m22 - other.m22 };
+                                m10 - other.m10, m11 - other.m11, m12 - other.m12,
+                                m20 - other.m20, m21 - other.m21, m22 - other.m22 };
     }
 
 
@@ -166,9 +142,9 @@ namespace ETL::Math
     template<typename Type>
     Matrix3x3<Type> Matrix3x3<Type>::operator*(Type scalar) const
     {
-        return Matrix3x3<Type>{ m00* scalar, m01* scalar, m02* scalar,
-            m10* scalar, m11* scalar, m12* scalar,
-            m20* scalar, m21* scalar, m22* scalar };
+        return Matrix3x3<Type>{ m00 * scalar, m01 * scalar, m02 * scalar,
+                                m10 * scalar, m11 * scalar, m12 * scalar,
+                                m20 * scalar, m21 * scalar, m22 * scalar };
     }
 
 
@@ -187,15 +163,15 @@ namespace ETL::Math
         {
             /// integer division, divide to avoid truncation errors
             return Matrix3x3<Type>{ m00 / scalar, m01 / scalar, m02 / scalar,
-                m10 / scalar, m11 / scalar, m12 / scalar,
-                m20 / scalar, m21 / scalar, m22 / scalar };
+                                    m10 / scalar, m11 / scalar, m12 / scalar,
+                                    m20 / scalar, m21 / scalar, m22 / scalar };
         }
         else
         {
             const Type inv = Type(1) / scalar;
-            return Matrix3x3<Type>{ m00* inv, m01* inv, m02* inv,
-                m10* inv, m11* inv, m12* inv,
-                m20* inv, m21* inv, m22* inv };
+            return Matrix3x3<Type>{ m00 * inv, m01 * inv, m02 * inv,
+                                    m10 * inv, m11 * inv, m12 * inv,
+                                    m20 * inv, m21 * inv, m22 * inv };
         }
     }
 

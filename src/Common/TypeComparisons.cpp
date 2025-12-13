@@ -52,7 +52,7 @@ namespace ETL { namespace Math
     bool isZero(const Matrix3x3<T>& mat, T epsilon)
     {
         for (int i = 0; i < 9; ++i)
-            if (!isZero<T>(mat[i], epsilon))
+            if (!isZero(mat[i], epsilon))
                 return false;
 
         return true;
