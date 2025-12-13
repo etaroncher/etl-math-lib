@@ -209,54 +209,54 @@ TEMPLATE_TEST_CASE("Matrix3x3 Arithmetic", "[Matrix3x3][math]", ALL_TYPES)
 
     SECTION("Addition")
     {
-        const Matrix res = mA + mB;
-        REQUIRE(res(0, 0) == TestType(9));
-        REQUIRE(res(1, 1) == TestType(9));
-        REQUIRE(res(2, 2) == TestType(9));
+        const Matrix mResult = mA + mB;
+        REQUIRE(mResult(0, 0) == TestType(9));
+        REQUIRE(mResult(1, 1) == TestType(9));
+        REQUIRE(mResult(2, 2) == TestType(9));
 
-        Matrix res2 = mA;
-        res2 += mB;
-        REQUIRE(res2 == res);
+        Matrix mResult2 = mA;
+        mResult2 += mB;
+        REQUIRE(mResult2 == mResult);
     }
 
     SECTION("Subtraction")
     {
-        const Matrix res = mA - mB;
-        REQUIRE(res(0, 0) == TestType(3));
-        REQUIRE(res(1, 1) == TestType(3));
-        REQUIRE(res(2, 2) == TestType(3));
+        const Matrix mResult = mA - mB;
+        REQUIRE(mResult(0, 0) == TestType(3));
+        REQUIRE(mResult(1, 1) == TestType(3));
+        REQUIRE(mResult(2, 2) == TestType(3));
 
-        Matrix res2 = mA;
-        res2 -= mB;
-        REQUIRE(res2 == res);
+        Matrix mResult2 = mA;
+        mResult2 -= mB;
+        REQUIRE(mResult2 == mResult);
     }
 
     SECTION("Scalar Multiplication")
     {
-        const Matrix res = mA * TestType(2);
-        REQUIRE(res(0, 0) == TestType(12));
-        REQUIRE(res(1, 1) == TestType(12));
-        REQUIRE(res(2, 2) == TestType(12));
+        const Matrix mResult = mA * TestType(2);
+        REQUIRE(mResult(0, 0) == TestType(12));
+        REQUIRE(mResult(1, 1) == TestType(12));
+        REQUIRE(mResult(2, 2) == TestType(12));
 
-        Matrix res2 = mA;
-        res2 *= TestType(2);
-        REQUIRE(res == res2);
+        Matrix mResult2 = mA;
+        mResult2 *= TestType(2);
+        REQUIRE(mResult2 == mResult);
 
         /// Test Commutative Property (s * v)
-        const Matrix res3 = TestType(2) * mA;
-        REQUIRE(res == res3);
+        const Matrix mResult3 = TestType(2) * mA;
+        REQUIRE(mResult3 == mResult);
     }
 
     SECTION("Scalar Division")
     {
-        const Matrix res = mA / TestType(2);
-        REQUIRE(res(0, 0) == TestType(3));
-        REQUIRE(res(1, 1) == TestType(3));
-        REQUIRE(res(2, 2) == TestType(3));
+        const Matrix mResult = mA / TestType(2);
+        REQUIRE(mResult(0, 0) == TestType(3));
+        REQUIRE(mResult(1, 1) == TestType(3));
+        REQUIRE(mResult(2, 2) == TestType(3));
 
-        Matrix res2 = mA;
-        res2 /= TestType(2);
-        REQUIRE(res == res2);
+        Matrix mResult2 = mA;
+        mResult2 /= TestType(2);
+        REQUIRE(mResult2 == mResult);
     }
 }
 
@@ -298,13 +298,13 @@ TEMPLATE_TEST_CASE("Matrix3x3 Matrix Multiplication", "[Matrix3x3][math]", ALL_T
         const Matrix m{ TestType(1), TestType(2), TestType(3),
                         TestType(4), TestType(5), TestType(6),
                         TestType(7), TestType(8), TestType(9) };
-        const Matrix identity = Matrix::Identity();
+        const Matrix mIdentity = Matrix::Identity();
 
-        const Matrix res1 = m * identity;
-        const Matrix res2 = identity * m;
+        const Matrix mResult1 = m * mIdentity;
+        const Matrix mResult2 = mIdentity * m;
 
-        REQUIRE(res1 == m);
-        REQUIRE(res2 == m);
+        REQUIRE(mResult1 == m);
+        REQUIRE(mResult2 == m);
     }
 
     SECTION("General matrix multiplication")
@@ -321,23 +321,23 @@ TEMPLATE_TEST_CASE("Matrix3x3 Matrix Multiplication", "[Matrix3x3][math]", ALL_T
                          TestType(6), TestType(5), TestType(4),
                          TestType(3), TestType(2), TestType(1) };
 
-        const Matrix expected{ TestType(30),  TestType(24),  TestType(18),
+        const Matrix mExpected{ TestType(30),  TestType(24),  TestType(18),
                                 TestType(84),  TestType(69),  TestType(54),
                                 TestType(138), TestType(114), TestType(90) };
 
-        const Matrix result = mA * mB;
+        const Matrix mResult = mA * mB;
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
     }
 
     SECTION("Compound assignment")
     {
         Matrix mA{ TestType(2) };
         const Matrix mB{ TestType(3) };
-        const Matrix expected = mA * mB;
+        const Matrix mExpected = mA * mB;
 
         mA *= mB;
-        REQUIRE(mA == expected);
+        REQUIRE(mA == mExpected);
     }
 }
 
@@ -349,12 +349,12 @@ TEMPLATE_TEST_CASE("Matrix3x3 Vector Multiplication", "[Matrix3x3][math]", ALL_T
 
     SECTION("Identity matrix vector multiplication")
     {
-        const Matrix identity = Matrix::Identity();
+        const Matrix mIdentity = Matrix::Identity();
         const Vec3 v{ TestType(1), TestType(2), TestType(3) };
 
-        const Vec3 result = identity * v;
+        const Vec3 vResult = mIdentity * v;
 
-        REQUIRE(result == v);
+        REQUIRE(vResult == v);
     }
 
     SECTION("General matrix vector multiplication")
@@ -368,21 +368,21 @@ TEMPLATE_TEST_CASE("Matrix3x3 Vector Multiplication", "[Matrix3x3][math]", ALL_T
                         TestType(7), TestType(8), TestType(9) };
 
         const Vec3 v{ TestType(1), TestType(2), TestType(3) };
-        const Vec3 expected{ TestType(14), TestType(32), TestType(50) };
-        const Vec3 result = m * v;
+        const Vec3 vExpected{ TestType(14), TestType(32), TestType(50) };
+        const Vec3 vResult = m * v;
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
     }
 
     SECTION("Diagonal matrix vector multiplication")
     {
         const Matrix m{ TestType(2) };
         const Vec3 v{ TestType(3), TestType(4), TestType(5) };
-        const Vec3 expected{ TestType(6), TestType(8), TestType(10) };
+        const Vec3 vExpected{ TestType(6), TestType(8), TestType(10) };
 
-        const Vec3 result = m * v;
+        const Vec3 vResult = m * v;
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
     }
 }
 
@@ -441,13 +441,13 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(4), TestType(5), TestType(6),
                         TestType(7), TestType(8), TestType(9) };
 
-        const Matrix expected{ TestType(1), TestType(4), TestType(7),
-                               TestType(2), TestType(5), TestType(8),
-                               TestType(3), TestType(6), TestType(9) };
+        const Matrix mExpected{ TestType(1), TestType(4), TestType(7),
+                                TestType(2), TestType(5), TestType(8),
+                                TestType(3), TestType(6), TestType(9) };
 
-        const Matrix result = m.transpose();
+        const Matrix mResult = m.transpose();
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
     }
 
     SECTION("MakeTranspose - in-place")
@@ -456,13 +456,13 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
                   TestType(4), TestType(5), TestType(6),
                   TestType(7), TestType(8), TestType(9) };
 
-        const Matrix expected{ TestType(1), TestType(4), TestType(7),
-                               TestType(2), TestType(5), TestType(8),
-                               TestType(3), TestType(6), TestType(9) };
+        const Matrix mExpected{ TestType(1), TestType(4), TestType(7),
+                                TestType(2), TestType(5), TestType(8),
+                                TestType(3), TestType(6), TestType(9) };
 
         m.makeTranspose();
 
-        REQUIRE(ETL::Math::isEqual(m, expected));
+        REQUIRE(ETL::Math::isEqual(m, mExpected));
     }
 
     SECTION("Double transpose returns original")
@@ -471,9 +471,9 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(4), TestType(5), TestType(6),
                         TestType(7), TestType(8), TestType(9) };
 
-        const Matrix result = m.transpose().transpose();
+        const Matrix mResult = m.transpose().transpose();
 
-        REQUIRE(result == m);
+        REQUIRE(mResult == m);
     }
 
     SECTION("Symmetric matrix transpose")
@@ -482,9 +482,9 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(2), TestType(4), TestType(5),
                         TestType(3), TestType(5), TestType(6) };
 
-        const Matrix result = m.transpose();
+        const Matrix mResult = m.transpose();
 
-        REQUIRE(result == m);
+        REQUIRE(mResult == m);
     }
 }
 
@@ -496,10 +496,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
     SECTION("Identity inverse")
     {
         const Matrix m = Matrix::Identity();
-        const Matrix inv = m.inverse();
+        const Matrix mInverse = m.inverse();
 
-        REQUIRE(inv == m);
-        REQUIRE(ETL::Math::isEqual(inv, m));
+        REQUIRE(mInverse == m);
+        REQUIRE(ETL::Math::isEqual(mInverse, m));
     }
 
     SECTION("Inverse property: M * M^-1 = I")
@@ -508,11 +508,11 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(0), TestType(1), TestType(4),
                         TestType(5), TestType(6), TestType(0) };
 
-        const Matrix inv = m.inverse();
-        const Matrix result = m * inv;
-        const Matrix expected = Matrix::Identity();
+        const Matrix mInverse = m.inverse();
+        const Matrix mResult = m * mInverse;
+        const Matrix mExpected = Matrix::Identity();
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
     }
 
     SECTION("MakeInverse - in-place")
@@ -523,10 +523,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
 
         Matrix m = original;
         m.makeInverse();
-        const Matrix result = m * original;
-        const Matrix expected = Matrix::Identity();
+        const Matrix mResult = m * original;
+        const Matrix mExpected = Matrix::Identity();
 
-        REQUIRE(ETL::Math::isEqual(result, expected));
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
     }
 
     SECTION("Double inverse returns original")
@@ -535,8 +535,231 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(0), TestType(1), TestType(4),
                         TestType(5), TestType(6), TestType(0) };
 
-        const Matrix result = m.inverse().inverse();
+        const Matrix mResult = m.inverse().inverse();
 
-        REQUIRE(ETL::Math::isEqual(result, m));
+        REQUIRE(ETL::Math::isEqual(mResult, m));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transform]", ALL_TYPES)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+    constexpr double PI_HALF = 3.14159265358979323846 / 2.0;
+
+    SECTION("Scale static factory")
+    {
+        const Matrix mScale = Matrix::Scale(2.0, 3.0);
+        const Matrix mExpected{ TestType(2), TestType(0), TestType(0),
+                                TestType(0), TestType(3), TestType(0),
+                                TestType(0), TestType(0), TestType(1) };
+
+        REQUIRE(ETL::Math::isEqual(mScale, mExpected));
+    }
+
+    SECTION("Rotation static factory")
+    {
+        const Matrix mRot = Matrix::Rotation(PI_HALF); // 90 degrees
+        const Matrix mExpected{ TestType(0), TestType(-1), TestType(0),
+                                TestType(1), TestType(0),  TestType(0),
+                                TestType(0), TestType(0),  TestType(1) };
+
+        REQUIRE(ETL::Math::isEqual(mRot, mExpected));
+    }
+
+    SECTION("Translation static factory")
+    {
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mExpected{ TestType(1), TestType(0), TestType(10),
+                                TestType(0), TestType(1), TestType(20),
+                                TestType(0), TestType(0), TestType(1) };
+
+        REQUIRE(ETL::Math::isEqual(mTrans, mExpected));;
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL_TYPES)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+    constexpr double PI_HALF = 3.14159265358979323846 / 2.0;
+
+    SECTION("TransformPoint - return value")
+    {
+        // Translation matrix: move by (10, 20)
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Vec2 vPoint{ TestType(5), TestType(3) };
+        const Vec2 vExpected{ TestType(15), TestType(23) };
+
+        const Vec2 vResult = mTrans.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
+    SECTION("TransformPoint - in-place")
+    {
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        Vec2 vPoint{ TestType(5), TestType(3) };
+        const Vec2 vExpected{ TestType(15), TestType(23) };
+
+        mTrans.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vPoint, vExpected));
+    }
+
+    SECTION("TransformDirection - return value")
+    {
+        // Rotation 90 degrees: (1, 0) -> (0, 1)
+        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        const Vec2 vDirection{ TestType(1), TestType(0) };
+        const Vec2 vExpected{ TestType(0), TestType(1) };
+
+        const Vec2 vResult = mRot.transformDirection(vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
+    SECTION("TransformDirection - in-place")
+    {
+        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        Vec2 vDirection{ TestType(1), TestType(0) };
+        const Vec2 vExpected{ TestType(0), TestType(1) };
+
+        mRot.transformDirection(vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vDirection, vExpected));
+    }
+
+    SECTION("TransformDirection ignores translation")
+    {
+        // Translation should not affect directions
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Vec2 vDirection{ TestType(1), TestType(0) };
+
+        const Vec2 vResult = mTrans.transformDirection(vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vDirection));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", ALL_TYPES)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+    constexpr double PI_HALF = 3.14159265358979323846 / 2.0;
+
+    SECTION("Scale method (post-multiply)")
+    {
+        const Matrix mScale = Matrix::Identity().scale(2.0, 3.0);
+        const Vec2 vPoint{ TestType(4), TestType(5) };
+        const Vec2 vExpected{ TestType(8), TestType(15) };
+        const Vec2 vResult = mScale.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
+    SECTION("Rotate method (post-multiply)")
+    {
+        const Matrix mRot = Matrix::Identity().rotate(PI_HALF); // 90 degrees
+        const Vec2 vPoint{ TestType(1), TestType(0) };
+        const Vec2 vExpected{ TestType(0), TestType(1) };
+        const Vec2 vResult = mRot.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
+    SECTION("Translate method (post-multiply)")
+    {
+        const Matrix mTrans = Matrix::Identity().translate(TestType(10), TestType(20));
+        const Vec2 vPoint{ TestType(5), TestType(3) };
+        const Vec2 vExpected{ TestType(15), TestType(23) };
+        const Vec2 vResult = mTrans.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
+    SECTION("Combined transformations (TRS order)")
+    {
+        /// Translate, then Rotate, then Scale
+        Matrix mA = Matrix::Identity();
+        mA.translate(TestType(10), TestType(0));
+        mA.rotate(PI_HALF); // 90 degrees
+        mA.scale(2.0, 2.0);
+
+        const Vec2 vPoint{ TestType(1), TestType(0) }; /// Point (1,0) -> translate -> (11, 0) -> rotate 90° -> (0, 11) -> scale 2x -> (0, 22)
+        const Vec2 vExpected{ TestType(0), TestType(22) };
+        const Vec2 vResult = mA.transformPoint(vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+
+        /// Chained function calls and chained Mat * Mat
+        const Matrix mB = Matrix::Identity().translate(TestType(10), TestType(0)).rotate(PI_HALF).scale(2.0, 2.0);
+        const Matrix mC = Matrix::Translation(TestType(10), TestType(0)).rotate(PI_HALF).scale(2.0, 2.0);
+        const Matrix mD = Matrix::Translation(TestType(10), TestType(0)) * Matrix::Rotation(PI_HALF) * Matrix::Scale(2.0, 2.0);
+
+        REQUIRE(ETL::Math::isEqual(mA, mB));
+        REQUIRE(ETL::Math::isEqual(mA, mC));
+        REQUIRE(ETL::Math::isEqual(mA, mD));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]", ALL_TYPES)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+    constexpr double PI = 3.14159265358979323846;
+
+    SECTION("GetScale from scale matrix")
+    {
+        const Matrix mScale = Matrix::Scale(2.0, 3.0);
+        const ETL::Math::Vector2<double> vScale = mScale.getScale();
+        const ETL::Math::Vector2<double> vExpected{ 2.0, 3.0 };
+
+        REQUIRE(ETL::Math::isEqual(vScale, vExpected));
+    }
+
+    SECTION("GetRotation from rotation matrix")
+    {
+        const double angle = PI / 4.0; /// 45 degrees
+        const Matrix mRot = Matrix::Rotation(angle);
+        const double extractedAngle = mRot.getRotation();
+
+        REQUIRE(ETL::Math::isEqual(extractedAngle, angle));
+    }
+
+    SECTION("GetTranslation from translation matrix")
+    {
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Vec2 vTranslation = mTrans.getTranslation();
+        const Vec2 vExpected{ TestType(10), TestType(20) };
+
+        REQUIRE(ETL::Math::isEqual(vTranslation, vExpected));
+    }
+
+    SECTION("Decompose combined transformation")
+    {
+        Matrix mA = Matrix::Identity();
+        mA.translate(TestType(5), TestType(10));
+        mA.rotate(PI / 6.0); /// 30 degrees
+        mA.scale(2.0, 3.0);
+
+        const auto vScale = mA.getScale();
+        const double rotation = mA.getRotation();
+        const Vec2 vTranslation = mA.getTranslation();
+        const Vec2 vExpectedTrans{ TestType(5), TestType(10) };
+        const auto vExpectedScale = ETL::Math::Vector2{ 2.0, 3.0 };
+
+        // Note: Decomposition may not be exact due to combined transforms
+        // Just check that values are reasonable
+        REQUIRE(vScale.x() > 0);
+        REQUIRE(vScale.y() > 0);
+        REQUIRE(std::abs(rotation) < PI);
+        REQUIRE(ETL::Math::isEqual(vScale, vExpectedScale));
+        REQUIRE(ETL::Math::isEqual(std::abs(rotation), PI / 6.0));
+        REQUIRE(ETL::Math::isEqual(vTranslation, vExpectedTrans));
     }
 }
