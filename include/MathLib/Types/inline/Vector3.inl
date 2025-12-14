@@ -3,7 +3,7 @@
 /// Vector3.inl
 ///----------------------------------------------------------------------------
 
-#include "MathLib/Common/Common.h"
+#include "MathLib/Common/Asserts.h"
 #include "MathLib/Common/TypeComparisons.h"
 #include <algorithm>
 

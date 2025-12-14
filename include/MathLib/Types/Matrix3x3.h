@@ -4,6 +4,7 @@
 ///---------------------------------------------------------------------------- 
 #pragma once
 
+#include "MathLib/Common/ElementProxy.h"
 #include "MathLib/Types/Vector3.h"
 #include "MathLib/Types/Vector2.h"
 
@@ -40,10 +41,10 @@ namespace ETL::Math
         ~Matrix3x3() = default;
 
         /// Access methods
-        Type  operator()(int row, int col) const;
-        Type& operator()(int row, int col);
-        Type  operator[](int index) const;
-        Type& operator[](int index);
+        Type               operator()(int row, int col) const;
+        ElementProxy<Type> operator()(int row, int col);
+        Type               operator[](int index) const;
+        ElementProxy<Type> operator[](int index);
 
         Vector3<Type> getCol(int col) const;
         Vector3<Type> getRow(int row) const;
@@ -102,6 +103,7 @@ namespace ETL::Math
             Type m[3][3];                                                 /// 2D access
             Type mData[9];                                                /// 1D access
         };
+
     };
 
 

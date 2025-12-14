@@ -24,6 +24,15 @@ target_include_directories(MathLib PUBLIC  ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(MathLib PRIVATE ${CMAKE_SOURCE_DIR}/private)
 
 
+# MathLib Sandbox
+set(MATHLIB_SANDBOX_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/Sandbox/Sandbox.cpp
+)
+
+add_executable(MathLib_Sandbox ${MATHLIB_SANDBOX_SOURCES})
+target_link_libraries(MathLib_Sandbox PRIVATE MathLib)
+
+
 # Groups IDE
 
 function(assign_filter FILE ROOT GROUP_ROOT)

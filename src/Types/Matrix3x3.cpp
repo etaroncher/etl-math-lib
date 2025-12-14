@@ -76,7 +76,7 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        return Vector3<Type>{ mData[col * COL_SIZE + 0], mData[col * COL_SIZE + 1], mData[col * COL_SIZE + 2] };
+        return Vector3<Type>{ m[col][0], m[col][1], m[col][2] };
     }
 
 
@@ -91,7 +91,7 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        return Vector3<Type>{ mData[0 * COL_SIZE + row], mData[1 * COL_SIZE + row], mData[2 * COL_SIZE + row] };
+        return Vector3<Type>{ m[0][row], m[1][row], m[2][row] };
     }
 
 
@@ -106,9 +106,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        outValue[0] = mData[col * COL_SIZE + 0];
-        outValue[1] = mData[col * COL_SIZE + 1];
-        outValue[2] = mData[col * COL_SIZE + 2];
+        outValue[0] = m[col][0];
+        outValue[1] = m[col][1];
+        outValue[2] = m[col][2];
     }
 
 
@@ -123,9 +123,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        outValue[0] = mData[0 * COL_SIZE + row];
-        outValue[1] = mData[1 * COL_SIZE + row];
-        outValue[2] = mData[2 * COL_SIZE + row];
+        outValue[0] = m[0][row];
+        outValue[1] = m[1][row];
+        outValue[2] = m[2][row];
     }
 
 
@@ -142,9 +142,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        mData[col * COL_SIZE + 0] = c0;
-        mData[col * COL_SIZE + 1] = c1;
-        mData[col * COL_SIZE + 2] = c2;
+        m[col][0] = c0;
+        m[col][1] = c1;
+        m[col][2] = c2;
     }
 
 
@@ -161,9 +161,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        mData[0 * COL_SIZE + row] = r0;
-        mData[1 * COL_SIZE + row] = r1;
-        mData[2 * COL_SIZE + row] = r2;
+        m[0][row] = r0;
+        m[1][row] = r1;
+        m[2][row] = r2;
     }
 
 
@@ -178,9 +178,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        mData[col * COL_SIZE + 0] = value.x();
-        mData[col * COL_SIZE + 1] = value.y();
-        mData[col * COL_SIZE + 2] = value.z();
+        m[col][0] = value.x();
+        m[col][1] = value.y();
+        m[col][2] = value.z();
     }
 
 
@@ -195,9 +195,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        mData[0 * COL_SIZE + row] = value.x();
-        mData[1 * COL_SIZE + row] = value.y();
-        mData[2 * COL_SIZE + row] = value.z();
+        m[0][row] = value.x();
+        m[1][row] = value.y();
+        m[2][row] = value.z();
     }
 
     /// <summary>
@@ -217,12 +217,12 @@ namespace ETL::Math
             {
                 for (int col = 0; col < COL_SIZE; ++col)
                 {
-                    const int64_t sum = static_cast<int64_t>(mData[0*COL_SIZE + row]) * other.mData[col*COL_SIZE + 0]
-                                      + static_cast<int64_t>(mData[1*COL_SIZE + row]) * other.mData[col*COL_SIZE + 1]
-                                      + static_cast<int64_t>(mData[2*COL_SIZE + row]) * other.mData[col*COL_SIZE + 2];
+                    const int64_t sum = static_cast<int64_t>(m[0][row]) * other.m[col][0]
+                                      + static_cast<int64_t>(m[1][row]) * other.m[col][1]
+                                      + static_cast<int64_t>(m[2][row]) * other.m[col][2];
 
                     /// Bitshift result back to Fixed Point
-                    result[col*COL_SIZE + row] = static_cast<Type>(sum >> FIXED_SHIFT);
+                    result.m[col][row] = static_cast<Type>(sum >> FIXED_SHIFT);
                 }
             }
 
@@ -434,12 +434,11 @@ namespace ETL::Math
         /// Extract scale from length of basis vectors (column 0 and column 1)
         if constexpr (std::integral<Type>)
         {
-            /// Length is calculated using double, then convert back to the required Type.
             /// The components are SCALED so length will be SCALED and thus it should be descaled.
             const double sx_scaled = Vector2<double>(m00, m10).length();
             const double sy_scaled = Vector2<double>(m01, m11).length();
 
-            return Vector2<double>{sx_scaled / FIXED_ONE, sy_scaled / FIXED_ONE};
+            return Vector2<double>{ sx_scaled / FIXED_ONE, sy_scaled / FIXED_ONE };
         }
         else
         {
@@ -456,6 +455,11 @@ namespace ETL::Math
     template<typename Type>
     double Matrix3x3<Type>::getRotation() const
     {
+        Vector2<Type> firstCol{ UnprocessValue<double>(m00), UnprocessValue<double>(m10) };
+        firstCol.makeNormalize();
+
+        return std::atan2(firstCol.y(), firstCol.x());
+
         /// Extract angle from column 0 (normalized)
         if constexpr (std::integral<Type>)
         {
@@ -486,15 +490,7 @@ namespace ETL::Math
     template<typename Type>
     Vector2<Type> Matrix3x3<Type>::getTranslation() const
     {
-        /// Extract translation from column 2 (normalized)
-        if constexpr (std::integral<Type>)
-        {
-            return Vector2<Type>{ m02 >> FIXED_SHIFT, m12 >> FIXED_SHIFT };
-        }
-        else
-        {
-            return Vector2<Type>{ m02, m12 };
-        }
+        return Vector2<Type>{ UnprocessValue<Type>(m02), UnprocessValue<Type>(m12) };
     }
 
 

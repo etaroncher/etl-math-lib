@@ -3,7 +3,7 @@
 /// Matrix3x3.inl
 ///----------------------------------------------------------------------------
 
-#include "MathLib/Common/Common.h"
+#include "MathLib/Common/Asserts.h"
 #include "MathLib/Common/TypeComparisons.h"
 #include <algorithm>
 
@@ -53,7 +53,7 @@ namespace ETL::Math
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        return mData[col * COL_SIZE + row];
+        return UnprocessValue<Type>(m[col][row]);
     }
 
 
@@ -64,12 +64,12 @@ namespace ETL::Math
     /// <param name="x"></param>
     /// <param name="y"></param>
     template<typename Type>
-    Type& Matrix3x3<Type>::operator()(int row, int col)
+    ElementProxy<Type> Matrix3x3<Type>::operator()(int row, int col)
     {
         ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
         ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        return mData[col * COL_SIZE + row];
+        return ElementProxy<Type>{ m[col][row] };
     }
 
 
@@ -84,7 +84,7 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(elem >= 0 && elem < NUM_ELEM, "Matrix3x3 out of bounds ELEM access");
 
-        return mData[elem];
+        return UnprocessValue<Type>(mData[elem]);
     }
 
 
@@ -95,11 +95,11 @@ namespace ETL::Math
     /// <param name="x"></param>
     /// <param name="y"></param>
     template<typename Type>
-    Type& Matrix3x3<Type>::operator[](int elem)
+    ElementProxy<Type> Matrix3x3<Type>::operator[](int elem)
     {
         ETLMATH_ASSERT(elem >= 0 && elem < NUM_ELEM, "Matrix3x3 out of bounds ELEM access");
 
-        return mData[elem];
+        return ElementProxy<Type>{ mData[elem] };
     }
 
 
