@@ -40,18 +40,19 @@ namespace ETL::Math
     {
     }
 
+
     /// Read conversion
     template<typename Type>
     inline ElementProxy<Type>::operator Type() const
     {
-        return UnprocessValue<Type>(element); /// Integers converted from Fixed Point
+        return DecodeValue<Type>(element); /// Integers converted from Fixed Point
     }
 
     /// Write assignment
     template<typename Type>
     inline ElementProxy<Type>& ElementProxy<Type>::operator=(Type value)
     {
-        element = ProcessValue<Type>(value); /// Integers converted to Fixed Point
+        element = EncodeValue<Type>(value); /// Integers converted to Fixed Point
 
         return *this;
     }
@@ -68,7 +69,7 @@ namespace ETL::Math
     template<typename Type>
     inline ElementProxy<Type>& ElementProxy<Type>::operator+=(Type value)
     {
-        element += ProcessValue<Type>(value); /// Integers converted to Fixed Point
+        element += EncodeValue<Type>(value); /// Integers converted to Fixed Point
 
         return *this;
     }
@@ -77,7 +78,7 @@ namespace ETL::Math
     template<typename Type>
     inline ElementProxy<Type>& ElementProxy<Type>::operator-=(Type value)
     {
-        element -= ProcessValue<Type>(value);  /// Integers converted to Fixed Point
+        element -= EncodeValue<Type>(value);  /// Integers converted to Fixed Point
 
         return *this;
     }

@@ -2,18 +2,21 @@
 
 # Source files
 set(MODULE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ElementProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TypeComparisons.cpp
 )
 
 # Header files
 set(MODULE_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/MathLib/Common/ElementProxy.h
     ${CMAKE_SOURCE_DIR}/include/MathLib/Common/TypeComparisons.h
 )
 
 # Header private files
 set(MODULE_HEADERS_PRIVATE
-    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Common.h
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Asserts.h
     ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Constants.h
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/FixedPointHelpers.h
 )
 
 # Append to MATHLIB_SOURCES & MATHLIB_HEADERS

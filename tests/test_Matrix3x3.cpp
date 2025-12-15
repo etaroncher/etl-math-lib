@@ -550,7 +550,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 
     SECTION("Scale static factory")
     {
-        const Matrix mScale = Matrix::Scale(2.0, 3.0);
+        const Matrix mScale = Matrix::Scale(TestType(2), TestType(3));
         const Matrix mExpected{ TestType(2), TestType(0), TestType(0),
                                 TestType(0), TestType(3), TestType(0),
                                 TestType(0), TestType(0), TestType(1) };
@@ -588,7 +588,6 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
 
     SECTION("TransformPoint - return value")
     {
-        // Translation matrix: move by (10, 20)
         const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
         const Vec2 vPoint{ TestType(5), TestType(3) };
         const Vec2 vExpected{ TestType(15), TestType(23) };
@@ -611,7 +610,6 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
 
     SECTION("TransformDirection - return value")
     {
-        // Rotation 90 degrees: (1, 0) -> (0, 1)
         const Matrix mRot = Matrix::Rotation(PI_HALF);
         const Vec2 vDirection{ TestType(1), TestType(0) };
         const Vec2 vExpected{ TestType(0), TestType(1) };
@@ -634,7 +632,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
 
     SECTION("TransformDirection ignores translation")
     {
-        // Translation should not affect directions
+        /// Translation should not affect directions
         const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
         const Vec2 vDirection{ TestType(1), TestType(0) };
 
@@ -715,34 +713,46 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
 
     SECTION("GetScale from scale matrix")
     {
-        const Matrix mScale = Matrix::Scale(2.0, 3.0);
-        const ETL::Math::Vector2<double> vScale = mScale.getScale();
         const ETL::Math::Vector2<double> vExpected{ 2.0, 3.0 };
+        const Matrix mScale = Matrix::Scale(vExpected.x(), vExpected.y());
 
-        REQUIRE(ETL::Math::isEqual(vScale, vExpected));
+        const ETL::Math::Vector2<double> vScale1 = mScale.getScale();
+        REQUIRE(ETL::Math::isEqual(vScale1, vExpected, 0.001));
+
+        ETL::Math::Vector2<double> vScale2;
+        mScale.getScale(vScale2);
+        REQUIRE(ETL::Math::isEqual(vScale2, vExpected, 0.001));
     }
 
     SECTION("GetRotation from rotation matrix")
     {
         const double angle = PI / 4.0; /// 45 degrees
         const Matrix mRot = Matrix::Rotation(angle);
-        const double extractedAngle = mRot.getRotation();
 
-        REQUIRE(ETL::Math::isEqual(extractedAngle, angle, 0.001));
+        const double extractedAngle1 = mRot.getRotation();
+        REQUIRE(ETL::Math::isEqual(extractedAngle1, angle, 0.001));
+
+        double extractedAngle2;
+        mRot.getRotation(extractedAngle2);
+        REQUIRE(ETL::Math::isEqual(extractedAngle2, angle, 0.001));
     }
 
     SECTION("GetTranslation from translation matrix")
     {
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
-        const Vec2 vTranslation = mTrans.getTranslation();
         const Vec2 vExpected{ TestType(10), TestType(20) };
+        const Matrix mTrans = Matrix::Translation(vExpected.x(), vExpected.y());
 
-        REQUIRE(ETL::Math::isEqual(vTranslation, vExpected));
+        const Vec2 vTranslation1 = mTrans.getTranslation();
+        REQUIRE(ETL::Math::isEqual(vTranslation1, vExpected));
+
+        Vec2 vTranslation2;
+        mTrans.getTranslation(vTranslation2);
+        REQUIRE(ETL::Math::isEqual(vTranslation2, vExpected));
     }
 
     SECTION("Decompose combined transformation")
     {
-        const double angle = PI / 6.0; /// 30 degrees
+        constexpr double angle = PI / 6.0; /// 30 degrees
         Matrix mA = Matrix::Identity();
         mA.translate(TestType(5), TestType(10));
         mA.rotate(angle); 
@@ -756,8 +766,8 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
 
         /// Note: Decomposition may not be exact due to combined transforms, 
         /// Just check that values are reasonable enough
-        REQUIRE(ETL::Math::isEqual(vScale, vExpectedScale));
-        REQUIRE(ETL::Math::isEqual(std::abs(rotation), angle, 0.001));
+        REQUIRE(ETL::Math::isEqual(vScale, vExpectedScale, 0.001));
+        REQUIRE(ETL::Math::isEqual(rotation, angle, 0.001));
         REQUIRE(ETL::Math::isEqual(vTranslation, vExpectedTrans));
     }
 }

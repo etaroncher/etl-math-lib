@@ -14,31 +14,36 @@ namespace ETL::Math
 
 
     /// Helper to safely convert FROM FIXED POINT to normal value
-    template<typename Type>
-    constexpr Type FromFixed(int val)
+    template<typename ReturnType, typename InputType>
+    requires (std::integral<InputType>)
+    constexpr ReturnType FromFixed(InputType val)
     {
-        if constexpr (std::integral<Type>)
-            return static_cast<Type>(val >> FIXED_SHIFT);
+        if constexpr (std::integral<ReturnType>)
+            return static_cast<ReturnType>(val >> FIXED_SHIFT);
         else
-            return static_cast<Type>(val) / FIXED_ONE;
+            return static_cast<ReturnType>(val) / FIXED_ONE;
     }
 
 
     /// Helper to safely convert from normal value TO FIXED POINT
-    template<typename Type>
-    constexpr int ToFixed(Type val)
+    template<typename ReturnType, typename InputType>
+    requires (std::integral<ReturnType>)
+    constexpr ReturnType ToFixed(InputType val)
     {
-        return static_cast<int>(val * FIXED_ONE);
+        if constexpr (std::integral<InputType>)
+            return static_cast<ReturnType>(val) << FIXED_SHIFT;
+        else
+            return static_cast<ReturnType>(val * FIXED_ONE);
     }
 
 
     /// Helper to automatically convert or NOT convert 
     /// TO fixed point safely depending on return type
     template<typename ReturnType, typename InputType>
-    constexpr ReturnType ProcessValue(InputType val)
+    constexpr ReturnType EncodeValue(InputType val)
     {
         if constexpr (std::integral<ReturnType>)
-            return ToFixed<InputType>(val);
+            return ToFixed<ReturnType>(val);
         else
             return static_cast<ReturnType>(val);
     }
@@ -47,7 +52,7 @@ namespace ETL::Math
     /// Helper to automatically convert or NOT convert 
     /// FROM fixed point safely depending
     template<typename ReturnType, typename InputType>
-    constexpr ReturnType UnprocessValue(InputType val)
+    constexpr ReturnType DecodeValue(InputType val)
     {
         if constexpr (std::integral<InputType>)
             return FromFixed<ReturnType>(val);
