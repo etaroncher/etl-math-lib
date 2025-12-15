@@ -96,9 +96,20 @@ namespace ETL::Math
     using Vec2i = Vector2<int>;
 
 
-    /// Scalar * matrix operator (commutative property)
+    ///------------------------------------------------------------------------------------------
+    /// Free functions and common helpers (also present as class member functions.
+
+    /// Length
     template<typename Type>
-    Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector);
+    Type Length(const Vector2<Type>& vec);
+
+    /// Length Squared
+    template<typename Type>
+    Type LengthSquared(const Vector2<Type>& vec);
+
+    /// Normalize
+    template<typename Type> requires std::floating_point<Type>
+    Vector2<Type> Normalize(const Vector2<Type>& vec);
 
     /// Cross prod
     template<typename Type>
@@ -110,21 +121,34 @@ namespace ETL::Math
 
     /// Component-wise mul
     template<typename Type>
-    Type ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2);
+    Vector2<Type> ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2);
 
     /// Component-wise div
     template<typename Type>
-    Type ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2);
+    Vector2<Type> ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2);
+
+    /// Scalar * matrix operator (commutative property)
+    template<typename Type>
+    Vector2<Type> operator*(Type scalar, const Vector2<Type>& vector);
 
 
-    /// Explicit template instantiation (precompiled declaration)
+    ///------------------------------------------------------------------------------------------
+    /// Explicit template instantiations (precompiled declaration)
+
     extern template class Vector2<float>;
     extern template class Vector2<double>;
     extern template class Vector2<int>;
 
-    extern template Vector2<float>  operator*(float  scalar, const Vector2<float>&  vector);
-    extern template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
-    extern template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
+    extern template float  Length(const Vector2<float>&  vec);
+    extern template double Length(const Vector2<double>& vec);
+    extern template int    Length(const Vector2<int>&    vec);
+
+    extern template float  LengthSquared(const Vector2<float>& vec);
+    extern template double LengthSquared(const Vector2<double>& vec);
+    extern template int    LengthSquared(const Vector2<int>& vec);
+
+    extern template Vector2<float>  Normalize(const Vector2<float>&  vec);
+    extern template Vector2<double> Normalize(const Vector2<double>& vec);
 
     extern template float  Cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
     extern template double Cross(const Vector2<double>& v1, const Vector2<double>& v2);
@@ -134,13 +158,17 @@ namespace ETL::Math
     extern template double Dot(const Vector2<double>& v1, const Vector2<double>& v2);
     extern template int    Dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template float  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    extern template double ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template int    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template Vector2<float>  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template Vector2<double> ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template Vector2<int>    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template float  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    extern template double ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template int    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template Vector2<float>  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template Vector2<double> ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template Vector2<int>    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    extern template Vector2<float>  operator*(float  scalar, const Vector2<float>& vector);
+    extern template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
+    extern template Vector2<int>    operator*(int    scalar, const Vector2<int>& vector);
 
 
 } /// namespace ETL::Math

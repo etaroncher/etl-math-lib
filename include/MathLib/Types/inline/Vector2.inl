@@ -152,7 +152,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::operator*(const Vector2& other) const
     {
-        return dot<Type>(*this, other);
+        return Dot<Type>(*this, other);
     }
 
 
@@ -165,7 +165,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::operator^(const Vector2& other) const
     {
-        return cross<Type>(*this, other);
+        return Cross<Type>(*this, other);
     }
 
 
@@ -376,6 +376,45 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Return length
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="vec"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Type Length(const Vector2<Type>& vec)
+    {
+        return vec.length();
+    }
+
+
+    /// <summary>
+    /// Return length squared
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="vec"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Type LengthSquared(const Vector2<Type>& vec)
+    {
+        return vec.lengthSquared();
+    }
+
+
+    /// <summary>
+    /// Return normalized version of vec
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="vec"></param>
+    /// <returns></returns>
+    template<typename Type> requires std::floating_point<Type>
+    Vector2<Type> Normalize(const Vector2<Type>& vec)
+    {
+        return vec.normalize();
+    }
+
+
+    /// <summary>
     /// 2D "Cross product" of V1 x V2
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -407,13 +446,13 @@ namespace ETL::Math
     /// Component-wise multiplication
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="a"></param>
-    /// <param name="b"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> ComponentMul(const Vector2<Type>& a, const Vector2<Type>& b)
+    Vector2<Type> ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
-        return a.componentMul(b);
+        return v1.componentMul(v2);
     }
 
 
@@ -421,13 +460,13 @@ namespace ETL::Math
     /// Component-wise division
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="a"></param>
-    /// <param name="b"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> ComponentDiv(const Vector2<Type>& a, const Vector2<Type>& b)
+    Vector2<Type> ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
-        return a.componentDiv(b);
+        return v1.componentDiv(v2);
     }
 
 } /// namespace ETL::Math

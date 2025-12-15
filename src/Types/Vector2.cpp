@@ -62,9 +62,16 @@ namespace ETL::Math
     template class Vector2<double>;
     template class Vector2<int>;
 
-    template Vector2<float>  operator*(float  scalar, const Vector2<float>&  vector);
-    template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
-    template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
+    template float  Length(const Vector2<float>& vec);
+    template double Length(const Vector2<double>& vec);
+    template int    Length(const Vector2<int>& vec);
+
+    template float  LengthSquared(const Vector2<float>& vec);
+    template double LengthSquared(const Vector2<double>& vec);
+    template int    LengthSquared(const Vector2<int>& vec);
+
+    template Vector2<float>  Normalize(const Vector2<float>& vec);
+    template Vector2<double> Normalize(const Vector2<double>& vec);
 
     template float  Cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
     template double Cross(const Vector2<double>& v1, const Vector2<double>& v2);
@@ -74,12 +81,16 @@ namespace ETL::Math
     template double Dot(const Vector2<double>& v1, const Vector2<double>& v2);
     template int    Dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template Vector2<float>  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template Vector2<double> ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
+    template Vector2<int>    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template Vector2<float>  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template Vector2<double> ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
+    template Vector2<int>    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    template Vector2<float>  operator*(float  scalar, const Vector2<float>& vector);
+    template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
+    template Vector2<int>    operator*(int    scalar, const Vector2<int>& vector);
 
 } /// namespace ETL::Math

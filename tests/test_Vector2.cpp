@@ -97,17 +97,41 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
         REQUIRE(res.y() == TestType(3));
     }
 
+    SECTION("Component-wise Multiplication")
+    {
+        const Vector res1 = ETL::Math::ComponentMul<TestType>(Vector{ TestType(4), TestType(6) }, Vector{ TestType(2), TestType(3) });
+        REQUIRE(res1.x() == TestType(8));
+        REQUIRE(res1.y() == TestType(18));
+
+        Vector res2{ TestType(4), TestType(6) };
+        res2 *= Vector{ TestType(2), TestType(3) };
+        REQUIRE(res2.x() == TestType(8));
+        REQUIRE(res2.y() == TestType(18));
+    }
+
+    SECTION("Component-wise Division")
+    {
+        const Vector res1 = ETL::Math::ComponentDiv<TestType>( Vector{ TestType(4), TestType(6) } , Vector{ TestType(2), TestType(3) });
+        REQUIRE(res1.x() == TestType(2));
+        REQUIRE(res1.y() == TestType(2));
+
+        Vector res2{ TestType(4), TestType(6) };
+        res2 /= Vector{ TestType(2), TestType(3) };
+        REQUIRE(res2.x() == TestType(2));
+        REQUIRE(res2.y() == TestType(2));
+    }
+
     SECTION("Dot Product")
     {
         // 1*3 + 2*4
-        TestType d = dot(v1, v2);
+        TestType d = Dot(v1, v2);
         REQUIRE(d == TestType(11));
     }
 
     SECTION("Cross Product")
     {
         // 1*4-2*3
-        TestType d = cross(v1, v2);
+        TestType d = Cross(v1, v2);
         REQUIRE(d == TestType(-2));
     }
 }
