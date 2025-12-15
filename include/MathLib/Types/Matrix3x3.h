@@ -91,10 +91,10 @@ namespace ETL::Math
         Matrix3x3&    translate(const Vector2<Type>& pos);
 
         /// 2D Transformation setters (override current, leaving rest untouched)
-        //Matrix3x3&    setScale(double sX, double sY);
-        //Matrix3x3&    setRotate(double angleRad);
-        //Matrix3x3&    setTranslate(Type tX, Type tY);
-        //Matrix3x3&    setTranslate(const Vector2<Type>& vec);
+        //Matrix3x3&    setScale(double newScaleX, double newScaleY);
+        //Matrix3x3&    setRotation(double newAngleRad);
+        //Matrix3x3&    setTranslation(Type newTX, Type newTY);
+        //Matrix3x3&    setTranslation(const Vector2<Type>& newTranslation);
 
         /// 2D Transformations Decomposition
         Vector2<double> getScale() const;

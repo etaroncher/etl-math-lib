@@ -6,7 +6,7 @@
 #include <MathLib/Common/TypeComparisons.h>
 #include <MathLib/Types/Matrix3x3.h>
 
-#define ALL_TYPES /*int,*/ float, double
+#define ALL_TYPES int, float, double
 
 TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", ALL_TYPES)
 {
@@ -639,6 +639,42 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL
         const Vec2 vResult = mTrans.transformDirection(vDirection);
 
         REQUIRE(ETL::Math::isEqual(vResult, vDirection));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3x3][transform]", int)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+
+    SECTION("Rotation weird angle - return value")
+    {
+        const Matrix mRot = Matrix::Rotation(0.3948);
+        const Vec2 vDirection{ TestType(13), TestType(0) };
+        const Vec2 vExpected{ TestType(12), TestType(5) };
+
+        const Vec2 vResult = mRot.transformDirection(vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected, 2));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3x3][transform]", float, double)
+{
+    using Matrix = ETL::Math::Matrix3x3<TestType>;
+    using Vec2 = ETL::Math::Vector2<TestType>;
+
+    SECTION("Rotation weird angle - return value")
+    {
+        const Matrix mRot = Matrix::Rotation(0.3948);
+        const Vec2 vDirection{ TestType(13), TestType(0) };
+        const Vec2 vExpected{ TestType(12), TestType(5) };
+
+        const Vec2 vResult = mRot.transformDirection(vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected, TestType(0.001)));
     }
 }
 
