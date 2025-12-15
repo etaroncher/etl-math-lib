@@ -580,7 +580,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations", "[Matrix3x3][transform]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][transform]", ALL_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec2 = ETL::Math::Vector2<TestType>;
@@ -715,13 +715,16 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", A
         REQUIRE(ETL::Math::isEqual(vResult, vExpected));
     }
 
-    SECTION("Combined transformations (TRS order)")
+    SECTION("Combined transformations & TRS order)")
     {
+        const ETL::Math::Vector2<double> scale{ 2.0, 2.0 };
+        const ETL::Math::Vector2<TestType> translation{ TestType(10), TestType(0) };
+
         /// Translate, then Rotate, then Scale
         Matrix mA = Matrix::Identity();
-        mA.translate(TestType(10), TestType(0));
+        mA.translate(translation);
         mA.rotate(PI_HALF); // 90 degrees
-        mA.scale(2.0, 2.0);
+        mA.scale(scale);
 
         const Vec2 vPoint{ TestType(1), TestType(0) }; /// Point (1,0) -> scale<2> -> (2, 0) -> rotate<90°> -> (0, 2) -> translate<10,0> -> (10, 2)
         const Vec2 vExpected{ TestType(10), TestType(2) };
@@ -729,14 +732,57 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", A
 
         REQUIRE(ETL::Math::isEqual(vResult, vExpected));
 
-        /// Chained function calls and chained Mat * Mat
-        const Matrix mB = Matrix::Identity().translate(TestType(10), TestType(0)).rotate(PI_HALF).scale(2.0, 2.0);
-        const Matrix mC = Matrix::Translation(TestType(10), TestType(0)).rotate(PI_HALF).scale(2.0, 2.0);
-        const Matrix mD = Matrix::Translation(TestType(10), TestType(0)) * Matrix::Rotation(PI_HALF) * Matrix::Scale(2.0, 2.0);
+        /// Order of chained method calls does not matter
+        const Matrix mB = Matrix::Identity().translate(translation).rotate(PI_HALF).scale(scale); /// T*R*S -> TRS
+        const Matrix mC = Matrix::Identity().translate(translation).scale(scale).rotate(PI_HALF); /// T*S*R -> TRS
+        const Matrix mD = Matrix::Identity().rotate(PI_HALF).translate(translation).scale(scale); /// R*T*S -> TRS
+        const Matrix mE = Matrix::Identity().rotate(PI_HALF).scale(scale).translate(translation); /// R*S*T -> TRS 
+        const Matrix mF = Matrix::Identity().scale(scale).translate(translation).rotate(PI_HALF); /// S*T*R -> TRS
+        const Matrix mG = Matrix::Identity().scale(scale).rotate(PI_HALF).translate(translation); /// S*R*T -> TRS
 
         REQUIRE(ETL::Math::isEqual(mA, mB));
         REQUIRE(ETL::Math::isEqual(mA, mC));
         REQUIRE(ETL::Math::isEqual(mA, mD));
+        REQUIRE(ETL::Math::isEqual(mA, mE));
+        REQUIRE(ETL::Math::isEqual(mA, mF));
+        REQUIRE(ETL::Math::isEqual(mA, mG));
+
+        /// Order of chained Mat * Mat does matter
+        const Matrix mH = Matrix::Translation(translation.x(), translation.y()) * Matrix::Rotation(PI_HALF) * Matrix::Scale(scale.x(), scale.y());
+        const Matrix mI = Matrix::Scale(scale.x(), scale.y()) * Matrix::Rotation(PI_HALF) * Matrix::Translation(translation.x(), translation.y());
+        REQUIRE(ETL::Math::isEqual(mA, mH));
+        REQUIRE_FALSE(ETL::Math::isEqual(mA, mI));
+    }
+
+    SECTION("Transform setters - overwrite current values")
+    {
+        const ETL::Math::Vector2<double>   newScale{ 6.0, 6.0 };
+        const double                       newRotation{ PI_HALF*2 };
+        const ETL::Math::Vector2<TestType> newTranslation{ TestType(5), TestType(15) };
+
+        const Matrix mExpected = Matrix::Identity().translate(newTranslation).rotate(newRotation).scale(newScale);
+
+        /// Resulting should be same as mExpected
+        Matrix mA = Matrix::Identity().translate(TestType(10), TestType(0)).rotate(PI_HALF).scale(2.0, 2.0);
+        mA.setTranslation(newTranslation);
+        mA.setRotation(newRotation);
+        mA.setScale(newScale);
+
+        ///  Check order does not matter
+        const Matrix mB = Matrix::Identity().setTranslation(newTranslation).setRotation(newRotation).setScale(newScale); /// T*R*S -> TRS
+        const Matrix mC = Matrix::Identity().setTranslation(newTranslation).setScale(newScale).setRotation(newRotation); /// T*S*R -> TRS
+        const Matrix mD = Matrix::Identity().setRotation(newRotation).setTranslation(newTranslation).setScale(newScale); /// R*T*S -> TRS
+        const Matrix mE = Matrix::Identity().setRotation(newRotation).setScale(newScale).setTranslation(newTranslation); /// R*S*T -> TRS
+        const Matrix mF = Matrix::Identity().setScale(newScale).setTranslation(newTranslation).setRotation(newRotation); /// S*T*R -> TRS
+        const Matrix mG = Matrix::Identity().setScale(newScale).setRotation(newRotation).setTranslation(newTranslation); /// S*R*T -> TRS
+
+        REQUIRE(ETL::Math::isEqual(mA, mExpected));
+        REQUIRE(ETL::Math::isEqual(mB, mExpected));
+        REQUIRE(ETL::Math::isEqual(mC, mExpected));
+        REQUIRE(ETL::Math::isEqual(mD, mExpected));
+        REQUIRE(ETL::Math::isEqual(mE, mExpected));
+        REQUIRE(ETL::Math::isEqual(mF, mExpected));
+        REQUIRE(ETL::Math::isEqual(mG, mExpected));
     }
 }
 

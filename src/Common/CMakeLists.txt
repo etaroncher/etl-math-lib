@@ -17,6 +17,7 @@ set(MODULE_HEADERS_PRIVATE
     ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Asserts.h
     ${CMAKE_SOURCE_DIR}/private/MathLib/Common/Constants.h
     ${CMAKE_SOURCE_DIR}/private/MathLib/Common/FixedPointHelpers.h
+    ${CMAKE_SOURCE_DIR}/private/MathLib/Common/RawTag.h
 )
 
 # Append to MATHLIB_SOURCES & MATHLIB_HEADERS

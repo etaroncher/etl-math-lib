@@ -5,6 +5,7 @@
 #pragma once
 
 #include "MathLib/Common/ElementProxy.h"
+#include "MathLib/Common/RawTag.h"
 #include "MathLib/Types/Vector3.h"
 #include "MathLib/Types/Vector2.h"
 
@@ -88,21 +89,21 @@ namespace ETL::Math
         Matrix3x3&    scale(const Vector2<double>& scale);
         Matrix3x3&    rotate(double angleRad);
         Matrix3x3&    translate(Type tX, Type tY);
-        Matrix3x3&    translate(const Vector2<Type>& pos);
+        Matrix3x3&    translate(const Vector2<Type>& translation);
 
         /// 2D Transformation setters (override current, leaving rest untouched)
-        //Matrix3x3&    setScale(double newScaleX, double newScaleY);
-        //Matrix3x3&    setRotation(double newAngleRad);
-        //Matrix3x3&    setTranslation(Type newTX, Type newTY);
-        //Matrix3x3&    setTranslation(const Vector2<Type>& newTranslation);
+        Matrix3x3&    setScale(double newSX, double newSY);
+        Matrix3x3&    setScale(const Vector2<double>& newScale);
+        Matrix3x3&    setRotation(double newAngleRad);
+        Matrix3x3&    setTranslation(Type newTX, Type newTY);
+        Matrix3x3&    setTranslation(const Vector2<Type>& newTranslation);
 
         /// 2D Transformations Decomposition
         Vector2<double> getScale() const;
-        double          getRotation() const;
-        Vector2<Type>   getTranslation() const;
-
         void            getScale(Vector2<double>& scale) const;
+        double          getRotation() const;
         void            getRotation(double& angleRad) const;
+        Vector2<Type>   getTranslation() const;
         void            getTranslation(Vector2<Type>& pos) const;
 
         /// Matrix methods
@@ -130,11 +131,9 @@ namespace ETL::Math
 
 
         /// Raw constructor
-        struct RawTag {};
-        static constexpr RawTag Raw{};
         constexpr Matrix3x3(RawTag, Type v00, Type v01, Type v02,
-                            Type v10, Type v11, Type v12,
-                            Type v20, Type v21, Type v22);
+                                    Type v10, Type v11, Type v12,
+                                    Type v20, Type v21, Type v22);
     };
 
 
