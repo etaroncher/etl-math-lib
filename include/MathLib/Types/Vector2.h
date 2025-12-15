@@ -39,14 +39,23 @@ namespace ETL::Math
         /// Operators
         Vector2  operator+(const Vector2& other) const;
         Vector2  operator-(const Vector2& other) const;
+        Type     operator*(const Vector2& other) const; /// Dot prod
+        Type     operator^(const Vector2& other) const; /// Cross prod
         Vector2  operator*(Type scalar) const;
         Vector2  operator/(Type scalar) const;
+
         Vector2& operator+=(const Vector2& other);
         Vector2& operator-=(const Vector2& other);
         Vector2& operator*=(Type scalar);
         Vector2& operator/=(Type scalar);
+
         bool     operator==(const Vector2& other) const;
         bool     operator!=(const Vector2& other) const;
+
+        Vector2& operator*=(const Vector2& other); /// In-place Component Multiplication (Element-wise Multiplication Assignment)
+        Vector2& operator/=(const Vector2& other); /// In-place Component Division (Element-wise Division Assignment)
+        Vector2  componentMul(const Vector2& other) const; /// Component Multiplication
+        Vector2  componentDiv(const Vector2& other) const; /// Component Division
 
         /// Vector methods
         Type length() const;
@@ -93,11 +102,19 @@ namespace ETL::Math
 
     /// Cross prod
     template<typename Type>
-    Type cross(const Vector2<Type>& v1, const Vector2<Type>& v2);
+    Type Cross(const Vector2<Type>& v1, const Vector2<Type>& v2);
 
     /// Dot prod
     template<typename Type>
-    Type dot(const Vector2<Type>& v1, const Vector2<Type>& v2);
+    Type Dot(const Vector2<Type>& v1, const Vector2<Type>& v2);
+
+    /// Component-wise mul
+    template<typename Type>
+    Type ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2);
+
+    /// Component-wise div
+    template<typename Type>
+    Type ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2);
 
 
     /// Explicit template instantiation (precompiled declaration)
@@ -109,13 +126,21 @@ namespace ETL::Math
     extern template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
     extern template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
 
-    extern template float  cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    extern template double cross(const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template int    cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template float  Cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double Cross(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    Cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template float  dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    extern template double dot(const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template int    dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template float  Dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double Dot(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    Dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    extern template float  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    extern template float  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template double ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
+    extern template int    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
 
 } /// namespace ETL::Math

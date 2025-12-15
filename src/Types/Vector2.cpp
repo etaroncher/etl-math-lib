@@ -66,12 +66,20 @@ namespace ETL::Math
     template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
     template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
 
-    template float  cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double cross(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template float  Cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double Cross(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    Cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double dot(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template float  Dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double Dot(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    Dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    template float  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
+
+    template float  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template double ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
+    template int    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
 
 } /// namespace ETL::Math

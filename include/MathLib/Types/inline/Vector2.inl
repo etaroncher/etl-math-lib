@@ -144,6 +144,32 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Dot Product operator (this * other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Vector2<Type>::operator*(const Vector2& other) const
+    {
+        return dot<Type>(*this, other);
+    }
+
+
+    /// <summary>
+    /// Cross product operator (this ^ other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Vector2<Type>::operator^(const Vector2& other) const
+    {
+        return cross<Type>(*this, other);
+    }
+
+
+    /// <summary>
     /// Multiplication operator
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -280,6 +306,62 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// In-place Component Multiplication (Element-wise Multiplication Assignment)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type>& Vector2<Type>::operator*=(const Vector2& other)
+    {
+        mX *= other.mX;
+        mY *= other.mY;
+        return *this;
+    }
+
+
+    /// <summary>
+    /// In-place Component Division (Element-wise Division Assignment)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type>& Vector2<Type>::operator/=(const Vector2& other)
+    {
+        mX /= other.mX;
+        mY /= other.mY;
+        return *this;
+    }
+
+
+    /// <summary>
+    /// Component Multiplication
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> Vector2<Type>::componentMul(const Vector2& other) const
+    {
+        return Vector2<Type>{ mX * other.mX, mY * other.mY };
+    }
+
+
+    /// <summary>
+    /// Component Division
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type>  Vector2<Type>::componentDiv(const Vector2& other) const
+    {
+        return Vector2<Type>{ mX / other.mX, mY / other.mY };
+    }
+
+
+    /// <summary>
     /// Scalar * Vector multiplication operator, for commutative
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -301,7 +383,7 @@ namespace ETL::Math
     /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type cross(const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline Type Cross(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
         return v1.x() * v2.y() - v1.y() * v2.x();
     }
@@ -315,9 +397,37 @@ namespace ETL::Math
     /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type dot(const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline Type Dot(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
         return v1.x() * v2.x() + v1.y() * v2.y();
+    }
+
+
+    /// <summary>
+    /// Component-wise multiplication
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> ComponentMul(const Vector2<Type>& a, const Vector2<Type>& b)
+    {
+        return a.componentMul(b);
+    }
+
+
+    /// <summary>
+    /// Component-wise division
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> ComponentDiv(const Vector2<Type>& a, const Vector2<Type>& b)
+    {
+        return a.componentDiv(b);
     }
 
 } /// namespace ETL::Math
