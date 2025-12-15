@@ -152,7 +152,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::operator*(const Vector2& other) const
     {
-        return Dot<Type>(*this, other);
+        return mX * other.mX + mY * other.mY;
     }
 
 
@@ -165,7 +165,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::operator^(const Vector2& other) const
     {
-        return Cross<Type>(*this, other);
+        return mX * other.mY - mY * other.mX;
     }
 
 
@@ -329,6 +329,7 @@ namespace ETL::Math
     template<typename Type>
     Vector2<Type>& Vector2<Type>::operator/=(const Vector2& other)
     {
+        ETLMATH_ASSERT(!isZero(other.mX) && !isZero(other.mY), "Division by 0 in Vector2<Type>::operator/=");
         mX /= other.mX;
         mY /= other.mY;
         return *this;
@@ -357,6 +358,7 @@ namespace ETL::Math
     template<typename Type>
     Vector2<Type>  Vector2<Type>::componentDiv(const Vector2& other) const
     {
+        ETLMATH_ASSERT(!isZero(other.mX) && !isZero(other.mY), "Division by 0 in Vector2<Type>::componentDiv");
         return Vector2<Type>{ mX / other.mX, mY / other.mY };
     }
 
@@ -424,7 +426,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Cross(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
-        return v1.x() * v2.y() - v1.y() * v2.x();
+        return v1 ^ v2;
     }
 
 
@@ -438,7 +440,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Dot(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
-        return v1.x() * v2.x() + v1.y() * v2.y();
+        return v1 * v2;
     }
 
 
