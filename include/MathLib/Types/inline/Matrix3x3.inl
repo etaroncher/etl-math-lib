@@ -220,6 +220,36 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Matrix multiplication operator (Post multiply -> This * Other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns>Resulting matrix</returns>
+    template<typename Type>
+    inline Matrix3x3<Type> Matrix3x3<Type>::operator*(const Matrix3x3& other) const
+    {
+        Matrix3x3<Type> result;
+        MultiplyTo(result, *this, other);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Vector multiplication operator (Post multiply -> This * Other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="vector"></param>
+    /// <returns>Resulting vector</returns>
+    template<typename Type>
+    inline Vector3<Type> Matrix3x3<Type>::operator*(const Vector3<Type>& vector) const
+    {
+        Vector3<Type> result;
+        MultiplyTo(result, *this, vector);
+        return result;
+    }
+
+
+    /// <summary>
     /// Scalar multiplication operator (Post multiply -> This * Scalar)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -377,6 +407,117 @@ namespace ETL::Math
     inline bool Matrix3x3<Type>::operator!=(const Matrix3x3<Type>& other) const
     {
         return !(*this == other);
+    }
+
+
+    /// <summary>
+    /// Computes matrix determinant
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Matrix3x3<Type>::determinant(bool bFixedPoint /*= false*/) const
+    {
+        Type result;
+        DeterminantTo(result, *this, bFixedPoint);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Computes matrix determinant
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="bFixedPoint"></param>
+    template<typename Type>
+    inline void Matrix3x3<Type>::determinantTo(Type& outResult, bool bFixedPoint /*= false*/) const
+    {
+        DeterminantTo(outResult, *this, bFixedPoint);
+    }
+
+
+    /// <summary>
+    /// Compute the inverse of this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Matrix3x3<Type> Matrix3x3<Type>::inverse() const
+    {
+        Matrix3x3<Type> result;
+        InverseTo(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Compute the inverse of this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    template<typename Type>
+    inline void Matrix3x3<Type>::inverseTo(Matrix3x3<Type>& outResult) const
+    {
+        InverseTo(outResult, *this);
+    }
+
+
+    /// <summary>
+    /// Invert this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Matrix3x3<Type>& Matrix3x3<Type>::makeInverse()
+    {
+        Matrix3x3<Type> result;
+        InverseTo(result, *this);
+        *this = result;
+
+        return *this;
+    }
+
+
+    /// <summary>
+    /// Compute the transpose
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Matrix3x3<Type> Matrix3x3<Type>::transpose() const
+    {
+        Matrix3x3<Type> result;
+        TransposeTo(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Compute the transpose
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    template<typename Type>
+    inline void Matrix3x3<Type>::transposeTo(Matrix3x3<Type>& outResult) const
+    {
+        TransposeTo(outResult, *this);
+    };
+
+
+    /// <summary>
+    /// Transpose this matrix
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Matrix3x3<Type>& Matrix3x3<Type>::makeTranspose()
+    {
+        std::swap(m01, m10);
+        std::swap(m02, m20);
+        std::swap(m12, m21);
+
+        return *this;
     }
 
 
@@ -618,13 +759,13 @@ namespace ETL::Math
     /// 2D Transform decomposition - get scale
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="scale"></param>
+    /// <param name="outScale"></param>
     template<typename Type>
-    inline void Matrix3x3<Type>::getScale(Vector2<double>& scale) const
+    inline void Matrix3x3<Type>::getScaleTo(Vector2<double>& outScale) const
     {
         /// Extract scale from length of basis vectors (column 0 and column 1)
-        scale[0] = Vector2<double>{ DecodeValue<double>(m00), DecodeValue<double>(m10) }.length();
-        scale[1] = Vector2<double>{ DecodeValue<double>(m01), DecodeValue<double>(m11) }.length();
+        outScale[0] = Vector2<double>{ DecodeValue<double>(m00), DecodeValue<double>(m10) }.length();
+        outScale[1] = Vector2<double>{ DecodeValue<double>(m01), DecodeValue<double>(m11) }.length();
     }
 
 
@@ -632,15 +773,15 @@ namespace ETL::Math
     /// 2D Transform decomposition - get rotation
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="angle"></param>
+    /// <param name="outAngleRad"></param>
     template<typename Type>
-    inline void Matrix3x3<Type>::getRotation(double& angle) const
+    inline void Matrix3x3<Type>::getRotationTo(double& outAngleRad) const
     {
         /// Extract angle from column 0 (normalized)
         Vector2<double> firstCol{ DecodeValue<double>(m00), DecodeValue<double>(m10) };
         firstCol.makeNormalize();
 
-        angle = std::atan2(firstCol.y(), firstCol.x());
+        outAngleRad = std::atan2(firstCol.y(), firstCol.x());
     }
 
 
@@ -648,12 +789,12 @@ namespace ETL::Math
     /// 2D Transform decomposition - get translation
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="pos"></param>
+    /// <param name="outTranslation"></param>
     template<typename Type>
-    inline void Matrix3x3<Type>::getTranslation(Vector2<Type>& pos) const
+    inline void Matrix3x3<Type>::getTranslationTo(Vector2<Type>& outTranslation) const
     {
-        pos[0] = DecodeValue<Type>(m02);
-        pos[1] = DecodeValue<Type>(m12);
+        outTranslation[0] = DecodeValue<Type>(m02);
+        outTranslation[1] = DecodeValue<Type>(m12);
     }
 
 
@@ -661,14 +802,14 @@ namespace ETL::Math
     /// Column getter by index
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="col"></param>
+    /// <param name="colIndex"></param>
     /// <returns>Column as Vector3</returns>
     template<typename Type>
-    inline Vector3<Type> Matrix3x3<Type>::getCol(int col) const
+    inline Vector3<Type> Matrix3x3<Type>::getCol(int colIndex) const
     {
-        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
+        ETLMATH_ASSERT(colIndex >= 0 && colIndex < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        return Vector3<Type>{ DecodeValue<Type>(m[col][0]), DecodeValue<Type>(m[col][1]), DecodeValue<Type>(m[col][2]) };
+        return Vector3<Type>{ DecodeValue<Type>(m[colIndex][0]), DecodeValue<Type>(m[colIndex][1]), DecodeValue<Type>(m[colIndex][2]) };
     }
 
 
@@ -676,14 +817,14 @@ namespace ETL::Math
     /// Row getter by index
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="row"></param>
+    /// <param name="rowIndex"></param>
     /// <returns>Row as Vector3</returns>
     template<typename Type>
-    inline Vector3<Type> Matrix3x3<Type>::getRow(int row) const
+    inline Vector3<Type> Matrix3x3<Type>::getRow(int rowIndex) const
     {
-        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
+        ETLMATH_ASSERT(rowIndex >= 0 && rowIndex < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        return Vector3<Type>{ DecodeValue<Type>(m[0][row]), DecodeValue<Type>(m[1][row]), DecodeValue<Type>(m[2][row]) };
+        return Vector3<Type>{ DecodeValue<Type>(m[0][rowIndex]), DecodeValue<Type>(m[1][rowIndex]), DecodeValue<Type>(m[2][rowIndex]) };
     }
 
 
@@ -691,16 +832,16 @@ namespace ETL::Math
     /// Column getter by index
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="col"></param>
-    /// <returns>Column as Vector3</returns>
+    /// <param name="outValue"></param>
+    /// <param name="colIndex"></param>
     template<typename Type>
-    inline void Matrix3x3<Type>::getCol(int col, Vector3<Type>& outValue) const
+    inline void Matrix3x3<Type>::getColTo(Vector3<Type>& outValue, int colIndex) const
     {
-        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
+        ETLMATH_ASSERT(colIndex >= 0 && colIndex < COL_SIZE, "Matrix3x3 out of bounds COL access");
 
-        outValue[0] = DecodeValue<Type>(m[col][0]);
-        outValue[1] = DecodeValue<Type>(m[col][1]);
-        outValue[2] = DecodeValue<Type>(m[col][2]);
+        outValue[0] = DecodeValue<Type>(m[colIndex][0]);
+        outValue[1] = DecodeValue<Type>(m[colIndex][1]);
+        outValue[2] = DecodeValue<Type>(m[colIndex][2]);
     }
 
 
@@ -708,16 +849,16 @@ namespace ETL::Math
     /// Row getter by index
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    /// <param name="row"></param>
-    /// <returns>Row as Vector3</returns>
+    /// <param name="outValue"></param>
+    /// <param name="rowIndex"></param>
     template<typename Type>
-    inline void Matrix3x3<Type>::getRow(int row, Vector3<Type>& outValue) const
+    inline void Matrix3x3<Type>::getRowTo(Vector3<Type>& outValue, int rowIndex) const
     {
-        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
+        ETLMATH_ASSERT(rowIndex >= 0 && rowIndex < COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        outValue[0] = DecodeValue<Type>(m[0][row]);
-        outValue[1] = DecodeValue<Type>(m[1][row]);
-        outValue[2] = DecodeValue<Type>(m[2][row]);
+        outValue[0] = DecodeValue<Type>(m[0][rowIndex]);
+        outValue[1] = DecodeValue<Type>(m[1][rowIndex]);
+        outValue[2] = DecodeValue<Type>(m[2][rowIndex]);
     }
 
 

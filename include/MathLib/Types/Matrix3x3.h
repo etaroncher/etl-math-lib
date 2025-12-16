@@ -53,10 +53,10 @@ namespace ETL::Math
         Type               operator[](int index) const;
         ElementProxy<Type> operator[](int index);
 
-        Vector3<Type> getCol(int col) const;
-        Vector3<Type> getRow(int row) const;
-        void getCol(int col, Vector3<Type>& outValue) const;
-        void getRow(int row, Vector3<Type>& outValue) const;
+        Vector3<Type> getCol(int colIndex) const;
+        Vector3<Type> getRow(int rowIndex) const;
+        void getColTo(Vector3<Type>& outCol, int colIndex) const;
+        void getRowTo(Vector3<Type>& outRow, int rowIndex) const;
 
         void setCol(int col, const Vector3<Type>& value);
         void setRow(int row, const Vector3<Type>& value);
@@ -80,8 +80,10 @@ namespace ETL::Math
 
         /// 2D Vector Transformations
         Vector2<Type> transformPoint(const Vector2<Type>& point) const;
+        void          transformPointTo(Vector2<Type>& outResult, const Vector2<Type>& inPoint) const;
         void          transformPointInPlace(Vector2<Type>& inOutPoint) const;
         Vector2<Type> transformDirection(const Vector2<Type>& direction) const;
+        void          transformDirectionTo(Vector2<Type>& outResult, const Vector2<Type>& inDirection) const;
         void          transformDirectionInPlace(Vector2<Type>& inOutDirection) const;
 
         /// 2D Transformation modifiers (post multiply: this *= other)
@@ -100,17 +102,20 @@ namespace ETL::Math
 
         /// 2D Transformations Decomposition
         Vector2<double> getScale() const;
-        void            getScale(Vector2<double>& scale) const;
+        void            getScaleTo(Vector2<double>& outScale) const;
         double          getRotation() const;
-        void            getRotation(double& angleRad) const;
+        void            getRotationTo(double& outAngleRad) const;
         Vector2<Type>   getTranslation() const;
-        void            getTranslation(Vector2<Type>& pos) const;
+        void            getTranslationTo(Vector2<Type>& outTranslation) const;
 
         /// Matrix methods
         Type       determinant(bool bFixedPoint = false) const;
+        void       determinantTo(Type& outResult, bool bFixedPoint = false) const;
         Matrix3x3  transpose() const;
+        void       transposeTo(Matrix3x3& outResult) const;
         Matrix3x3& makeTranspose();
         Matrix3x3  inverse() const;
+        void       inverseTo(Matrix3x3& outResult) const;
         Matrix3x3& makeInverse();
 
         /// Direct access to internal storage - no conversions applied (use with caution for integral types)
@@ -151,15 +156,48 @@ namespace ETL::Math
     using Mat3i = Matrix3x3<int>;
 
 
-    /// Scalar * matrix operator 
+    ///------------------------------------------------------------------------------------------
+    /// Free functions and common helpers (also present as class member functions.
+
+    /// Matrix * vector
+    template<typename Type>
+    void MultiplyTo(Vector3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector3<Type>& vec);
+
+    /// Matrix1 * Matrix2
+    template<typename Type>
+    void MultiplyTo(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& m1, const Matrix3x3<Type>& m2);
+
+    /// Determinant
+    template<typename Type>
+    void DeterminantTo(Type& ourResult, const Matrix3x3<Type>& mat, bool bFixedPoint = false);
+
+    /// Inverse
+    template<typename Type>
+    void InverseTo(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat);
+
+    /// Transpose
+    template<typename Type>
+    void TransposeTo(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat);
+
+    /// Scalar * matrix operator (completeness product commutative)
     template<typename Type>
     Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix);
 
 
-    /// Explicit template instantiation (precompiled declaration)
+    ///------------------------------------------------------------------------------------------
+    /// Explicit template instantiations (precompiled declaration)
+
     extern template class Matrix3x3<float>;
     extern template class Matrix3x3<double>;
     extern template class Matrix3x3<int>;
+
+    extern template void MultiplyTo(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mA, const Matrix3x3<float>&  mB);
+    extern template void MultiplyTo(Matrix3x3<double>& outResult, const Matrix3x3<double>& mA, const Matrix3x3<double>& mB);
+    extern template void MultiplyTo(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mA, const Matrix3x3<int>&    mB);
+
+    extern template void MultiplyTo(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector3<float>&  vec);
+    extern template void MultiplyTo(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
+    extern template void MultiplyTo(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector3<int>&    vec);
 
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);

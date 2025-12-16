@@ -108,12 +108,12 @@ TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", ALL_T
         const Vec3 A_col2 = mA.getCol(2);
 
         Vec3 B_row0, B_row1, B_row2, B_col0, B_col1, B_col2;
-        mB.getRow(0, B_row0);
-        mB.getRow(1, B_row1);
-        mB.getRow(2, B_row2);
-        mB.getCol(0, B_col0);
-        mB.getCol(1, B_col1);
-        mB.getCol(2, B_col2);
+        mB.getRowTo(B_row0, 0);
+        mB.getRowTo(B_row1, 1);
+        mB.getRowTo(B_row2, 2);
+        mB.getColTo(B_col0, 0);
+        mB.getColTo(B_col1, 1);
+        mB.getColTo(B_col2, 2);
 
         REQUIRE(A_row0 == B_row0);
         REQUIRE(A_row1 == B_row1);
@@ -395,6 +395,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
     {
         const Matrix m = Matrix::Identity();
         REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(1)));
+
+        TestType det;
+        m.determinantTo(det);
+        REQUIRE(ETL::Math::isEqual(det, TestType(1)));
     }
 
     SECTION("Zero determinant (singular matrix)")
@@ -405,6 +409,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(3), TestType(6), TestType(9) };
 
         REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(0)));
+
+        TestType det;
+        m.determinantTo(det);
+        REQUIRE(ETL::Math::isEqual(det, TestType(0)));
     }
 
     SECTION("Non-zero determinant")
@@ -418,6 +426,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(0), TestType(5), TestType(8) };
 
         REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(-12)));
+
+        TestType det;
+        m.determinantTo(det);
+        REQUIRE(ETL::Math::isEqual(det, TestType(-12)));
     }
 
     SECTION("Diagonal matrix determinant")
@@ -427,6 +439,10 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
                         TestType(0), TestType(0), TestType(4) };
 
         REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(24)));
+
+        TestType det;
+        m.determinantTo(det);
+        REQUIRE(ETL::Math::isEqual(det, TestType(24)));
     }
 }
 
@@ -434,6 +450,22 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
 TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
+
+    SECTION("Transpose - output arg")
+    {
+        const Matrix m{ TestType(1), TestType(2), TestType(3),
+                        TestType(4), TestType(5), TestType(6),
+                        TestType(7), TestType(8), TestType(9) };
+
+        const Matrix mExpected{ TestType(1), TestType(4), TestType(7),
+                                TestType(2), TestType(5), TestType(8),
+                                TestType(3), TestType(6), TestType(9) };
+
+        Matrix mResult;
+        m.transposeTo(mResult);
+
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
+    }
 
     SECTION("Transpose - return value")
     {
@@ -496,10 +528,25 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
     SECTION("Identity inverse")
     {
         const Matrix m = Matrix::Identity();
-        const Matrix mInverse = m.inverse();
+        Matrix mInverse;
+        m.inverseTo(mInverse);
 
         REQUIRE(mInverse == m);
         REQUIRE(ETL::Math::isEqual(mInverse, m));
+    }
+
+    SECTION("Inverse - output arg")
+    {
+        const Matrix original{ TestType(1), TestType(2), TestType(3),
+                               TestType(0), TestType(1), TestType(4),
+                               TestType(5), TestType(6), TestType(0) };
+
+        Matrix m;
+        original.inverseTo(m);
+        const Matrix mResult = m * original;
+        const Matrix mExpected = Matrix::Identity();
+
+        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
     }
 
     SECTION("Inverse property: M * M^-1 = I")
@@ -586,6 +633,18 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
     using Vec2 = ETL::Math::Vector2<TestType>;
     constexpr double PI_HALF = 3.14159265358979323846 / 2.0;
 
+    SECTION("TransformPoint - output arg")
+    {
+        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Vec2 vPoint{ TestType(5), TestType(3) };
+        const Vec2 vExpected{ TestType(15), TestType(23) };
+
+        Vec2 vResult;
+        mTrans.transformPointTo(vResult, vPoint);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
+    }
+
     SECTION("TransformPoint - return value")
     {
         const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
@@ -606,6 +665,18 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
         mTrans.transformPointInPlace(vPoint);
 
         REQUIRE(ETL::Math::isEqual(vPoint, vExpected));
+    }
+
+    SECTION("TransformDirection - output arg")
+    {
+        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        const Vec2 vDirection{ TestType(1), TestType(0) };
+        const Vec2 vExpected{ TestType(0), TestType(1) };
+
+        Vec2 vResult;
+        mRot.transformDirectionTo(vResult, vDirection);
+
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected));
     }
 
     SECTION("TransformDirection - return value")
@@ -802,7 +873,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
         REQUIRE(ETL::Math::isEqual(vScale1, vExpected, 0.001));
 
         ETL::Math::Vector2<double> vScale2;
-        mScale.getScale(vScale2);
+        mScale.getScaleTo(vScale2);
         REQUIRE(ETL::Math::isEqual(vScale2, vExpected, 0.001));
     }
 
@@ -815,7 +886,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
         REQUIRE(ETL::Math::isEqual(extractedAngle1, angle, 0.001));
 
         double extractedAngle2;
-        mRot.getRotation(extractedAngle2);
+        mRot.getRotationTo(extractedAngle2);
         REQUIRE(ETL::Math::isEqual(extractedAngle2, angle, 0.001));
     }
 
@@ -828,7 +899,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
         REQUIRE(ETL::Math::isEqual(vTranslation1, vExpected));
 
         Vec2 vTranslation2;
-        mTrans.getTranslation(vTranslation2);
+        mTrans.getTranslationTo(vTranslation2);
         REQUIRE(ETL::Math::isEqual(vTranslation2, vExpected));
     }
 

@@ -384,7 +384,7 @@ namespace ETL::Math
     /// <param name="vec"></param>
     /// <returns></returns>
     template<typename Type>
-    Type Length(const Vector2<Type>& vec)
+    inline Type Length(const Vector2<Type>& vec)
     {
         return vec.length();
     }
@@ -397,7 +397,7 @@ namespace ETL::Math
     /// <param name="vec"></param>
     /// <returns></returns>
     template<typename Type>
-    Type LengthSquared(const Vector2<Type>& vec)
+    inline Type LengthSquared(const Vector2<Type>& vec)
     {
         return vec.lengthSquared();
     }
@@ -410,7 +410,7 @@ namespace ETL::Math
     /// <param name="vec"></param>
     /// <returns></returns>
     template<typename Type> requires std::floating_point<Type>
-    Vector2<Type> Normalize(const Vector2<Type>& vec)
+    inline Vector2<Type> Normalize(const Vector2<Type>& vec)
     {
         return vec.normalize();
     }
@@ -452,7 +452,7 @@ namespace ETL::Math
     /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline Vector2<Type> ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
         return v1.componentMul(v2);
     }
@@ -466,7 +466,7 @@ namespace ETL::Math
     /// <param name="v2"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline Vector2<Type> ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
         return v1.componentDiv(v2);
     }
