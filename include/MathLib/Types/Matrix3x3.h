@@ -199,6 +199,18 @@ namespace ETL::Math
     extern template void MultiplyTo(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
     extern template void MultiplyTo(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector3<int>&    vec);
 
+    extern template void DeterminantTo(float&  ourResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
+    extern template void DeterminantTo(double& ourResult, const Matrix3x3<double>& mat, bool bFixedPoint);
+    extern template void DeterminantTo(int&    ourResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
+
+    extern template void InverseTo(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat);
+    extern template void InverseTo(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
+    extern template void InverseTo(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat);
+
+    extern template void TransposeTo(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat);
+    extern template void TransposeTo(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
+    extern template void TransposeTo(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat);
+
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
     extern template Matrix3x3<int>    operator*(int    scalar, const Matrix3x3<int>&    matrix);
