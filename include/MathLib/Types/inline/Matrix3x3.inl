@@ -472,7 +472,6 @@ namespace ETL::Math
     inline Matrix3x3<Type>& Matrix3x3<Type>::makeInverse()
     {
         Inverse(*this, *this);
-
         return *this;
     }
 
@@ -512,7 +511,6 @@ namespace ETL::Math
     inline Matrix3x3<Type>& Matrix3x3<Type>::makeTranspose()
     {
         Transpose(*this, *this);
-
         return *this;
     }
 
@@ -670,11 +668,9 @@ namespace ETL::Math
     template<typename Type>
     inline Vector2<double> Matrix3x3<Type>::getScale() const
     {
-        /// Extract scale from length of basis vectors (column 0 and column 1)
-        const double sx = Vector2<double>{ DecodeValue<double>(m00), DecodeValue<double>(m10) }.length();
-        const double sy = Vector2<double>{ DecodeValue<double>(m01), DecodeValue<double>(m11) }.length();
-
-        return Vector2<double>{ sx, sy };
+        Vector2<double> result;
+        GetScaling(result, *this);
+        return result;
     }
 
 
@@ -686,11 +682,9 @@ namespace ETL::Math
     template<typename Type>
     inline double Matrix3x3<Type>::getRotation() const
     {
-        /// Extract angle from column 0 (normalized)
-        Vector2<double> firstCol{ DecodeValue<double>(m00), DecodeValue<double>(m10) };
-        firstCol.makeNormalize();
-
-        return std::atan2(firstCol.y(), firstCol.x());
+        double result;
+        GetRotation(result, *this);
+        return result;
     }
 
 
@@ -702,7 +696,9 @@ namespace ETL::Math
     template<typename Type>
     inline Vector2<Type> Matrix3x3<Type>::getTranslation() const
     {
-        return Vector2<Type>{ DecodeValue<Type>(m02), DecodeValue<Type>(m12) };
+        Vector2<Type> result;
+        GetTranslation(result, *this);
+        return result;
     }
 
 
@@ -714,9 +710,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::getScaleTo(Vector2<double>& outScale) const
     {
-        /// Extract scale from length of basis vectors (column 0 and column 1)
-        outScale[0] = Vector2<double>{ DecodeValue<double>(m00), DecodeValue<double>(m10) }.length();
-        outScale[1] = Vector2<double>{ DecodeValue<double>(m01), DecodeValue<double>(m11) }.length();
+        GetScaling(outScale, *this);
     }
 
 
@@ -728,11 +722,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::getRotationTo(double& outAngleRad) const
     {
-        /// Extract angle from column 0 (normalized)
-        Vector2<double> firstCol{ DecodeValue<double>(m00), DecodeValue<double>(m10) };
-        firstCol.makeNormalize();
-
-        outAngleRad = std::atan2(firstCol.y(), firstCol.x());
+        GetRotation(outAngleRad, *this);
     }
 
 
@@ -744,8 +734,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::getTranslationTo(Vector2<Type>& outTranslation) const
     {
-        outTranslation[0] = DecodeValue<Type>(m02);
-        outTranslation[1] = DecodeValue<Type>(m12);
+        GetTranslation(outTranslation, *this);
     }
 
 
@@ -949,19 +938,8 @@ namespace ETL::Math
     }
 
 
-    /// <summary>
-    /// Scalar * Matrix multiplication operator, for commutative
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="scalar"></param>
-    /// <param name="matrix"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix)
-    {
-        return matrix * scalar;
-    }
-
+    ///------------------------------------------------------------------------------------------
+    /// Free functions - implement logic
 
     /// <summary>
     /// Translate - Add a 'translation' translation to 'mat', store result in 'outResult'
@@ -1016,6 +994,20 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Retrieve translation
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    template<typename Type>
+    inline void GetTranslation(Vector2<Type>& outResult, const Matrix3x3<Type>& mat)
+    {
+        outResult[0] = mat(0, 2);
+        outResult[1] = mat(1, 2);
+    }
+
+
+    /// <summary>
     /// Rotate - Add an 'angleRad' rotation to 'mat', store result in 'outResult'
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -1060,7 +1052,7 @@ namespace ETL::Math
     inline void SetRotation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, double angleRad)
     {
         Vector2<double> scale;
-        mat.getScaleTo(scale);
+        GetScaling(scale, mat);
 
         const double c = std::cos(angleRad);
         const double s = std::sin(angleRad);
@@ -1078,6 +1070,23 @@ namespace ETL::Math
             outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
             outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
         }
+    }
+
+
+    /// <summary>
+    /// Retrieve rotation
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    template<typename Type>
+    inline void GetRotation(double& outResult, const Matrix3x3<Type>& mat)
+    {
+        /// Extract angle from column 0 (normalized)
+        Vector2<double> firstCol{ DecodeValue<double>(mat.getRawValue(0,0)), DecodeValue<double>(mat.getRawValue(1,0)) };
+        firstCol.makeNormalize();
+
+        outResult = std::atan2(firstCol.y(), firstCol.x());
     }
 
 
@@ -1117,8 +1126,8 @@ namespace ETL::Math
     template<typename Type>
     inline void SetScaling(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale)
     {
-        double rotation{ 0.0 };
-        mat.getRotationTo(rotation);
+        double rotation;
+        GetRotation(rotation, mat);
 
         const double c = std::cos(rotation);
         const double s = std::sin(rotation);
@@ -1136,6 +1145,40 @@ namespace ETL::Math
             outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
             outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
         }
+    }
+
+
+    /// <summary>
+    /// Retrieve scale
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    template<typename Type>
+    inline void GetScaling(Vector2<double>& outResult, const Matrix3x3<Type>& mat)
+    {
+        /// Extract scale from length of basis vectors (column 0 and column 1)
+        const double xBasis_x = DecodeValue<double>(mat.getRawValue(0, 0));
+        const double xBasis_y = DecodeValue<double>(mat.getRawValue(1, 0));
+        const double yBasis_x = DecodeValue<double>(mat.getRawValue(0, 1));
+        const double yBasis_y = DecodeValue<double>(mat.getRawValue(1, 1));
+
+        outResult[0] = Vector2<double>{ xBasis_x, xBasis_y }.length();
+        outResult[1] = Vector2<double>{ yBasis_x, yBasis_y }.length();
+    }
+
+
+    /// <summary>
+    /// Scalar * Matrix multiplication operator, for commutative
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="scalar"></param>
+    /// <param name="matrix"></param>
+    /// <returns></returns>
+    template<typename Type>
+    inline Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix)
+    {
+        return matrix * scalar;
     }
 
 

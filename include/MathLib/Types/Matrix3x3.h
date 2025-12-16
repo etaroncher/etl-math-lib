@@ -161,7 +161,7 @@ namespace ETL::Math
 
     /// Matrix * vector
     template<typename Type>
-    void Multiply(Vector3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector3<Type>& vec);
+    void Multiply(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector3<Type>& vec);
 
     /// Matrix1 * Matrix2
     template<typename Type>
@@ -169,39 +169,51 @@ namespace ETL::Math
 
     /// Determinant
     template<typename Type>
-    void Determinant(Type& ourResult, const Matrix3x3<Type>& mat, bool bFixedPoint = false);
+    void Determinant(Type& outResult, const Matrix3x3<Type>& mat, bool bFixedPoint = false);
 
     /// Inverse
     template<typename Type>
-    void Inverse(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat);
+    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
 
     /// Transpose
     template<typename Type>
-    void Transpose(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat);
+    void Transpose(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
 
     /// Translate
     template<typename Type>
-    void Translate(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation);
+    void Translate(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation);
 
     /// SetTranslation
     template<typename Type>
-    void SetTranslation(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation);
+    void SetTranslation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation);
+
+    /// GetTranslation
+    template<typename Type>
+    void GetTranslation(Vector2<Type>& outResult, const Matrix3x3<Type>& mat);
 
     /// Rotate
     template<typename Type>
-    void Rotate(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, double angleRad);
+    void Rotate(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, double angleRad);
 
     /// SetRotation
     template<typename Type>
-    void SetRotation(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, double angleRad);
+    void SetRotation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, double angleRad);
+
+    /// SetRotation
+    template<typename Type>
+    void GetRotation(double& outResult, const Matrix3x3<Type>& mat);
 
     /// Scale
     template<typename Type>
-    void Scale(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale);
+    void Scale(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale);
 
     /// SetScaling
     template<typename Type>
-    void SetScaling(Matrix3x3<Type>& ourResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale);
+    void SetScaling(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale);
+
+    /// SetScaling
+    template<typename Type>
+    void GetScaling(Vector2<double>& outResult, const Matrix3x3<Type>& mat);
 
     /// Scalar * matrix operator (completeness product commutative)
     template<typename Type>
@@ -223,41 +235,53 @@ namespace ETL::Math
     extern template void Multiply(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
     extern template void Multiply(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector3<int>&    vec);
 
-    extern template void Determinant(float&  ourResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
-    extern template void Determinant(double& ourResult, const Matrix3x3<double>& mat, bool bFixedPoint);
-    extern template void Determinant(int&    ourResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
+    extern template void Determinant(float&  outResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
+    extern template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
+    extern template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
 
-    extern template void Inverse(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat);
-    extern template void Inverse(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
-    extern template void Inverse(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat);
+    extern template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
-    extern template void Transpose(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat);
-    extern template void Transpose(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
-    extern template void Transpose(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat);
+    extern template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void Transpose(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
-    extern template void Translate(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
-    extern template void Translate(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
-    extern template void Translate(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, const Vector2<int>&    translation);
+    extern template void Translate(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
+    extern template void Translate(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
+    extern template void Translate(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    translation);
 
-    extern template void SetTranslation(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
-    extern template void SetTranslation(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
-    extern template void SetTranslation(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, const Vector2<int>&    translation);
+    extern template void SetTranslation(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
+    extern template void SetTranslation(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
+    extern template void SetTranslation(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    translation);
 
-    extern template void Rotate(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, double angleRad);
-    extern template void Rotate(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, double angleRad);
-    extern template void Rotate(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, double angleRad);
+    extern template void GetTranslation(Vector2<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template void GetTranslation(Vector2<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void GetTranslation(Vector2<int>&    outResult, const Matrix3x3<int>&    mat);
 
-    extern template void SetRotation(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, double angleRad);
-    extern template void SetRotation(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, double angleRad);
-    extern template void SetRotation(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, double angleRad);
+    extern template void Rotate(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, double angleRad);
+    extern template void Rotate(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, double angleRad);
+    extern template void Rotate(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, double angleRad);
 
-    extern template void Scale(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, const Vector2<double>& scale);
-    extern template void Scale(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
-    extern template void Scale(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, const Vector2<double>& scale);
+    extern template void SetRotation(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, double angleRad);
+    extern template void SetRotation(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, double angleRad);
+    extern template void SetRotation(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, double angleRad);
 
-    extern template void SetScaling(Matrix3x3<float>&  ourResult, const Matrix3x3<float>&  mat, const Vector2<double>& scale);
-    extern template void SetScaling(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
-    extern template void SetScaling(Matrix3x3<int>&    ourResult, const Matrix3x3<int>&    mat, const Vector2<double>& scale);
+    extern template void GetRotation(double& outResult, const Matrix3x3<float>&  mat);
+    extern template void GetRotation(double& outResult, const Matrix3x3<double>& mat);
+    extern template void GetRotation(double& outResult, const Matrix3x3<int>&    mat);
+
+    extern template void Scale(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<double>& scale);
+    extern template void Scale(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
+    extern template void Scale(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<double>& scale);
+
+    extern template void SetScaling(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<double>& scale);
+    extern template void SetScaling(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
+    extern template void SetScaling(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<double>& scale);
+
+    extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<float>&  mat);
+    extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<int>&    mat);
 
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
