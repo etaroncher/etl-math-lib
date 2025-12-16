@@ -597,7 +597,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 
     SECTION("Scale static factory")
     {
-        const Matrix mScale = Matrix::Scale(TestType(2), TestType(3));
+        const Matrix mScale = Matrix::CreateScale(TestType(2), TestType(3));
         const Matrix mExpected{ TestType(2), TestType(0), TestType(0),
                                 TestType(0), TestType(3), TestType(0),
                                 TestType(0), TestType(0), TestType(1) };
@@ -607,7 +607,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 
     SECTION("Rotation static factory")
     {
-        const Matrix mRot = Matrix::Rotation(PI_HALF); // 90 degrees
+        const Matrix mRot = Matrix::CreateRotation(PI_HALF); // 90 degrees
         const Matrix mExpected{ TestType(0), TestType(-1), TestType(0),
                                 TestType(1), TestType(0),  TestType(0),
                                 TestType(0), TestType(0),  TestType(1) };
@@ -617,7 +617,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 
     SECTION("Translation static factory")
     {
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mTrans = Matrix::CreateTranslation(TestType(10), TestType(20));
         const Matrix mExpected{ TestType(1), TestType(0), TestType(10),
                                 TestType(0), TestType(1), TestType(20),
                                 TestType(0), TestType(0), TestType(1) };
@@ -635,7 +635,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformPoint - output arg")
     {
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mTrans = Matrix::CreateTranslation(TestType(10), TestType(20));
         const Vec2 vPoint{ TestType(5), TestType(3) };
         const Vec2 vExpected{ TestType(15), TestType(23) };
 
@@ -647,7 +647,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformPoint - return value")
     {
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mTrans = Matrix::CreateTranslation(TestType(10), TestType(20));
         const Vec2 vPoint{ TestType(5), TestType(3) };
         const Vec2 vExpected{ TestType(15), TestType(23) };
 
@@ -658,7 +658,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformPoint - in-place")
     {
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mTrans = Matrix::CreateTranslation(TestType(10), TestType(20));
         Vec2 vPoint{ TestType(5), TestType(3) };
         const Vec2 vExpected{ TestType(15), TestType(23) };
 
@@ -669,7 +669,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformDirection - output arg")
     {
-        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        const Matrix mRot = Matrix::CreateRotation(PI_HALF);
         const Vec2 vDirection{ TestType(1), TestType(0) };
         const Vec2 vExpected{ TestType(0), TestType(1) };
 
@@ -681,7 +681,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformDirection - return value")
     {
-        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        const Matrix mRot = Matrix::CreateRotation(PI_HALF);
         const Vec2 vDirection{ TestType(1), TestType(0) };
         const Vec2 vExpected{ TestType(0), TestType(1) };
 
@@ -692,7 +692,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
 
     SECTION("TransformDirection - in-place")
     {
-        const Matrix mRot = Matrix::Rotation(PI_HALF);
+        const Matrix mRot = Matrix::CreateRotation(PI_HALF);
         Vec2 vDirection{ TestType(1), TestType(0) };
         const Vec2 vExpected{ TestType(0), TestType(1) };
 
@@ -704,7 +704,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][tran
     SECTION("TransformDirection ignores translation")
     {
         /// Translation should not affect directions
-        const Matrix mTrans = Matrix::Translation(TestType(10), TestType(20));
+        const Matrix mTrans = Matrix::CreateTranslation(TestType(10), TestType(20));
         const Vec2 vDirection{ TestType(1), TestType(0) };
 
         const Vec2 vResult = mTrans.transformDirection(vDirection);
@@ -721,7 +721,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3
 
     SECTION("Rotation weird angle - return value")
     {
-        const Matrix mRot = Matrix::Rotation(0.3948);
+        const Matrix mRot = Matrix::CreateRotation(0.3948);
         const Vec2 vDirection{ TestType(13), TestType(0) };
         const Vec2 vExpected{ TestType(12), TestType(5) };
 
@@ -739,7 +739,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3
 
     SECTION("Rotation weird angle - return value")
     {
-        const Matrix mRot = Matrix::Rotation(0.3948);
+        const Matrix mRot = Matrix::CreateRotation(0.3948);
         const Vec2 vDirection{ TestType(13), TestType(0) };
         const Vec2 vExpected{ TestType(12), TestType(5) };
 
@@ -819,8 +819,8 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", A
         REQUIRE(ETL::Math::isEqual(mA, mG));
 
         /// Order of chained Mat * Mat does matter
-        const Matrix mH = Matrix::Translation(translation.x(), translation.y()) * Matrix::Rotation(PI_HALF) * Matrix::Scale(scale.x(), scale.y());
-        const Matrix mI = Matrix::Scale(scale.x(), scale.y()) * Matrix::Rotation(PI_HALF) * Matrix::Translation(translation.x(), translation.y());
+        const Matrix mH = Matrix::CreateTranslation(translation.x(), translation.y()) * Matrix::CreateRotation(PI_HALF) * Matrix::CreateScale(scale.x(), scale.y());
+        const Matrix mI = Matrix::CreateScale(scale.x(), scale.y()) * Matrix::CreateRotation(PI_HALF) * Matrix::CreateTranslation(translation.x(), translation.y());
         REQUIRE(ETL::Math::isEqual(mA, mH));
         REQUIRE_FALSE(ETL::Math::isEqual(mA, mI));
     }
@@ -867,7 +867,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
     SECTION("GetScale from scale matrix")
     {
         const ETL::Math::Vector2<double> vExpected{ 2.0, 3.0 };
-        const Matrix mScale = Matrix::Scale(vExpected.x(), vExpected.y());
+        const Matrix mScale = Matrix::CreateScale(vExpected.x(), vExpected.y());
 
         const ETL::Math::Vector2<double> vScale1 = mScale.getScale();
         REQUIRE(ETL::Math::isEqual(vScale1, vExpected, 0.001));
@@ -880,7 +880,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
     SECTION("GetRotation from rotation matrix")
     {
         const double angle = PI / 4.0; /// 45 degrees
-        const Matrix mRot = Matrix::Rotation(angle);
+        const Matrix mRot = Matrix::CreateRotation(angle);
 
         const double extractedAngle1 = mRot.getRotation();
         REQUIRE(ETL::Math::isEqual(extractedAngle1, angle, 0.001));
@@ -893,7 +893,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]"
     SECTION("GetTranslation from translation matrix")
     {
         const Vec2 vExpected{ TestType(10), TestType(20) };
-        const Matrix mTrans = Matrix::Translation(vExpected.x(), vExpected.y());
+        const Matrix mTrans = Matrix::CreateTranslation(vExpected.x(), vExpected.y());
 
         const Vec2 vTranslation1 = mTrans.getTranslation();
         REQUIRE(ETL::Math::isEqual(vTranslation1, vExpected));

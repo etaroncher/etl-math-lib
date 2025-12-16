@@ -159,14 +159,14 @@ namespace ETL::Math
     /// <param name="mat"></param>
     /// <param name="vec"></param>
     template<typename Type>
-    void MultiplyTo(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector3<Type>& vec)
+    void Multiply(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector3<Type>& vec)
     {
         /// --- SAFETY CHECK FOR ALIASING ---
         /// If outResult is the same object as vec, we must use a temporary buffer.
         if (&outResult == &vec)
         {
             Vector3<Type> temp;
-            MultiplyTo(temp, mat, vec);
+            Multiply(temp, mat, vec);
 
             outResult = temp;
             return;
@@ -207,14 +207,14 @@ namespace ETL::Math
     /// <param name="mA"></param>
     /// <param name="mB"></param>
     template<typename Type>
-    void MultiplyTo(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mA, const Matrix3x3<Type>& mB)
+    void Multiply(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mA, const Matrix3x3<Type>& mB)
     {
         /// --- SAFETY CHECK FOR ALIASING ---
         /// If outResult is the same object as mA OR mB, we must use a temporary buffer.
         if (&outResult == &mA || &outResult == &mB)
         {
             Matrix3x3<Type> temp;
-            MultiplyTo(temp, mA, mB);
+            Multiply(temp, mA, mB);
 
             outResult = temp;
             return;
@@ -249,7 +249,7 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="mat"></param>
     template<typename Type>
-    void DeterminantTo(Type& outResult, const Matrix3x3<Type>& mat, bool bFixedPoint /*= false*/)
+    void Determinant(Type& outResult, const Matrix3x3<Type>& mat, bool bFixedPoint /*= false*/)
     {
         if constexpr (std::integral<Type>)
         {
@@ -289,13 +289,24 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="mat"></param>
     template<typename Type>
-    void InverseTo(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
+    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
     {
+        /// --- SAFETY CHECK FOR ALIASING ---
+        /// If outResult is the same object as mat, we must use a temporary buffer.
+        if (&outResult == &mat)
+        {
+            Matrix3x3<Type> temp;
+            Inverse(temp, mat);
+
+            outResult = temp;
+            return;
+        }
+
         if constexpr (std::integral<Type>)
         {
             static constexpr bool bFixedPoint = true;
             Type det{ Type(0) };
-            DeterminantTo(det, mat, bFixedPoint);
+            Determinant(det, mat, bFixedPoint);
 
             /// Use epsilon of 0.001 in fixed-point terms
             constexpr Type fixedEpsilon = EncodeValue<Type>(0.001);
@@ -334,7 +345,7 @@ namespace ETL::Math
         else
         {
             Type det{ Type(0) };
-            DeterminantTo(det, mat);
+            Determinant(det, mat);
 
             if (isZero(det))
             {
@@ -366,17 +377,28 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="mat"></param>
     template<typename Type>
-    void TransposeTo(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
+    void Transpose(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
     {
-        outResult.setRawValue(0, 0, mat.getRawValue(0, 0));
-        outResult.setRawValue(1, 0, mat.getRawValue(0, 1));
-        outResult.setRawValue(2, 0, mat.getRawValue(0, 2));
-        outResult.setRawValue(0, 1, mat.getRawValue(1, 0));
-        outResult.setRawValue(1, 1, mat.getRawValue(1, 1));
-        outResult.setRawValue(2, 1, mat.getRawValue(1, 2));
-        outResult.setRawValue(0, 2, mat.getRawValue(2, 0));
-        outResult.setRawValue(1, 2, mat.getRawValue(2, 1));
-        outResult.setRawValue(2, 2, mat.getRawValue(2, 2));
+        const Type elem01 = mat.getRawValue(0, 1);
+        const Type elem02 = mat.getRawValue(0, 2);
+        const Type elem10 = mat.getRawValue(1, 0);
+        const Type elem12 = mat.getRawValue(1, 2);
+        const Type elem20 = mat.getRawValue(2, 0);
+        const Type elem21 = mat.getRawValue(2, 1);
+
+        outResult.setRawValue(0, 1, elem10);
+        outResult.setRawValue(0, 2, elem20);
+        outResult.setRawValue(1, 0, elem01);
+        outResult.setRawValue(1, 2, elem21);
+        outResult.setRawValue(2, 0, elem02);
+        outResult.setRawValue(2, 1, elem12);
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 0, mat.getRawValue(0, 0));
+            outResult.setRawValue(1, 1, mat.getRawValue(1, 1));
+            outResult.setRawValue(2, 2, mat.getRawValue(2, 2));
+        }
     }
 
 
@@ -387,25 +409,49 @@ namespace ETL::Math
     template class Matrix3x3<double>;
     template class Matrix3x3<int>;
 
-    template void MultiplyTo(Matrix3x3<float>& outResult, const Matrix3x3<float>& mA, const Matrix3x3<float>& mB);
-    template void MultiplyTo(Matrix3x3<double>& outResult, const Matrix3x3<double>& mA, const Matrix3x3<double>& mB);
-    template void MultiplyTo(Matrix3x3<int>& outResult, const Matrix3x3<int>& mA, const Matrix3x3<int>& mB);
+    template void Multiply(Matrix3x3<float>& outResult, const Matrix3x3<float>& mA, const Matrix3x3<float>& mB);
+    template void Multiply(Matrix3x3<double>& outResult, const Matrix3x3<double>& mA, const Matrix3x3<double>& mB);
+    template void Multiply(Matrix3x3<int>& outResult, const Matrix3x3<int>& mA, const Matrix3x3<int>& mB);
 
-    template void MultiplyTo(Vector3<float>& outResult, const Matrix3x3<float>& mat, const Vector3<float>& vec);
-    template void MultiplyTo(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
-    template void MultiplyTo(Vector3<int>& outResult, const Matrix3x3<int>& mat, const Vector3<int>& vec);
+    template void Multiply(Vector3<float>& outResult, const Matrix3x3<float>& mat, const Vector3<float>& vec);
+    template void Multiply(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
+    template void Multiply(Vector3<int>& outResult, const Matrix3x3<int>& mat, const Vector3<int>& vec);
 
-    template void DeterminantTo(float& ourResult, const Matrix3x3<float>& mat, bool bFixedPoint = false);
-    template void DeterminantTo(double& ourResult, const Matrix3x3<double>& mat, bool bFixedPoint = false);
-    template void DeterminantTo(int& ourResult, const Matrix3x3<int>& mat, bool bFixedPoint = false);
+    template void Determinant(float& ourResult, const Matrix3x3<float>& mat, bool bFixedPoint = false);
+    template void Determinant(double& ourResult, const Matrix3x3<double>& mat, bool bFixedPoint = false);
+    template void Determinant(int& ourResult, const Matrix3x3<int>& mat, bool bFixedPoint = false);
 
-    template void InverseTo(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat);
-    template void InverseTo(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
-    template void InverseTo(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat);
+    template void Inverse(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat);
+    template void Inverse(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
+    template void Inverse(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat);
 
-    template void TransposeTo(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat);
-    template void TransposeTo(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
-    template void TransposeTo(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat);
+    template void Transpose(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat);
+    template void Transpose(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat);
+    template void Transpose(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat);
+
+    template void Translate(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, const Vector2<float>& translation);
+    template void Translate(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
+    template void Translate(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, const Vector2<int>& translation);
+
+    template void SetTranslation(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, const Vector2<float>& translation);
+    template void SetTranslation(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
+    template void SetTranslation(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, const Vector2<int>& translation);
+
+    template void Rotate(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, double angleRad);
+    template void Rotate(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, double angleRad);
+    template void Rotate(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, double angleRad);
+
+    template void SetRotation(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, double angleRad);
+    template void SetRotation(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, double angleRad);
+    template void SetRotation(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, double angleRad);
+
+    template void Scale(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, const Vector2<double>& scale);
+    template void Scale(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
+    template void Scale(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, const Vector2<double>& scale);
+
+    template void SetScaling(Matrix3x3<float>& ourResult, const Matrix3x3<float>& mat, const Vector2<double>& scale);
+    template void SetScaling(Matrix3x3<double>& ourResult, const Matrix3x3<double>& mat, const Vector2<double>& scale);
+    template void SetScaling(Matrix3x3<int>& ourResult, const Matrix3x3<int>& mat, const Vector2<double>& scale);
 
     template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);

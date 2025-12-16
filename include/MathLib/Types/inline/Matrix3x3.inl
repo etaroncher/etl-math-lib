@@ -19,7 +19,7 @@ namespace ETL::Math
     /// <param name="sY"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Matrix3x3<Type> Matrix3x3<Type>::Scale(double sX, double sY)
+    inline Matrix3x3<Type> Matrix3x3<Type>::CreateScale(double sX, double sY)
     {
         return Matrix3x3<Type>{ Raw,
             EncodeValue<Type>(sX), Type(0),               Type(0),
@@ -36,7 +36,7 @@ namespace ETL::Math
     /// <param name="angleRadians"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Matrix3x3<Type> Matrix3x3<Type>::Rotation(double angleRadians)
+    inline Matrix3x3<Type> Matrix3x3<Type>::CreateRotation(double angleRadians)
     {
         const Type cos = EncodeValue<Type>(std::cos(angleRadians));
         const Type sin = EncodeValue<Type>(std::sin(angleRadians));
@@ -57,7 +57,7 @@ namespace ETL::Math
     /// <param name="tY"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Matrix3x3<Type> Matrix3x3<Type>::Translation(Type tX, Type tY)
+    inline Matrix3x3<Type> Matrix3x3<Type>::CreateTranslation(Type tX, Type tY)
     {
         return Matrix3x3<Type>{ Raw,
             EncodeValue<Type>(Type(1)), Type(0),                    EncodeValue<Type>(tX),
@@ -229,7 +229,7 @@ namespace ETL::Math
     inline Matrix3x3<Type> Matrix3x3<Type>::operator*(const Matrix3x3& other) const
     {
         Matrix3x3<Type> result;
-        MultiplyTo(result, *this, other);
+        Multiply(result, *this, other);
         return result;
     }
 
@@ -244,7 +244,7 @@ namespace ETL::Math
     inline Vector3<Type> Matrix3x3<Type>::operator*(const Vector3<Type>& vector) const
     {
         Vector3<Type> result;
-        MultiplyTo(result, *this, vector);
+        Multiply(result, *this, vector);
         return result;
     }
 
@@ -333,7 +333,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::operator*=(const Matrix3x3& other)
     {
-        *this = *this * other;
+        Multiply(*this, *this, other);
 
         return *this;
     }
@@ -419,7 +419,7 @@ namespace ETL::Math
     inline Type Matrix3x3<Type>::determinant(bool bFixedPoint /*= false*/) const
     {
         Type result;
-        DeterminantTo(result, *this, bFixedPoint);
+        Determinant(result, *this, bFixedPoint);
         return result;
     }
 
@@ -433,7 +433,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::determinantTo(Type& outResult, bool bFixedPoint /*= false*/) const
     {
-        DeterminantTo(outResult, *this, bFixedPoint);
+        Determinant(outResult, *this, bFixedPoint);
     }
 
 
@@ -446,7 +446,7 @@ namespace ETL::Math
     inline Matrix3x3<Type> Matrix3x3<Type>::inverse() const
     {
         Matrix3x3<Type> result;
-        InverseTo(result, *this);
+        Inverse(result, *this);
         return result;
     }
 
@@ -459,7 +459,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::inverseTo(Matrix3x3<Type>& outResult) const
     {
-        InverseTo(outResult, *this);
+        Inverse(outResult, *this);
     }
 
 
@@ -472,7 +472,7 @@ namespace ETL::Math
     inline Matrix3x3<Type>& Matrix3x3<Type>::makeInverse()
     {
         Matrix3x3<Type> result;
-        InverseTo(result, *this);
+        Inverse(result, *this);
         *this = result;
 
         return *this;
@@ -488,7 +488,7 @@ namespace ETL::Math
     inline Matrix3x3<Type> Matrix3x3<Type>::transpose() const
     {
         Matrix3x3<Type> result;
-        TransposeTo(result, *this);
+        Transpose(result, *this);
         return result;
     }
 
@@ -501,7 +501,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::transposeTo(Matrix3x3<Type>& outResult) const
     {
-        TransposeTo(outResult, *this);
+        Transpose(outResult, *this);
     };
 
 
@@ -531,14 +531,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::scale(double sX, double sY)
     {
-        /// Direct approach: scale affects only the basis vectors
-        /// Translation column (m[2][0], m[2][1]) is NOT scaled
-
-        m[0][0] = static_cast<Type>(m[0][0] * sX); /// X-axis basis vector scaled by sX
-        m[0][1] = static_cast<Type>(m[0][1] * sX); /// X-axis basis vector scaled by sX
-        m[1][0] = static_cast<Type>(m[1][0] * sY); /// Y-axis basis vector scaled by sY
-        m[1][1] = static_cast<Type>(m[1][1] * sY); /// Y-axis basis vector scaled by sY
-
+        Scale(*this, *this, Vector2<double>{sX, sY});
         return *this;
     }
 
@@ -553,7 +546,8 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::scale(const Vector2<double>& scaleVec)
     {
-        return scale(scaleVec.x(), scaleVec.y());
+        Scale(*this, *this, scaleVec);
+        return *this;
     }
 
 
@@ -566,19 +560,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::rotate(double angleRad)
     {
-        /// Direct approach: rotate affects only the basis vectors
-        /// Translation column (m[2][0], m[2][1]) is NOT scaled
-        const Type xBasis[2] { m[0][0], m[0][1] };  /// X-axis basis vector -> COL 0
-        const Type yBasis[2] { m[1][0], m[1][1] };  /// Y-axis basis vector -> COL 1
-
-        const double c = std::cos(angleRad);
-        const double s = std::sin(angleRad);
-
-        m[0][0] = static_cast<Type>(xBasis[0] * c - xBasis[1] * s);  /// New X-basis x-component
-        m[0][1] = static_cast<Type>(xBasis[0] * s + xBasis[1] * c);  /// New X-basis y-component
-        m[1][0] = static_cast<Type>(yBasis[0] * c - yBasis[1] * s);  /// New Y-basis x-component
-        m[1][1] = static_cast<Type>(yBasis[0] * s + yBasis[1] * c);  /// New Y-basis y-component
-
+        Rotate(*this, *this, angleRad);
         return *this;
     }
 
@@ -593,9 +575,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::translate(Type tX, Type tY)
     {
-        m[2][0] += EncodeValue<Type>(tX);
-        m[2][1] += EncodeValue<Type>(tY);
-
+        Translate(*this, *this, Vector2<Type>{tX, tY});
         return *this;
     }
 
@@ -609,9 +589,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::translate(const Vector2<Type>& translation)
     {
-        m[2][0] += EncodeValue<Type>(translation.x());
-        m[2][1] += EncodeValue<Type>(translation.y());
-
+        Translate(*this, *this, translation);
         return *this;
     }
 
@@ -626,18 +604,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::setScale(double newSX, double newSY)
     {
-        /// Directly encode TRS into matrix elements (no matrix multiply!)
-        /// Reconstructs entire basis vectors, respecting current rotation
-        const double currentRotation = getRotation();
-
-        const double c = std::cos(currentRotation);
-        const double s = std::sin(currentRotation);
-
-        m[0][0] = EncodeValue<Type>(newSX * c);
-        m[0][1] = EncodeValue<Type>(newSX * s);
-        m[1][0] = EncodeValue<Type>(-newSY * s);
-        m[1][1] = EncodeValue<Type>(newSY * c);
-
+        SetScaling(*this, *this, Vector2<double>{newSX, newSY});
         return *this;
     }
 
@@ -651,7 +618,8 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::setScale(const Vector2<double>& newScale)
     {
-        return setScale(newScale.x(), newScale.y());
+        SetScaling(*this, *this, newScale);
+        return *this;
     }
 
 
@@ -664,18 +632,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::setRotation(double newAngleRad)
     {
-        /// Directly encode TRS into matrix elements (no matrix multiply!)
-        /// Reconstructs entire basis vectors, respecting current scale
-        const Vector2<double> currentScale = getScale();
-
-        const double c = std::cos(newAngleRad);
-        const double s = std::sin(newAngleRad);
-
-        m[0][0] = EncodeValue<Type>(currentScale.x() * c);
-        m[0][1] = EncodeValue<Type>(currentScale.x() * s);
-        m[1][0] = EncodeValue<Type>(-currentScale.y() * s);
-        m[1][1] = EncodeValue<Type>(currentScale.y() * c);
-
+        SetRotation(*this, *this, newAngleRad);
         return *this;
     }
 
@@ -690,8 +647,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::setTranslation(Type newTX, Type newTY)
     {
-        m[2][0] = EncodeValue<Type>(newTX);
-        m[2][1] = EncodeValue<Type>(newTY);
+        SetTranslation(*this, *this, Vector2<Type>{newTX, newTY});
         return *this;
     }
 
@@ -705,8 +661,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::setTranslation(const Vector2<Type>& newTranslation)
     {
-        m[2][0] = EncodeValue<Type>(newTranslation.x());
-        m[2][1] = EncodeValue<Type>(newTranslation.y());
+        SetTranslation(*this, *this, newTranslation);
         return *this;
     }
 
@@ -1009,6 +964,182 @@ namespace ETL::Math
     inline Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix)
     {
         return matrix * scalar;
+    }
+
+
+    /// <summary>
+    /// Translate - Add a 'translation' translation to 'mat', store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="translation"></param>
+    template<typename Type>
+    inline void Translate(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation)
+    {
+        outResult.setRawValue(0, 2, mat.getRawValue(0, 2) + EncodeValue<Type>(translation.x()));
+        outResult.setRawValue(1, 2, mat.getRawValue(1, 2) + EncodeValue<Type>(translation.y()));
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 0, mat.getRawValue(0, 0));
+            outResult.setRawValue(1, 0, mat.getRawValue(1, 0));
+            outResult.setRawValue(0, 1, mat.getRawValue(0, 1));
+            outResult.setRawValue(1, 1, mat.getRawValue(1, 1));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
+    }
+
+
+    /// <summary>
+    /// SetTranslation - Overwrite current translation in 'mat' with 'translation', store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="translation"></param>
+    template<typename Type>
+    inline void SetTranslation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation)
+    {
+        outResult.setRawValue(0, 2, EncodeValue<Type>(translation.x()));
+        outResult.setRawValue(1, 2, EncodeValue<Type>(translation.y()));
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 0, mat.getRawValue(0, 0));
+            outResult.setRawValue(1, 0, mat.getRawValue(1, 0));
+            outResult.setRawValue(0, 1, mat.getRawValue(0, 1));
+            outResult.setRawValue(1, 1, mat.getRawValue(1, 1));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
+    }
+
+
+    /// <summary>
+    /// Rotate - Add an 'angleRad' rotation to 'mat', store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="angleRad"></param>
+    template<typename Type>
+    inline void Rotate(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, double angleRad)
+    {
+        /// Direct approach: rotate affects only the basis vectors
+        /// Translation column (m[2][0], m[2][1]) is NOT scaled
+        const Type xBasis[2]{ mat.getRawValue(0,0), mat.getRawValue(1,0) };  /// X-axis basis vector -> COL 0
+        const Type yBasis[2]{ mat.getRawValue(0,1), mat.getRawValue(1,1) };  /// Y-axis basis vector -> COL 1
+
+        const double c = std::cos(angleRad);
+        const double s = std::sin(angleRad);
+
+        outResult.setRawValue(0, 0, static_cast<Type>(xBasis[0] * c - xBasis[1] * s));  /// New X-basis x-component
+        outResult.setRawValue(1, 0, static_cast<Type>(xBasis[0] * s + xBasis[1] * c));  /// New X-basis y-component
+        outResult.setRawValue(0, 1, static_cast<Type>(yBasis[0] * c - yBasis[1] * s));  /// New Y-basis x-component
+        outResult.setRawValue(1, 1, static_cast<Type>(yBasis[0] * s + yBasis[1] * c));  /// New Y-basis y-component
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 2, mat.getRawValue(0, 2));
+            outResult.setRawValue(1, 2, mat.getRawValue(1, 2));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
+    }
+
+
+    /// <summary>
+    /// SetRotation - Overwrite current rotation in 'mat' with 'angleRad' rotation, store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="angleRad"></param>
+    template<typename Type>
+    inline void SetRotation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, double angleRad)
+    {
+        Vector2<double> scale;
+        mat.getScaleTo(scale);
+
+        const double c = std::cos(angleRad);
+        const double s = std::sin(angleRad);
+
+        outResult.setRawValue(0, 0, EncodeValue<Type>( c * scale.x()));
+        outResult.setRawValue(1, 0, EncodeValue<Type>( s * scale.x()));
+        outResult.setRawValue(0, 1, EncodeValue<Type>(-s * scale.y()));
+        outResult.setRawValue(1, 1, EncodeValue<Type>( c * scale.y()));
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 2, mat.getRawValue(0, 2));
+            outResult.setRawValue(1, 2, mat.getRawValue(1, 2));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
+    }
+
+
+    /// <summary>
+    /// Scale - Add a 'scale' scaling to 'mat', store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="scale"></param>
+    template<typename Type>
+    inline void Scale(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale)
+    {
+        outResult.setRawValue(0, 0, static_cast<Type>(mat.getRawValue(0, 0) * scale.x()));
+        outResult.setRawValue(1, 0, static_cast<Type>(mat.getRawValue(1, 0) * scale.x()));
+        outResult.setRawValue(0, 1, static_cast<Type>(mat.getRawValue(0, 1) * scale.y()));
+        outResult.setRawValue(1, 1, static_cast<Type>(mat.getRawValue(1, 1) * scale.y()));
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 2, mat.getRawValue(0, 2));
+            outResult.setRawValue(1, 2, mat.getRawValue(1, 2));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
+    }
+
+
+    /// <summary>
+    /// SetScaling - Overwrite current scaling in 'mat' with 'scale', store result in 'outResult'
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="scale"></param>
+    template<typename Type>
+    inline void SetScaling(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale)
+    {
+        double rotation{ 0.0 };
+        mat.getRotationTo(rotation);
+
+        const double c = std::cos(rotation);
+        const double s = std::sin(rotation);
+
+        outResult.setRawValue(0, 0, EncodeValue<Type>( c * scale.x()));
+        outResult.setRawValue(1, 0, EncodeValue<Type>( s * scale.x()));
+        outResult.setRawValue(0, 1, EncodeValue<Type>(-s * scale.y()));
+        outResult.setRawValue(1, 1, EncodeValue<Type>( c * scale.y()));
+
+        if (&outResult != &mat)
+        {
+            outResult.setRawValue(0, 2, mat.getRawValue(0, 2));
+            outResult.setRawValue(1, 2, mat.getRawValue(1, 2));
+            outResult.setRawValue(2, 0, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 1, EncodeValue<Type>(Type(0)));
+            outResult.setRawValue(2, 2, EncodeValue<Type>(Type(1)));
+        }
     }
 
 
