@@ -471,9 +471,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::makeInverse()
     {
-        Matrix3x3<Type> result;
-        Inverse(result, *this);
-        *this = result;
+        Inverse(*this, *this);
 
         return *this;
     }
@@ -513,9 +511,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::makeTranspose()
     {
-        std::swap(m01, m10);
-        std::swap(m02, m20);
-        std::swap(m12, m21);
+        Transpose(*this, *this);
 
         return *this;
     }
