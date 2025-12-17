@@ -6,9 +6,9 @@
 #include <MathLib/Common/TypeComparisons.h>
 #include <MathLib/Types/Matrix3x3.h>
 
-#define ALL_TYPES int, float, double
+#define MATRIX3x3_TYPES int, float, double
 
-TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec3 = ETL::Math::Vector3<TestType>;
@@ -32,6 +32,20 @@ TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", ALL_T
         REQUIRE(m[6] == TestType(0));
         REQUIRE(m[7] == TestType(0));
         REQUIRE(m[8] == TestType(5));
+    }
+
+    SECTION("Variable Diagonal matrix constructor")
+    {
+        const Matrix m{ TestType(1), TestType(2), TestType(3) };
+        REQUIRE(m[0] == TestType(1));
+        REQUIRE(m[1] == TestType(0));
+        REQUIRE(m[2] == TestType(0));
+        REQUIRE(m[3] == TestType(0));
+        REQUIRE(m[4] == TestType(2));
+        REQUIRE(m[5] == TestType(0));
+        REQUIRE(m[6] == TestType(0));
+        REQUIRE(m[7] == TestType(0));
+        REQUIRE(m[8] == TestType(3));
     }
 
     SECTION("Component constructor")
@@ -163,7 +177,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Construction & Access", "[Matrix3x3][core]", ALL_T
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Static Factories", "[Matrix3x3][factories]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Static Factories", "[Matrix3x3][factories]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -190,7 +204,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Static Factories", "[Matrix3x3][factories]", ALL_T
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Arithmetic", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Arithmetic", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -289,7 +303,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 isEqual with epsilon - integers", "[Matrix3x3][uti
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Matrix Multiplication", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Matrix Multiplication", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -342,7 +356,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Matrix Multiplication", "[Matrix3x3][math]", ALL_T
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Vector Multiplication", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Vector Multiplication", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec3 = ETL::Math::Vector3<TestType>;
@@ -387,7 +401,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Vector Multiplication", "[Matrix3x3][math]", ALL_T
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -447,7 +461,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", ALL_TYPES)
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -521,7 +535,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", ALL_TYPES)
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
@@ -589,7 +603,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Inverse", "[Matrix3x3][math]", ALL_TYPES)
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transform]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transform]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec2 = ETL::Math::Vector2<TestType>;
@@ -627,7 +641,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][transform]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Point & Direction", "[Matrix3x3][transform]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec2 = ETL::Math::Vector2<TestType>;
@@ -750,7 +764,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec2 = ETL::Math::Vector2<TestType>;
@@ -858,7 +872,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform Methods", "[Matrix3x3][transform]", A
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]", ALL_TYPES)
+TEMPLATE_TEST_CASE("Matrix3x3 Transform Decomposition", "[Matrix3x3][transform]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
     using Vec2 = ETL::Math::Vector2<TestType>;

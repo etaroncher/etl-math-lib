@@ -36,6 +36,7 @@ namespace ETL::Math
         /// Constructors
         constexpr Matrix3x3() = default;
         explicit constexpr Matrix3x3(Type val);
+        constexpr Matrix3x3(Type v00, Type v11, Type v22);
         constexpr Matrix3x3(Type v00, Type v01, Type v02,
                             Type v10, Type v11, Type v12,
                             Type v20, Type v21, Type v22);
@@ -130,7 +131,7 @@ namespace ETL::Math
     private:
         union {
             struct { Type m00, m10, m20, m01, m11, m21, m02, m12, m22; }; /// Named access
-            Type m[3][3];                                                 /// 2D access
+            Type m[3][3];                                                 /// 2D access [COL][ROW]
             Type mData[9];                                                /// 1D access
         };
 

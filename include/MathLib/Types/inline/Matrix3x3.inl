@@ -82,6 +82,20 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Matrix diagonal constructor
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="val"></param>
+    template<typename Type>
+    constexpr Matrix3x3<Type>::Matrix3x3(Type v00, Type v11, Type v22)
+        : mData{ EncodeValue<Type>(v00), Type(0),                Type(0),
+                 Type(0),                EncodeValue<Type>(v11), Type(0),
+                 Type(0),                Type(0),                EncodeValue<Type>(v22) }
+    {
+    }
+
+
+    /// <summary>
     /// Explicit constructor
     /// </summary>
     /// <typeparam name="Type"></typeparam>
