@@ -167,17 +167,29 @@ namespace ETL::Math
     template<typename Type>
     void Multiply(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& m1, const Matrix3x3<Type>& m2);
 
-    /// Determinant
+    /// GetCol
     template<typename Type>
-    void Determinant(Type& outResult, const Matrix3x3<Type>& mat, bool bFixedPoint = false);
+    void GetCol(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
 
-    /// Inverse
+    /// GetRow
     template<typename Type>
-    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
+    void GetRow(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
 
-    /// Transpose
+    /// SetCol
     template<typename Type>
-    void Transpose(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
+    void SetCol(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& col);
+
+    /// SetRow
+    template<typename Type>
+    void SetRow(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& row);
+
+    /// TransformPoint
+    template<typename Type>
+    void TransformPoint(Vector2<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& point);
+
+    /// TransformDirection
+    template<typename Type>
+    void TransformDirection(Vector2<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& direction);
 
     /// Translate
     template<typename Type>
@@ -215,21 +227,17 @@ namespace ETL::Math
     template<typename Type>
     void GetScaling(Vector2<double>& outResult, const Matrix3x3<Type>& mat);
 
-    /// GetCol
+    /// Determinant
     template<typename Type>
-    void GetCol(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
+    void Determinant(Type& outResult, const Matrix3x3<Type>& mat, bool bFixedPoint = false);
 
-    /// GetRow
+    /// Inverse
     template<typename Type>
-    void GetRow(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
+    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
 
-    /// SetCol
+    /// Transpose
     template<typename Type>
-    void SetCol(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& col);
-
-    /// SetRow
-    template<typename Type>
-    void SetRow(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& row);
+    void Transpose(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
 
     /// Scalar * matrix operator (completeness product commutative)
     template<typename Type>
@@ -251,17 +259,29 @@ namespace ETL::Math
     extern template void Multiply(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
     extern template void Multiply(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector3<int>&    vec);
 
-    extern template void Determinant(float&  outResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
-    extern template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
-    extern template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
+    extern template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    extern template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    extern template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
 
-    extern template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    extern template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    extern template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    extern template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    extern template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    extern template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
 
-    extern template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    extern template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    extern template void Transpose(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    extern template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
+    extern template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
+    extern template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
+
+    extern template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
+    extern template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
+    extern template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
+
+    extern template void TransformPoint(Vector2<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  point);
+    extern template void TransformPoint(Vector2<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& point);
+    extern template void TransformPoint(Vector2<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    point);
+
+    extern template void TransformDirection(Vector2<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  direction);
+    extern template void TransformDirection(Vector2<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& direction);
+    extern template void TransformDirection(Vector2<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    direction);
 
     extern template void Translate(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
     extern template void Translate(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
@@ -299,21 +319,17 @@ namespace ETL::Math
     extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<double>& mat);
     extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<int>&    mat);
 
-    extern template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
-    extern template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
-    extern template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+    extern template void Determinant(float&  outResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
+    extern template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
+    extern template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
 
-    extern template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
-    extern template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
-    extern template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+    extern template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
-    extern template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
-    extern template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
-    extern template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
-
-    extern template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
-    extern template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
-    extern template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
+    extern template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    extern template void Transpose(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);

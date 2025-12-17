@@ -8,148 +8,8 @@
 namespace ETL::Math
 {
 
-    /// <summary>
-    /// 2D Transformations - Point
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="point"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type> Matrix3x3<Type>::transformPoint(const Vector2<Type>& point) const
-    {
-        Vector2<Type> result;
-        transformPointTo(result, point);
-        return result;
-    }
-
-
-    /// <summary>
-    /// 2D Transformations - Point
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="outResult"></param>
-    /// <param name="point"></param>
-    template<typename Type>
-    void Matrix3x3<Type>::transformPointTo(Vector2<Type>& outResult, const Vector2<Type>& point) const
-    {
-        if constexpr (std::integral<Type>)
-        {
-            const int64_t x = static_cast<int64_t>(point.x());
-            const int64_t y = static_cast<int64_t>(point.y());
-            const int64_t resX = x * m00 + y * m01 + m02;
-            const int64_t resY = x * m10 + y * m11 + m12;
-
-            outResult[0] = DecodeValue<Type>(resX);
-            outResult[1] = DecodeValue<Type>(resY);
-        }
-        else
-        {
-            outResult[0] = m00 * point.x() + m01 * point.y() + m02;
-            outResult[1] = m10 * point.x() + m11 * point.y() + m12;
-        }
-    }
-
-
-    /// <summary>
-    /// 2D Transformations - Point
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="point"></param>
-    template<typename Type>
-    void Matrix3x3<Type>::transformPointInPlace(Vector2<Type>& point) const
-    {
-        if constexpr (std::integral<Type>)
-        {
-            const int64_t x = static_cast<int64_t>(point.x());
-            const int64_t y = static_cast<int64_t>(point.y());
-            const int64_t resX = x*m00 + y*m01 + m02;
-            const int64_t resY = x*m10 + y*m11 + m12;
-
-            point[0] = DecodeValue<Type>(resX);
-            point[1] = DecodeValue<Type>(resY);
-        }
-        else
-        {
-            Type x = point.x();
-            Type y = point.y();
-            point[0] = m00*x + m01*y + m02;
-            point[1] = m10*x + m11*y + m12;
-        }
-    }
-
-
-    /// <summary>
-    /// 2D Transformations - Direction
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="point"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type> Matrix3x3<Type>::transformDirection(const Vector2<Type>& direction) const
-    {
-        Vector2<Type> result;
-        transformDirectionTo(result, direction);
-        return result;
-    }
-
-
-    /// <summary>
-    /// 2D Transformations - Direction
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="outResult"></param>
-    /// <param name="direction"></param>
-    template<typename Type>
-    void Matrix3x3<Type>::transformDirectionTo(Vector2<Type>& outResult, const Vector2<Type>& direction) const
-    {
-        if constexpr (std::integral<Type>)
-        {
-            const int64_t x = static_cast<int64_t>(direction.x());
-            const int64_t y = static_cast<int64_t>(direction.y());
-            const int64_t resX = x * m00 + y * m01;
-            const int64_t resY = x * m10 + y * m11;
-
-            outResult[0] = DecodeValue<Type>(resX);
-            outResult[1] = DecodeValue<Type>(resY);
-        }
-        else
-        {
-            outResult[0] = m00 * direction.x() + m01 * direction.y();
-            outResult[1] = m10 * direction.x() + m11 * direction.y();
-        }
-    }
-
-
-    /// <summary>
-    /// 2D Transformations - Direction
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="direction"></param>
-    template<typename Type>
-    void Matrix3x3<Type>::transformDirectionInPlace(Vector2<Type>& direction) const
-    {
-        if constexpr (std::integral<Type>)
-        {
-            const int64_t x = static_cast<int64_t>(direction.x());
-            const int64_t y = static_cast<int64_t>(direction.y());
-            const int64_t resX = x*m00 + y*m01;
-            const int64_t resY = x*m10 + y*m11;
-
-            direction[0] = DecodeValue<Type>(resX);
-            direction[1] = DecodeValue<Type>(resY);
-        }
-        else
-        {
-            Type x = direction.x();
-            Type y = direction.y();
-            direction[0] = m00*x + m01*y;
-            direction[1] = m10*x + m11*y;
-        }
-    }
-
-
     ///------------------------------------------------------------------------------------------
-    /// Free functions and common helpers (also present as class member functions.
+    /// Free functions and common helpers
 
     /// <summary>
     /// Matrix * Vector
@@ -417,17 +277,29 @@ namespace ETL::Math
     template void Multiply(Vector3<double>& outResult, const Matrix3x3<double>& mat, const Vector3<double>& vec);
     template void Multiply(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, const Vector3<int>&    vec);
 
-    template void Determinant(float&  outResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
-    template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
-    template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
+    template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
 
-    template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
 
-    template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    template void Transpose(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
+    template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
+    template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
+
+    template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
+    template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
+    template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
+
+    template void TransformPoint(Vector2<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  point);
+    template void TransformPoint(Vector2<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& point);
+    template void TransformPoint(Vector2<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    point);
+
+    template void TransformDirection(Vector2<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  direction);
+    template void TransformDirection(Vector2<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& direction);
+    template void TransformDirection(Vector2<int>&    outResult, const Matrix3x3<int>&    mat, const Vector2<int>&    direction);
 
     template void Translate(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, const Vector2<float>&  translation);
     template void Translate(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, const Vector2<double>& translation);
@@ -465,21 +337,17 @@ namespace ETL::Math
     template void GetScaling(Vector2<double>& outResult, const Matrix3x3<double>& mat);
     template void GetScaling(Vector2<double>& outResult, const Matrix3x3<int>&    mat);
 
-    template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
-    template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
-    template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+    template void Determinant(float&  outResult, const Matrix3x3<float>&  mat, bool bFixedPoint);
+    template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
+    template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
 
-    template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
-    template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
-    template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+    template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
-    template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
-    template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
-    template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
-
-    template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
-    template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
-    template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
+    template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    template void Transpose(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
     template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
