@@ -465,6 +465,22 @@ namespace ETL::Math
     template void GetScaling(Vector2<double>& outResult, const Matrix3x3<double>& mat);
     template void GetScaling(Vector2<double>& outResult, const Matrix3x3<int>&    mat);
 
+    template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+
+    template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+
+    template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
+    template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
+    template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
+
+    template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
+    template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
+    template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
+
     template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);
     template Matrix3x3<int>    operator*(int    scalar, const Matrix3x3<int>&    matrix);

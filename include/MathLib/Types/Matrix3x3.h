@@ -215,6 +215,22 @@ namespace ETL::Math
     template<typename Type>
     void GetScaling(Vector2<double>& outResult, const Matrix3x3<Type>& mat);
 
+    /// GetCol
+    template<typename Type>
+    void GetCol(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
+
+    /// GetRow
+    template<typename Type>
+    void GetRow(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index);
+
+    /// SetCol
+    template<typename Type>
+    void SetCol(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& col);
+
+    /// SetRow
+    template<typename Type>
+    void SetRow(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& row);
+
     /// Scalar * matrix operator (completeness product commutative)
     template<typename Type>
     Matrix3x3<Type> operator*(Type scalar, const Matrix3x3<Type>& matrix);
@@ -282,6 +298,22 @@ namespace ETL::Math
     extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<float>&  mat);
     extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<double>& mat);
     extern template void GetScaling(Vector2<double>& outResult, const Matrix3x3<int>&    mat);
+
+    extern template void GetCol(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    extern template void GetCol(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    extern template void GetCol(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+
+    extern template void GetRow(Vector3<float>&  outResult, const Matrix3x3<float>&  mat, int index);
+    extern template void GetRow(Vector3<double>& outResult, const Matrix3x3<double>& mat, int index);
+    extern template void GetRow(Vector3<int>&    outResult, const Matrix3x3<int>&    mat, int index);
+
+    extern template void SetCol(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  col);
+    extern template void SetCol(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& col);
+    extern template void SetCol(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    col);
+
+    extern template void SetRow(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat, int index, const Vector3<float>&  row);
+    extern template void SetRow(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat, int index, const Vector3<double>& row);
+    extern template void SetRow(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat, int index, const Vector3<int>&    row);
 
     extern template Matrix3x3<float>  operator*(float  scalar, const Matrix3x3<float>&  matrix);
     extern template Matrix3x3<double> operator*(double scalar, const Matrix3x3<double>& matrix);

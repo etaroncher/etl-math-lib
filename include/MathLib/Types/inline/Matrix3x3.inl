@@ -747,9 +747,9 @@ namespace ETL::Math
     template<typename Type>
     inline Vector3<Type> Matrix3x3<Type>::getCol(int colIndex) const
     {
-        ETLMATH_ASSERT(colIndex >= 0 && colIndex < COL_SIZE, "Matrix3x3 out of bounds COL access");
-
-        return Vector3<Type>{ DecodeValue<Type>(m[colIndex][0]), DecodeValue<Type>(m[colIndex][1]), DecodeValue<Type>(m[colIndex][2]) };
+        Vector3<Type> result;
+        GetCol(result, *this, colIndex);
+        return result;
     }
 
 
@@ -762,9 +762,9 @@ namespace ETL::Math
     template<typename Type>
     inline Vector3<Type> Matrix3x3<Type>::getRow(int rowIndex) const
     {
-        ETLMATH_ASSERT(rowIndex >= 0 && rowIndex < COL_SIZE, "Matrix3x3 out of bounds ROW access");
-
-        return Vector3<Type>{ DecodeValue<Type>(m[0][rowIndex]), DecodeValue<Type>(m[1][rowIndex]), DecodeValue<Type>(m[2][rowIndex]) };
+        Vector3<Type> result;
+        GetRow(result, *this, rowIndex);
+        return result;
     }
 
 
@@ -777,11 +777,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::getColTo(Vector3<Type>& outValue, int colIndex) const
     {
-        ETLMATH_ASSERT(colIndex >= 0 && colIndex < COL_SIZE, "Matrix3x3 out of bounds COL access");
-
-        outValue[0] = DecodeValue<Type>(m[colIndex][0]);
-        outValue[1] = DecodeValue<Type>(m[colIndex][1]);
-        outValue[2] = DecodeValue<Type>(m[colIndex][2]);
+        GetCol(outValue, *this, colIndex);
     }
 
 
@@ -794,11 +790,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::getRowTo(Vector3<Type>& outValue, int rowIndex) const
     {
-        ETLMATH_ASSERT(rowIndex >= 0 && rowIndex < COL_SIZE, "Matrix3x3 out of bounds ROW access");
-
-        outValue[0] = DecodeValue<Type>(m[0][rowIndex]);
-        outValue[1] = DecodeValue<Type>(m[1][rowIndex]);
-        outValue[2] = DecodeValue<Type>(m[2][rowIndex]);
+        GetRow(outValue, *this, rowIndex);
     }
 
 
@@ -813,11 +805,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::setCol(int col, Type c0, Type c1, Type c2)
     {
-        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
-
-        m[col][0] = EncodeValue<Type>(c0);
-        m[col][1] = EncodeValue<Type>(c1);
-        m[col][2] = EncodeValue<Type>(c2);
+        SetCol(*this, *this, col, Vector3<Type>{c0, c1, c2});
     }
 
 
@@ -832,11 +820,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::setRow(int row, Type r0, Type r1, Type r2)
     {
-        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
-
-        m[0][row] = EncodeValue<Type>(r0);
-        m[1][row] = EncodeValue<Type>(r1);
-        m[2][row] = EncodeValue<Type>(r2);
+        SetRow(*this, *this, row, Vector3<Type>{r0, r1, r2});
     }
 
 
@@ -849,11 +833,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::setCol(int col, const Vector3<Type>& value)
     {
-        ETLMATH_ASSERT(col >= 0 && col < COL_SIZE, "Matrix3x3 out of bounds COL access");
-
-        m[col][0] = EncodeValue<Type>(value.x());
-        m[col][1] = EncodeValue<Type>(value.y());
-        m[col][2] = EncodeValue<Type>(value.z());
+        SetCol(*this, *this, col, value);
     }
 
 
@@ -866,11 +846,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Matrix3x3<Type>::setRow(int row, const Vector3<Type>& value)
     {
-        ETLMATH_ASSERT(row >= 0 && row < COL_SIZE, "Matrix3x3 out of bounds ROW access");
-
-        m[0][row] = EncodeValue<Type>(value.x());
-        m[1][row] = EncodeValue<Type>(value.y());
-        m[2][row] = EncodeValue<Type>(value.z());
+        SetRow(*this, *this, row, value);
     }
 
 
@@ -1165,6 +1141,90 @@ namespace ETL::Math
 
         outResult[0] = Vector2<double>{ xBasis_x, xBasis_y }.length();
         outResult[1] = Vector2<double>{ yBasis_x, yBasis_y }.length();
+    }
+
+
+    /// <summary>
+    /// Column getter
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="index"></param>
+    template<typename Type>
+    void GetCol(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index)
+    {
+        ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
+
+        outResult[0] = mat(0, index);
+        outResult[1] = mat(1, index);
+        outResult[2] = mat(2, index);
+    }
+
+
+    /// <summary>
+    /// Row getter
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="index"></param>
+    template<typename Type>
+    void GetRow(Vector3<Type>& outResult, const Matrix3x3<Type>& mat, int index)
+    {
+        ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
+
+        outResult[0] = mat(index, 0);
+        outResult[1] = mat(index, 1);
+        outResult[2] = mat(index, 2);
+    }
+
+
+    /// <summary>
+    /// Column setter
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="index"></param>
+    /// <param name="col"></param>
+    template<typename Type>
+    void SetCol(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& col)
+    {
+        ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
+
+        if (&outResult != &mat)
+        {
+            outResult = mat;
+        }
+
+        outResult(0, index) = col[0];
+        outResult(1, index) = col[1];
+        outResult(2, index) = col[2];
+    }
+
+
+    /// <summary>
+    /// Row setter
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="mat"></param>
+    /// <param name="index"></param>
+    /// <param name="row"></param>
+    template<typename Type>
+    void SetRow(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, int index, const Vector3<Type>& row)
+    {
+        ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
+
+        if (&outResult != &mat)
+        {
+            outResult = mat;
+        }
+
+        outResult(index, 0) = row[0];
+        outResult(index, 1) = row[1];
+        outResult(index, 2) = row[2];
     }
 
 
