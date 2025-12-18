@@ -980,7 +980,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="row"></param>
     /// <param name="col"></param>
-    /// <returns></returns>
+    /// <param name="value"></param>
     template<typename Type>
     inline void Matrix3x3<Type>::setRawValue(int row, int col, Type value)
     {
@@ -995,7 +995,7 @@ namespace ETL::Math
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="elem"></param>
-    /// <returns></returns>
+    /// <param name="value"></param>
     template<typename Type>
     inline void Matrix3x3<Type>::setRawValue(int elem, Type value)
     {

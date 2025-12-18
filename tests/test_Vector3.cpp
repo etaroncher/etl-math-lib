@@ -6,7 +6,9 @@
 #include <MathLib/Common/TypeComparisons.h>
 #include <MathLib/Types/Vector3.h>
 
-TEMPLATE_TEST_CASE("Vector3 Construction & Acces", "[Vector3][core]", int, float, double)
+#define VECTOR3_TYPES int, float, double
+
+TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", VECTOR3_TYPES)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
@@ -43,31 +45,60 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Acces", "[Vector3][core]", int, float
         v[0] = TestType(5);
         REQUIRE(v.x() == TestType(5));
     }
+
+    SECTION("Equality and inequality operators")
+    {
+        Vector vA{ TestType(3), TestType(4), TestType(5) };
+        Vector vB{ TestType(3), TestType(4), TestType(5) };
+        Vector vC{ TestType(4), TestType(3), TestType(5) };
+        REQUIRE(vA == vB);
+        REQUIRE(vA != vC);
+        REQUIRE_FALSE(vA == vC);
+    }
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
+TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - floating", "[Vector3][utils]", float, double)
+{
+    using Vector = ETL::Math::Vector3<TestType>;
+
+    const Vector v1{ TestType(1),      TestType(2)     , TestType(3) };
+    const Vector v2{ TestType(1.0001), TestType(2.0001), TestType(3.0001) };
+    const Vector v3{ TestType(1.1),    TestType(2.1)   , TestType(3.1) };
+
+    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(0.001)));
+    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(0.001)));
+    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(0.15)));
+}
+
+
+TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - integers", "[Vector3][utils]", int)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
     const Vector v1{ TestType(1), TestType(2), TestType(3) };
-    const Vector v2{ TestType(4), TestType(5), TestType(6) };
+    const Vector v2{ TestType(1), TestType(2), TestType(3) };
+    const Vector v3{ TestType(2), TestType(3), TestType(4) };
 
-    SECTION("Equality")
-    {
-        const Vector v3 = v1;
-        REQUIRE(v1 != v2);
-        REQUIRE(v1 == v3);
-        REQUIRE_FALSE(v1 == v2);
-        REQUIRE_FALSE(v1 != v3);
-    }
+    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(1)));
+    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(1)));
+    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(2)));
+}
+
+
+TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
+{
+    using Vector = ETL::Math::Vector3<TestType>;
+
+    const Vector v1{ TestType(4), TestType(6), TestType(8) };
+    const Vector v2{ TestType(2), TestType(3), TestType(4) };
 
     SECTION("Addition")
     {
         const Vector res = v1 + v2;
-        REQUIRE(res.x() == TestType(5));
-        REQUIRE(res.y() == TestType(7));
-        REQUIRE(res.z() == TestType(9));
+        REQUIRE(res.x() == TestType(6));
+        REQUIRE(res.y() == TestType(9));
+        REQUIRE(res.z() == TestType(12));
 
         Vector res2 = v1;
         res2 += v2;
@@ -77,9 +108,9 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
     SECTION("Subtraction")
     {
         const Vector res = v2 - v1;
-        REQUIRE(res.x() == TestType(3));
+        REQUIRE(res.x() == TestType(2));
         REQUIRE(res.y() == TestType(3));
-        REQUIRE(res.z() == TestType(3));
+        REQUIRE(res.z() == TestType(4));
 
         Vector res2 = v2;
         res2 -= v1;
@@ -89,9 +120,9 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
     SECTION("Scalar Multiplication")
     {
         const Vector res = v1 * TestType(2);
-        REQUIRE(res.x() == TestType(2));
-        REQUIRE(res.y() == TestType(4));
-        REQUIRE(res.z() == TestType(6));
+        REQUIRE(res.x() == TestType(8));
+        REQUIRE(res.y() == TestType(12));
+        REQUIRE(res.z() == TestType(16));
 
         Vector res2 = v1;
         res2 *= TestType(2);
@@ -103,45 +134,68 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", int, float, double)
 
     SECTION("Scalar Division")
     {
-        const Vector v3{ TestType(4), TestType(6), TestType(8) };
-        const Vector res = v3 / TestType(2);
+        const Vector res = v1 / TestType(2);
         REQUIRE(res.x() == TestType(2));
         REQUIRE(res.y() == TestType(3));
         REQUIRE(res.z() == TestType(4));
 
-        Vector res2 = v3;
+        Vector res2 = v1;
         res2 /= TestType(2);
         REQUIRE(res2 == res);
     }
 
+    SECTION("Component-wise Mul and Div")
+    {
+        Vector res1 = v1.componentMul(v2);
+        REQUIRE(res1.x() == TestType(8));
+        REQUIRE(res1.y() == TestType(18));
+        REQUIRE(res1.y() == TestType(32));
+        res1.componentDivInPlace(v2);
+        REQUIRE(res1 == v1);
+
+        Vector res2 = v1.componentDiv(v2);
+        REQUIRE(res2.x() == TestType(2));
+        REQUIRE(res2.y() == TestType(2));
+        REQUIRE(res2.y() == TestType(2));
+        res2.componentMulInPlace(v2);
+        REQUIRE(res2 == v1);
+    }
+
     SECTION("Dot Product")
     {
-        /// d = 1*4 + 2*5 + 3*6 = 22
-        TestType d = dot(v1, v2);
-        REQUIRE(d == TestType(32));
+        const TestType d1 = v1.dot(v2); 
+        REQUIRE(d1 == TestType(58)); /// d = 4*2 + 6*3 + 8*4
+
+        const TestType d2 = v1.dot(Vector{ TestType(3), TestType(2), TestType(1) });
+        REQUIRE(d1 == TestType(32)); /// d = 4*3 + 6*2 + 8*1
     }
 
     SECTION("Cross Product")
     {
-        /// res{ 2*6-3*5, 3*4-1*6, 1*5-2*4 }
-        const Vector res = cross(v1, v2);
-        REQUIRE(res.x() == TestType(-3));
-        REQUIRE(res.y() == TestType( 6));
-        REQUIRE(res.z() == TestType(-3));
+        const Vector c1 = v1.cross(v2);
+        REQUIRE(isZero(c1));  /// { 6*4-8*3, 8*2-4*4, 4*3-6*2 } = Vector::ZERO
+
+        const TestType c2 = v1.dot(Vector{ TestType(3), TestType(2), TestType(1) });
+        REQUIRE(c2.x() == TestType(-10)); /// 6*1 - 8*2
+        REQUIRE(c2.y() == TestType( 20)); /// 8*3 - 4*1
+        REQUIRE(c2.z() == TestType(-10)); /// 4*2 - 6*3
     }
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 Length", "[Vector3][geo]", int, float, double)
+TEMPLATE_TEST_CASE("Vector3 Length", "[Vector3][geo]", VECTOR3_TYPES)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
     SECTION("Length")
     {
-        const Vector v{ TestType(3), TestType(0), TestType(4) }; /// 3-4-5 triangle logic
+        const Vector v1{ TestType(3), TestType(0), TestType(4) }; /// 3-4-5 triangle logic
+        REQUIRE(v1.lengthSquared() == TestType(25));
+        REQUIRE(v1.length() == TestType(5));
 
-        REQUIRE(v.lengthSquared() == TestType(25));
-        REQUIRE(v.length() == TestType(5));
+        const Vector v2{ TestType(1), TestType(2), TestType(3) };
+        REQUIRE(v2.lengthSquared() == TestType(12));
+        REQUIRE(v2.length() == TestType(std::sqrt(12)));
     }
 }
 
@@ -169,36 +223,31 @@ TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", float, double)
     }
 }
 
-
-TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - floating", "[Vector3][utils]", float, double)
+TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", int)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
-    const Vector v1{ TestType(1),      TestType(2)     , TestType(3)      };
-    const Vector v2{ TestType(1.0001), TestType(2.0001), TestType(3.0001) };
-    const Vector v3{ TestType(1.1),    TestType(2.1)   , TestType(3.1)    };
+    SECTION("Normalization")
+    {
+        Vector v{ TestType(3), TestType(0), TestType(4) }; /// 3-4-5 triangle logic
 
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(0.001)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(0.001)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(0.15)));
+        const Vector vn = v.normalize();
+        REQUIRE(vn.lengthSquared() == Catch::Approx(1.0));
+        REQUIRE(vn.length() == Catch::Approx(1.0));
+        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<int>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
+        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<int>(0.0 * ETL::Math::FIXED_ONE))); // 0/5
+        REQUIRE(vn.getRawValue(2) == Catch::Approx(static_cast<int>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
+
+        v.makeNormalize();
+        REQUIRE(v.length() == Catch::Approx(1.0));
+        REQUIRE(v.x() == Catch::Approx(vn.x()));
+        REQUIRE(v.y() == Catch::Approx(vn.y()));
+        REQUIRE(v.z() == Catch::Approx(vn.z()));
+    }
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - integers", "[Vector3][utils]", int)
-{
-    using Vector = ETL::Math::Vector3<TestType>;
-
-    const Vector v1{ TestType(1), TestType(2), TestType(3) };
-    const Vector v2{ TestType(1), TestType(2), TestType(3) };
-    const Vector v3{ TestType(2), TestType(3), TestType(4) };
-
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(1)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(1)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(2)));
-}
-
-
-TEMPLATE_TEST_CASE("Vector3 factories", "[Vector3][utils]", int, float, double)
+TEMPLATE_TEST_CASE("Vector3 factories", "[Vector3][utils]", VECTOR3_TYPES)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 

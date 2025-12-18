@@ -6,7 +6,9 @@
 #include <MathLib/Common/TypeComparisons.h>
 #include <MathLib/Types/Vector2.h>
 
-TEMPLATE_TEST_CASE("Vector2 Construction & Acces", "[Vector2][core]", int, float, double)
+#define VECTOR2_TYPES int, float, double
+
+TEMPLATE_TEST_CASE("Vector2 Construction & Access", "[Vector2][core]", VECTOR2_TYPES)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 
@@ -46,22 +48,51 @@ TEMPLATE_TEST_CASE("Vector2 Construction & Acces", "[Vector2][core]", int, float
         Vector vC{ TestType(4), TestType(3) };
         REQUIRE(vA == vB);
         REQUIRE(vA != vC);
+        REQUIRE_FALSE(vA == vC);
     }
 }
 
 
-TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
+TEMPLATE_TEST_CASE("Vector2 isEqual with epsilon - floating", "[Vector2][utils]", float, double)
+{
+    using Vector = ETL::Math::Vector2<TestType>;
+
+    const Vector v1{ TestType(1),      TestType(2) };
+    const Vector v2{ TestType(1.0001), TestType(2.0001) };
+    const Vector v3{ TestType(1.1),    TestType(2.1) };
+
+    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(0.001)));
+    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(0.001)));
+    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(0.15)));
+}
+
+
+TEMPLATE_TEST_CASE("Vector2 isEqual with epsilon - integers", "[Vector2][utils]", int)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 
     const Vector v1{ TestType(1), TestType(2) };
-    const Vector v2{ TestType(3), TestType(4) };
+    const Vector v2{ TestType(1), TestType(2) };
+    const Vector v3{ TestType(2), TestType(3) };
+
+    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(1)));
+    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(1)));
+    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(2)));
+}
+
+
+TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
+{
+    using Vector = ETL::Math::Vector2<TestType>;
+
+    const Vector v1{ TestType(4), TestType(6) };
+    const Vector v2{ TestType(2), TestType(3) };
 
     SECTION("Addition")
     {
         const Vector res = v1 + v2;
-        REQUIRE(res.x() == TestType(4));
-        REQUIRE(res.y() == TestType(6));
+        REQUIRE(res.x() == TestType(6));
+        REQUIRE(res.y() == TestType(9));
 
         Vector v3 = v1;
         v3 += v2;
@@ -70,9 +101,9 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
 
     SECTION("Subtraction")
     {
-        const Vector res = v2 - v1;
+        const Vector res = v1 - v2;
         REQUIRE(res.x() == TestType(2));
-        REQUIRE(res.y() == TestType(2));
+        REQUIRE(res.y() == TestType(3));
 
         Vector v3 = v2;
         v3 -= v1;
@@ -82,71 +113,76 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", int, float, double)
     SECTION("Scalar Multiplication")
     {
         const Vector res = v1 * TestType(2);
-        REQUIRE(res.x() == TestType(2));
-        REQUIRE(res.y() == TestType(4));
+        REQUIRE(res.x() == TestType(8));
+        REQUIRE(res.y() == TestType(12));
 
-        // Test Commutative Property (s * v)
-        const Vector res2 = TestType(2) * v1;
-        REQUIRE(res == res2);
+        Vector res2 = v1;
+        res2 *= TestType(2);
+        REQUIRE(res2 == res);
+
+        const Vector res3 = TestType(2) * v1;
+        REQUIRE(res3 == res);
     }
 
     SECTION("Scalar Division")
     {
-        const Vector res = Vector{ TestType(4), TestType(6) } / TestType(2);
+        const Vector res = v1 / TestType(2);
         REQUIRE(res.x() == TestType(2));
         REQUIRE(res.y() == TestType(3));
+
+        Vector res2 = v1;
+        res2 /= TestType(2);
+        REQUIRE(res2 == res);
     }
 
-    SECTION("Component-wise Multiplication")
+    SECTION("Component-wise Mul and Div")
     {
-        const Vector res1 = ETL::Math::ComponentMul<TestType>(Vector{ TestType(4), TestType(6) }, Vector{ TestType(2), TestType(3) });
+        Vector res1 = v1.componentMul(v2);
         REQUIRE(res1.x() == TestType(8));
         REQUIRE(res1.y() == TestType(18));
+        res1.componentDivInPlace(v1);
+        REQUIRE(res1 == v1);
 
-        Vector res2{ TestType(4), TestType(6) };
-        res2 *= Vector{ TestType(2), TestType(3) };
-        REQUIRE(res2.x() == TestType(8));
-        REQUIRE(res2.y() == TestType(18));
-    }
-
-    SECTION("Component-wise Division")
-    {
-        const Vector res1 = ETL::Math::ComponentDiv<TestType>( Vector{ TestType(4), TestType(6) } , Vector{ TestType(2), TestType(3) });
-        REQUIRE(res1.x() == TestType(2));
-        REQUIRE(res1.y() == TestType(2));
-
-        Vector res2{ TestType(4), TestType(6) };
-        res2 /= Vector{ TestType(2), TestType(3) };
+        Vector res2 = v1.componentDiv(v2);
         REQUIRE(res2.x() == TestType(2));
         REQUIRE(res2.y() == TestType(2));
+        res2.componentMulInPlace(v1);
+        REQUIRE(res2 == v1);
     }
 
     SECTION("Dot Product")
     {
-        // 1*3 + 2*4
-        TestType d = Dot(v1, v2);
-        REQUIRE(d == TestType(11));
+        const TestType d1 = v1.dot(v2);
+        REQUIRE(d1 == TestType(26)); /// 4*2 + 6*3
+
+        const TestType d2 = v1.dot(Vector{ TestType(2), TestType(1) });
+        REQUIRE(d1 == TestType(14)); /// 4*2 + 6*1
     }
 
     SECTION("Cross Product")
     {
-        // 1*4-2*3
-        TestType d = Cross(v1, v2);
-        REQUIRE(d == TestType(-2));
+        const TestType c1 = v1.cross(v2);
+        REQUIRE(c1 == TestType(0));  /// 4*3 - 6*2
+
+        const TestType c2 = v1.cross(Vector{ TestType(2), TestType(1) });
+        REQUIRE(c1 == TestType(-8)); /// 4*1 - 6*2
     }
 }
 
 
-TEMPLATE_TEST_CASE("Vector2 Length", "[Vector2][geo]", int, float, double)
+TEMPLATE_TEST_CASE("Vector2 Length", "[Vector2][geo]", VECTOR2_TYPES)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 
     SECTION("Length")
     {
-        const Vector v{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
+        const Vector v1{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
+        REQUIRE(v1.lengthSquared() == TestType(25));
+        REQUIRE(v1.length() == TestType(5));
 
-        REQUIRE(v.lengthSquared() == TestType(25));
-        REQUIRE(v.length() == TestType(5));
+        const Vector v2{ TestType(1), TestType(2) };
+        REQUIRE(v2.lengthSquared() == TestType(5));
+        REQUIRE(v2.length() == TestType(std::sqrt(5)));
     }
 }
 
@@ -172,35 +208,28 @@ TEMPLATE_TEST_CASE("Vector2 Normalization", "[Vector2][geo]", float, double)
 }
 
 
-TEMPLATE_TEST_CASE("Vector2 isEqual with epsilon - floating", "[Vector2][utils]", float, double)
+TEMPLATE_TEST_CASE("Vector2 Normalization", "[Vector2][geo]", int)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 
-    const Vector v1{ TestType(1),      TestType(2)      };
-    const Vector v2{ TestType(1.0001), TestType(2.0001) };
-    const Vector v3{ TestType(1.1),    TestType(2.1)    };
+    SECTION("Normalization")
+    {
+        Vector v{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
 
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(0.001)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(0.001)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(0.15)));
+        const Vector vn = v.normalize();
+        REQUIRE(vn.length() == Catch::Approx(1.0));
+        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<int>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
+        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<int>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
+
+        v.makeNormalize();
+        REQUIRE(v.length() == Catch::Approx(1.0));
+        REQUIRE(v.getRawValue(0) == Catch::Approx(vn.getRawValue(0)));
+        REQUIRE(v.getRawValue(1) == Catch::Approx(vn.getRawValue(1)));
+    }
 }
 
 
-TEMPLATE_TEST_CASE("Vector2 isEqual with epsilon - integers", "[Vector2][utils]", int)
-{
-    using Vector = ETL::Math::Vector2<TestType>;
-
-    const Vector v1{ TestType(1), TestType(2) };
-    const Vector v2{ TestType(1), TestType(2) };
-    const Vector v3{ TestType(2), TestType(3) };
-
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(1)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(1)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(2)));
-}
-
-
-TEMPLATE_TEST_CASE("Vector2 factories", "[Vector2][utils]", int, float, double)
+TEMPLATE_TEST_CASE("Vector2 factories", "[Vector2][utils]", VECTOR2_TYPES)
 {
     using Vector = ETL::Math::Vector2<TestType>;
 
