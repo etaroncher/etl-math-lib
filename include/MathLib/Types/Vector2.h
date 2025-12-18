@@ -66,8 +66,8 @@ namespace ETL::Math
         Type dot(const Vector2& other) const;
         Type cross(const Vector2& other) const;
 
-        Type length() const;
-        Type lengthSquared() const;
+        double length() const;
+        Type   lengthSquared() const;
 
         Vector2  normalize() const;
         Vector2& makeNormalize();
@@ -130,7 +130,7 @@ namespace ETL::Math
 
     /// Length
     template<typename Type>
-    void Length(Type& outResult, const Vector2<Type>& vec);
+    void Length(double& outResult, const Vector2<Type>& vec);
 
     /// Length Squared
     template<typename Type>
@@ -168,9 +168,9 @@ namespace ETL::Math
     extern template void Cross(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
     extern template void Cross(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template void Length(float&  outResult, const Vector2<float>&  vec);
+    extern template void Length(double& outResult, const Vector2<float>&  vec);
     extern template void Length(double& outResult, const Vector2<double>& vec);
-    extern template void Length(int&    outResult, const Vector2<int>&    vec);
+    extern template void Length(double& outResult, const Vector2<int>&    vec);
 
     extern template void LengthSquared(float&  outResult, const Vector2<float>&  vec);
     extern template void LengthSquared(double& outResult, const Vector2<double>& vec);

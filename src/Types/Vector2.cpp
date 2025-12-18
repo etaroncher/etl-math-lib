@@ -31,9 +31,9 @@ namespace ETL::Math
     template void Cross(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
     template void Cross(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template void Length(float&  outResult, const Vector2<float>&  vec);
+    template void Length(double& outResult, const Vector2<float>&  vec);
     template void Length(double& outResult, const Vector2<double>& vec);
-    template void Length(int&    outResult, const Vector2<int>&    vec);
+    template void Length(double& outResult, const Vector2<int>&    vec);
 
     template void LengthSquared(float&  outResult, const Vector2<float>&  vec);
     template void LengthSquared(double& outResult, const Vector2<double>& vec);

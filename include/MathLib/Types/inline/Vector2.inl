@@ -406,9 +406,9 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::length() const
+    inline double Vector2<Type>::length() const
     {
-        Type result;
+        double result;
         Length(result, *this);
         return result;
     }
@@ -593,10 +593,11 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="vec"></param>
     template<typename Type>
-    inline void Length(Type& outResult, const Vector2<Type>& vec)
+    inline void Length(double& outResult, const Vector2<Type>& vec)
     {
-        LengthSquared(outResult, vec);
-        outResult = static_cast<Type>(std::sqrt(outResult));
+        Type lengthSq;
+        LengthSquared(lengthSq, vec);
+        outResult = std::sqrt(static_cast<double>(lengthSq));
     }
 
 
@@ -639,7 +640,11 @@ namespace ETL::Math
         if (isZero(lengthSq))
             return false;
 
-        outResult = vec / std::sqrt(lengthSq);
+        const double invLength = 1.0 / std::sqrt(static_cast<double>(lengthSq));
+
+        outResult.setRawValue(0, static_cast<Type>(vec.getRawValue(0) * invLength));
+        outResult.setRawValue(1, static_cast<Type>(vec.getRawValue(1) * invLength));
+
         return true;
     }
 
