@@ -175,7 +175,7 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
         const Vector c1 = v1.cross(v2);
         REQUIRE(isZero(c1));  /// { 6*4-8*3, 8*2-4*4, 4*3-6*2 } = Vector::ZERO
 
-        const TestType c2 = v1.dot(Vector{ TestType(3), TestType(2), TestType(1) });
+        const Vector c2 = v1.cross(Vector{ TestType(3), TestType(2), TestType(1) });
         REQUIRE(c2.x() == TestType(-10)); /// 6*1 - 8*2
         REQUIRE(c2.y() == TestType( 20)); /// 8*3 - 4*1
         REQUIRE(c2.z() == TestType(-10)); /// 4*2 - 6*3
