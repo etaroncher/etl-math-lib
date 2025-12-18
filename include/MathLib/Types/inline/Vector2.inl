@@ -6,6 +6,7 @@
 #include "MathLib/Common/Asserts.h"
 #include "MathLib/Common/TypeComparisons.h"
 #include <algorithm>
+#include <cmath>
 
 namespace ETL::Math
 {
@@ -16,7 +17,10 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="val"></param>
     template<typename Type>
-    constexpr Vector2<Type>::Vector2(Type val) : mData{ val, val } {}
+    constexpr Vector2<Type>::Vector2(Type val)
+        : mData{ EncodeValue<Type>(val), EncodeValue<Type>(val) }
+    {
+    }
 
 
     /// <summary>
@@ -26,8 +30,23 @@ namespace ETL::Math
     /// <param name="x"></param>
     /// <param name="y"></param>
     template<typename Type>
-    constexpr Vector2<Type>::Vector2(Type x, Type y) : mData{ x, y } {}
+    constexpr Vector2<Type>::Vector2(Type x, Type y)
+        : mData{ EncodeValue<Type>(x), EncodeValue<Type>(y) }
+    {
+    }
 
+    /// <summary>
+    /// Explicit Raw Constructor
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name=""></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    template<typename Type>
+    constexpr Vector2<Type>::Vector2(RawTag, Type x, Type y)
+        : mData{ x, y }
+    {
+    }
 
     /// <summary>
     /// X component getter
@@ -37,7 +56,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::x() const
     {
-        return mX;
+        return DecodeValue<Type>(mX);
     }
 
 
@@ -49,7 +68,7 @@ namespace ETL::Math
     template<typename Type>
     inline Type Vector2<Type>::y() const
     {
-        return mY;
+        return DecodeValue<Type>(mY);
     }
 
 
@@ -61,7 +80,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Vector2<Type>::x(Type x)
     {
-        mX = x;
+        mX = EncodeValue<Type>(x);
     }
 
 
@@ -73,19 +92,7 @@ namespace ETL::Math
     template<typename Type>
     inline void Vector2<Type>::y(Type y)
     {
-        mY = y;
-    }
-
-
-    /// <summary>
-    /// Vector length squared
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    inline Type Vector2<Type>::lengthSquared() const
-    {
-        return mX * mX + mY * mY;
+        mY = EncodeValue<Type>(y);
     }
 
 
@@ -96,10 +103,10 @@ namespace ETL::Math
     /// <param name="index"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type& Vector2<Type>::operator[](int index)
+    inline ElementProxy<Type> Vector2<Type>::operator[](int index)
     {
         ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds access");
-        return mData[index];
+        return ElementProxy<Type>{ mData[index] };
     }
 
 
@@ -113,7 +120,7 @@ namespace ETL::Math
     inline Type Vector2<Type>::operator[](int index) const
     {
         ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds access");
-        return mData[index];
+        return DecodeValue<Type>(mData[index]);
     }
 
 
@@ -124,9 +131,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Vector2<Type> Vector2<Type>::operator+(const Vector2& other) const
+    inline Vector2<Type> Vector2<Type>::operator+(const Vector2<Type>& other) const
     {
-        return Vector2<Type>{ mX + other.mX, mY + other.mY };
+        return Vector2<Type>{ Raw, mX + other.mX, mY + other.mY };
     }
 
 
@@ -137,9 +144,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Vector2<Type> Vector2<Type>::operator-(const Vector2& other) const
+    inline Vector2<Type> Vector2<Type>::operator-(const Vector2<Type>& other) const
     {
-        return Vector2<Type>{ mX - other.mX, mY - other.mY };
+        return Vector2<Type>{ Raw, mX - other.mX, mY - other.mY };
     }
 
 
@@ -150,9 +157,11 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::operator*(const Vector2& other) const
+    inline Type Vector2<Type>::operator*(const Vector2<Type>& other) const
     {
-        return mX * other.mX + mY * other.mY;
+        Type result;
+        Dot(result, *this, other);
+        return result;
     }
 
 
@@ -163,9 +172,11 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::operator^(const Vector2& other) const
+    inline Type Vector2<Type>::operator^(const Vector2<Type>& other) const
     {
-        return mX * other.mY - mY * other.mX;
+        Type result;
+        Cross(result, *this, other);
+        return result;
     }
 
 
@@ -178,7 +189,7 @@ namespace ETL::Math
     template<typename Type>
     inline Vector2<Type> Vector2<Type>::operator*(Type scalar) const
     {
-        return Vector2<Type>{ mX * scalar, mY * scalar };
+        return Vector2<Type>{ Raw, mX * scalar, mY * scalar };
     }
 
 
@@ -196,12 +207,12 @@ namespace ETL::Math
         if constexpr (std::integral<Type>)
         {
             /// integer division, divide to avoid truncation errors
-            return Vector2<Type>{ mX / scalar, mY / scalar };
+            return Vector2<Type>{ Raw, mX / scalar, mY / scalar };
         }
         else
         {
             const Type inv = Type(1) / scalar;
-            return Vector2<Type>{ mX * inv, mY * inv };
+            return Vector2<Type>{ Raw, mX * inv, mY * inv };
         }
     }
 
@@ -213,7 +224,7 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Vector2<Type>& Vector2<Type>::operator+=(const Vector2& other)
+    inline Vector2<Type>& Vector2<Type>::operator+=(const Vector2<Type>& other)
     {
         mX += other.mX;
         mY += other.mY;
@@ -228,7 +239,7 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Vector2<Type>& Vector2<Type>::operator-=(const Vector2& other)
+    inline Vector2<Type>& Vector2<Type>::operator-=(const Vector2<Type>& other)
     {
         mX -= other.mX;
         mY -= other.mY;
@@ -306,46 +317,17 @@ namespace ETL::Math
 
 
     /// <summary>
-    /// In-place Component Multiplication (Element-wise Multiplication Assignment)
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type>& Vector2<Type>::operator*=(const Vector2& other)
-    {
-        mX *= other.mX;
-        mY *= other.mY;
-        return *this;
-    }
-
-
-    /// <summary>
-    /// In-place Component Division (Element-wise Division Assignment)
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="other"></param>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type>& Vector2<Type>::operator/=(const Vector2& other)
-    {
-        ETLMATH_ASSERT(!isZero(other.mX) && !isZero(other.mY), "Division by 0 in Vector2<Type>::operator/=");
-        mX /= other.mX;
-        mY /= other.mY;
-        return *this;
-    }
-
-
-    /// <summary>
     /// Component Multiplication
     /// </summary>
     /// <typeparam name="Type"></typeparam>
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> Vector2<Type>::componentMul(const Vector2& other) const
+    Vector2<Type> Vector2<Type>::componentMul(const Vector2<Type>& other) const
     {
-        return Vector2<Type>{ mX * other.mX, mY * other.mY };
+        Vector2<Type> result;
+        ComponentMul(result, *this, other);
+        return result;
     }
 
 
@@ -356,10 +338,310 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type>  Vector2<Type>::componentDiv(const Vector2& other) const
+    Vector2<Type> Vector2<Type>::componentDiv(const Vector2<Type>& other) const
     {
-        ETLMATH_ASSERT(!isZero(other.mX) && !isZero(other.mY), "Division by 0 in Vector2<Type>::componentDiv");
-        return Vector2<Type>{ mX / other.mX, mY / other.mY };
+        Vector2<Type> result;
+        ComponentDiv(result, *this, other);
+        return result;
+    }
+
+
+    /// <summary>
+    /// In Place Component Multiplication
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    template<typename Type>
+    void Vector2<Type>::componentMulInPlace(const Vector2<Type>& other)
+    {
+        ComponentMul(*this, *this, other);
+    }
+
+
+    /// <summary>
+    /// In Place Component Division
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    template<typename Type>
+    void Vector2<Type>::componentDivInPlace(const Vector2<Type>& other)
+    {
+        ComponentDiv(*this, *this, other);
+    }
+
+
+    /// <summary>
+    /// Dot product (this * other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Vector2<Type>::dot(const Vector2<Type>& other) const
+    {
+        Type result;
+        Dot(result, *this, other);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Cross product (this ^ other)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Vector2<Type>::cross(const Vector2<Type>& other) const
+    {
+        Type result;
+        Cross(result, *this, other);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Vector length
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    Type Vector2<Type>::length() const
+    {
+        Type result;
+        Length(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Vector length squared
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Type Vector2<Type>::lengthSquared() const
+    {
+        Type result;
+        LengthSquared(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Get a normalized copy of this vector
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type> Vector2<Type>::normalize() const
+    {
+        Vector2<Type> result;
+        Normalize(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Normalize self
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    Vector2<Type>& Vector2<Type>::makeNormalize()
+    {
+        Normalize(*this, *this);
+        return *this;
+    }
+
+
+    /// <summary>
+    /// Raw access to vector elements (no fixed-point conversion)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    template<typename Type>
+    Type Vector2<Type>::getRawValue(int index) const
+    {
+        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds index access");
+        return mData[index];
+    }
+
+
+    /// <summary>
+    /// Raw access to vector elements (no fixed-point conversion)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="index"></param>
+    /// <param name="value"></param>
+    template<typename Type>
+    void Vector2<Type>::setRawValue(int index, Type value)
+    {
+        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds index access");
+        mData[index] = value;
+    }
+
+
+    ///------------------------------------------------------------------------------------------
+    /// Free functions - implement logic
+
+    /// <summary>
+    /// Component-wise multiplication
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    template<typename Type>
+    inline void ComponentMul(Vector2<Type>& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(0);
+            const int64_t y = static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(1);
+            outResult.setRawValue(0, static_cast<Type>(x >> FIXED_SHIFT));
+            outResult.setRawValue(1, static_cast<Type>(y >> FIXED_SHIFT));
+        }
+        else
+        {
+            outResult.setRawValue(0, v1.getRawValue(0) * v2.getRawValue(0));
+            outResult.setRawValue(1, v1.getRawValue(1) * v2.getRawValue(1));
+        }
+    }
+
+
+    /// <summary>
+    /// Component-wise division
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    template<typename Type>
+    inline void ComponentDiv(Vector2<Type>& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    {
+        ETLMATH_ASSERT(!isZero(v2.getRawValue(0)) && !isZero(v2.getRawValue(1)), "Division by 0 in ComponentDiv (Vector2)");
+
+        if constexpr (std::integral<Type>)
+        {
+            /// Scale dividend to avoid integer rounding. Result will be descaled to FX
+            /// Dividend(FX^2) / Divisor(FX) = Result(FX)
+            const int64_t x = (static_cast<int64_t>(v1.getRawValue(0)) << FIXED_SHIFT) / v2.getRawValue(0);
+            const int64_t y = (static_cast<int64_t>(v1.getRawValue(1)) << FIXED_SHIFT) / v2.getRawValue(1);
+            outResult.setRawValue(0, static_cast<Type>(x));
+            outResult.setRawValue(1, static_cast<Type>(y));
+        }
+        else
+        {
+            outResult.setRawValue(0, v1.getRawValue(0) / v2.getRawValue(0));
+            outResult.setRawValue(1, v1.getRawValue(1) / v2.getRawValue(1));
+        }
+    }
+
+
+    /// <summary>
+    /// Dot product V1*V2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    template<typename Type>
+    inline void Dot(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t dot = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(0)
+                              + static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(1);
+            outResult = static_cast<Type>(dot >> (2*FIXED_SHIFT));
+        }
+        else
+        {
+            outResult = v1.getRawValue(0) * v2.getRawValue(0) + v1.getRawValue(1) * v2.getRawValue(1);
+        }
+    }
+
+
+    /// <summary>
+    /// 2D "Cross product" of V1 x V2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    template<typename Type>
+    inline void Cross(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t cross = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(1)
+                                - static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(0);
+            outResult = static_cast<Type>(cross >> (2*FIXED_SHIFT));
+        }
+        else
+        {
+            outResult = v1.getRawValue(0) * v2.getRawValue(1) - v1.getRawValue(1) * v2.getRawValue(0);
+        }
+    }
+
+
+    /// <summary>
+    /// Return length
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="vec"></param>
+    template<typename Type>
+    inline void Length(Type& outResult, const Vector2<Type>& vec)
+    {
+        Type lengthSq;
+        LengthSquared(lengthSq, vec);
+        outResult = static_cast<Type>(std::sqrt(lengthSq));
+    }
+
+
+    /// <summary>
+    /// Return length squared
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="vec"></param>
+    template<typename Type>
+    inline void LengthSquared(Type& outResult, const Vector2<Type>& vec)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t x = static_cast<int64_t>(vec.getRawValue(0));
+            const int64_t y = static_cast<int64_t>(vec.getRawValue(1));
+            const Type fixedPointResult = static_cast<Type>((x * x + y * y) >> FIXED_SHIFT);
+            outResult = fixedPointResult >> FIXED_SHIFT;
+        }
+        else
+        {
+            const Type x = vec.getRawValue(0);
+            const Type y = vec.getRawValue(1);
+            outResult = x * x + y * y;
+        }
+    }
+
+
+    /// <summary>
+    /// Normalize vec
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="vec"></param>
+    template<typename Type>
+    inline bool Normalize(Vector2<Type>& outResult, const Vector2<Type>& vec)
+    {
+        Type lengthSq;
+        LengthSquared(lengthSq, vec);
+        if (isZero(lengthSq))
+            return false;
+
+        outResult = vec / std::sqrt(lengthSq);
+        return true;
     }
 
 
@@ -376,99 +658,5 @@ namespace ETL::Math
         return vector * scalar;
     }
 
-
-    /// <summary>
-    /// Return length
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="vec"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Type Length(const Vector2<Type>& vec)
-    {
-        return vec.length();
-    }
-
-
-    /// <summary>
-    /// Return length squared
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="vec"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Type LengthSquared(const Vector2<Type>& vec)
-    {
-        return vec.lengthSquared();
-    }
-
-
-    /// <summary>
-    /// Return normalized version of vec
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="vec"></param>
-    /// <returns></returns>
-    template<typename Type> requires std::floating_point<Type>
-    inline Vector2<Type> Normalize(const Vector2<Type>& vec)
-    {
-        return vec.normalize();
-    }
-
-
-    /// <summary>
-    /// 2D "Cross product" of V1 x V2
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="v1"></param>
-    /// <param name="v2"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Type Cross(const Vector2<Type>& v1, const Vector2<Type>& v2)
-    {
-        return v1 ^ v2;
-    }
-
-
-    /// <summary>
-    /// Dot product V1*V2
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="v1"></param>
-    /// <param name="v2"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Type Dot(const Vector2<Type>& v1, const Vector2<Type>& v2)
-    {
-        return v1 * v2;
-    }
-
-
-    /// <summary>
-    /// Component-wise multiplication
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="v1"></param>
-    /// <param name="v2"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Vector2<Type> ComponentMul(const Vector2<Type>& v1, const Vector2<Type>& v2)
-    {
-        return v1.componentMul(v2);
-    }
-
-
-    /// <summary>
-    /// Component-wise division
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="v1"></param>
-    /// <param name="v2"></param>
-    /// <returns></returns>
-    template<typename Type>
-    inline Vector2<Type> ComponentDiv(const Vector2<Type>& v1, const Vector2<Type>& v2)
-    {
-        return v1.componentDiv(v2);
-    }
 
 } /// namespace ETL::Math

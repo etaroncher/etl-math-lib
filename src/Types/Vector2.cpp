@@ -4,56 +4,9 @@
 ///----------------------------------------------------------------------------
 
 #include "MathLib/Types/Vector2.h"
-#include <cmath>
-#include <stdexcept>
 
 namespace ETL::Math
 {
-
-    /// <summary>
-    /// Vector length
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    Type Vector2<Type>::length() const
-    {
-        return Type(std::sqrt(lengthSquared()));
-    }
-
-
-    /// <summary>
-    /// Get a normalized copy of this vector
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type> Vector2<Type>::normalize() const requires std::floating_point<Type>
-    {
-        const Type lengthSq = lengthSquared();
-        if (isZero(lengthSq))
-            throw std::runtime_error("Cannot normalize zero vector");
-
-        return *this / Type(std::sqrt(lengthSq));
-    }
-
-
-    /// <summary>
-    /// Get a normalized copy of this vector
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <returns></returns>
-    template<typename Type>
-    Vector2<Type>& Vector2<Type>::makeNormalize() requires std::floating_point<Type>
-    {
-        const Type lengthSq = lengthSquared();
-        if (isZero(lengthSq))
-            throw std::runtime_error("Cannot normalize zero vector");
-
-        *this /= Type(std::sqrt(lengthSq));
-        return *this;
-    }
-
 
     ///------------------------------------------------------------------------------------------
     /// Explicit template instantiations (precompiled declaration)
@@ -62,35 +15,36 @@ namespace ETL::Math
     template class Vector2<double>;
     template class Vector2<int>;
 
-    template float  Length(const Vector2<float>& vec);
-    template double Length(const Vector2<double>& vec);
-    template int    Length(const Vector2<int>& vec);
+    template void ComponentMul(Vector2<float>&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void ComponentMul(Vector2<double>& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
+    template void ComponentMul(Vector2<int>&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  LengthSquared(const Vector2<float>& vec);
-    template double LengthSquared(const Vector2<double>& vec);
-    template int    LengthSquared(const Vector2<int>& vec);
+    template void ComponentDiv(Vector2<float>&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void ComponentDiv(Vector2<double>& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
+    template void ComponentDiv(Vector2<int>&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template Vector2<float>  Normalize(const Vector2<float>& vec);
-    template Vector2<double> Normalize(const Vector2<double>& vec);
+    template void Dot(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void Dot(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
+    template void Dot(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  Cross(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double Cross(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    Cross(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template void Cross(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void Cross(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
+    template void Cross(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template float  Dot(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template double Dot(const Vector2<double>& v1, const Vector2<double>& v2);
-    template int    Dot(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template void Length(float&  outResult, const Vector2<float>&  vec);
+    template void Length(double& outResult, const Vector2<double>& vec);
+    template void Length(int&    outResult, const Vector2<int>&    vec);
 
-    template Vector2<float>  ComponentMul(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template Vector2<double> ComponentMul(const Vector2<double>& v1, const Vector2<double>& v2);
-    template Vector2<int>    ComponentMul(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template void LengthSquared(float&  outResult, const Vector2<float>&  vec);
+    template void LengthSquared(double& outResult, const Vector2<double>& vec);
+    template void LengthSquared(int&    outResult, const Vector2<int>&    vec);
 
-    template Vector2<float>  ComponentDiv(const Vector2<float>&  v1, const Vector2<float>&  v2);
-    template Vector2<double> ComponentDiv(const Vector2<double>& v1, const Vector2<double>& v2);
-    template Vector2<int>    ComponentDiv(const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template bool Normalize(Vector2<float>&  outResult, const Vector2<float>&  vec);
+    template bool Normalize(Vector2<double>& outResult, const Vector2<double>& vec);
+    template bool Normalize(Vector2<int>&    outResult, const Vector2<int>&    vec);
 
-    template Vector2<float>  operator*(float  scalar, const Vector2<float>& vector);
+    template Vector2<float>  operator*(float  scalar, const Vector2<float>&  vector);
     template Vector2<double> operator*(double scalar, const Vector2<double>& vector);
-    template Vector2<int>    operator*(int    scalar, const Vector2<int>& vector);
+    template Vector2<int>    operator*(int    scalar, const Vector2<int>&    vector);
 
 } /// namespace ETL::Math
