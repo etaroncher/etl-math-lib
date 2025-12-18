@@ -1019,9 +1019,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        outResult[0] = mat(0, index);
-        outResult[1] = mat(1, index);
-        outResult[2] = mat(2, index);
+        outResult.setRawValue(0, mat.getRawValue(0, index));
+        outResult.setRawValue(1, mat.getRawValue(1, index));
+        outResult.setRawValue(2, mat.getRawValue(2, index));
     }
 
 
@@ -1037,9 +1037,9 @@ namespace ETL::Math
     {
         ETLMATH_ASSERT(index >= 0 && index < Matrix3x3<Type>::COL_SIZE, "Matrix3x3 out of bounds ROW access");
 
-        outResult[0] = mat(index, 0);
-        outResult[1] = mat(index, 1);
-        outResult[2] = mat(index, 2);
+        outResult.setRawValue(0, mat.getRawValue(index, 0));
+        outResult.setRawValue(1, mat.getRawValue(index, 1));
+        outResult.setRawValue(2, mat.getRawValue(index, 2));
     }
 
 
@@ -1061,9 +1061,9 @@ namespace ETL::Math
             outResult = mat;
         }
 
-        outResult(0, index) = col[0];
-        outResult(1, index) = col[1];
-        outResult(2, index) = col[2];
+        outResult.setRawValue(0, index, col.getRawValue(0));
+        outResult.setRawValue(1, index, col.getRawValue(1));
+        outResult.setRawValue(2, index, col.getRawValue(2));
     }
 
 
@@ -1085,9 +1085,9 @@ namespace ETL::Math
             outResult = mat;
         }
 
-        outResult(index, 0) = row[0];
-        outResult(index, 1) = row[1];
-        outResult(index, 2) = row[2];
+        outResult.setRawValue(index, 0, row.getRawValue(0));
+        outResult.setRawValue(index, 1, row.getRawValue(1));
+        outResult.setRawValue(index, 2, row.getRawValue(2));
     }
 
 
@@ -1103,17 +1103,19 @@ namespace ETL::Math
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t x = static_cast<int64_t>(point.x());
-            const int64_t y = static_cast<int64_t>(point.y());
-            outResult[0] = DecodeValue<Type>(x * mat.getRawValue(0, 0) + y * mat.getRawValue(0, 1) + mat.getRawValue(0, 2));
-            outResult[1] = DecodeValue<Type>(x * mat.getRawValue(1, 0) + y * mat.getRawValue(1, 1) + mat.getRawValue(1, 2));
+            const int64_t x = static_cast<int64_t>(point.getRawValue(0));
+            const int64_t y = static_cast<int64_t>(point.getRawValue(1));
+            const int64_t outX = ((mat.getRawValue(0, 0) * x + mat.getRawValue(0, 1) * y) >> FIXED_SHIFT) + mat.getRawValue(0, 2);
+            const int64_t outY = ((mat.getRawValue(1, 0) * x + mat.getRawValue(1, 1) * y) >> FIXED_SHIFT) + mat.getRawValue(1, 2);
+            outResult.setRawValue(0, static_cast<Type>(outX));
+            outResult.setRawValue(1, static_cast<Type>(outY));
         }
         else
         {
-            const Type x = point.x();
-            const Type y = point.y();
-            outResult[0] = x * mat.getRawValue(0, 0) + y * mat.getRawValue(0, 1) + mat.getRawValue(0, 2);
-            outResult[1] = x * mat.getRawValue(1, 0) + y * mat.getRawValue(1, 1) + mat.getRawValue(1, 2);
+            const Type x = point.getRawValue(0);
+            const Type y = point.getRawValue(1);
+            outResult.setRawValue(0, mat.getRawValue(0, 0) * x + mat.getRawValue(0, 1) * y + mat.getRawValue(0, 2));
+            outResult.setRawValue(1, mat.getRawValue(1, 0) * x + mat.getRawValue(1, 1) * y + mat.getRawValue(1, 2));
         }
     }
 
@@ -1130,17 +1132,19 @@ namespace ETL::Math
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t x = static_cast<int64_t>(direction.x());
-            const int64_t y = static_cast<int64_t>(direction.y());
-            outResult[0] = DecodeValue<Type>(x * mat.getRawValue(0, 0) + y * mat.getRawValue(0, 1));
-            outResult[1] = DecodeValue<Type>(x * mat.getRawValue(1, 0) + y * mat.getRawValue(1, 1));
+            const int64_t x = static_cast<int64_t>(direction.getRawValue(0));
+            const int64_t y = static_cast<int64_t>(direction.getRawValue(1));
+            const int64_t outX = (mat.getRawValue(0, 0) * x + mat.getRawValue(0, 1) * y) >> FIXED_SHIFT;
+            const int64_t outY = (mat.getRawValue(1, 0) * x + mat.getRawValue(1, 1) * y) >> FIXED_SHIFT;
+            outResult.setRawValue(0, static_cast<Type>(outX));
+            outResult.setRawValue(1, static_cast<Type>(outY));
         }
         else
         {
-            const Type x = direction.x();
-            const Type y = direction.y();
-            outResult[0] = x * mat.getRawValue(0, 0) + y * mat.getRawValue(0, 1);
-            outResult[1] = x * mat.getRawValue(1, 0) + y * mat.getRawValue(1, 1);
+            const Type x = direction.getRawValue(0);
+            const Type y = direction.getRawValue(1);
+            outResult.setRawValue(0, mat.getRawValue(0, 0) * x + mat.getRawValue(0, 1) * y);
+            outResult.setRawValue(1, mat.getRawValue(1, 0) * x + mat.getRawValue(1, 1) * y);
         }
     }
 
@@ -1155,8 +1159,8 @@ namespace ETL::Math
     template<typename Type>
     inline void Translate(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation)
     {
-        outResult.setRawValue(0, 2, mat.getRawValue(0, 2) + EncodeValue<Type>(translation.x()));
-        outResult.setRawValue(1, 2, mat.getRawValue(1, 2) + EncodeValue<Type>(translation.y()));
+        outResult.setRawValue(0, 2, mat.getRawValue(0, 2) + translation.getRawValue(0));
+        outResult.setRawValue(1, 2, mat.getRawValue(1, 2) + translation.getRawValue(1));
 
         if (&outResult != &mat)
         {
@@ -1181,8 +1185,8 @@ namespace ETL::Math
     template<typename Type>
     inline void SetTranslation(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<Type>& translation)
     {
-        outResult.setRawValue(0, 2, EncodeValue<Type>(translation.x()));
-        outResult.setRawValue(1, 2, EncodeValue<Type>(translation.y()));
+        outResult.setRawValue(0, 2, translation.getRawValue(0));
+        outResult.setRawValue(1, 2, translation.getRawValue(1));
 
         if (&outResult != &mat)
         {
@@ -1206,8 +1210,8 @@ namespace ETL::Math
     template<typename Type>
     inline void GetTranslation(Vector2<Type>& outResult, const Matrix3x3<Type>& mat)
     {
-        outResult[0] = mat(0, 2);
-        outResult[1] = mat(1, 2);
+        outResult.setRawValue(0, mat.getRawValue(0, 2));
+        outResult.setRawValue(1, mat.getRawValue(1, 2));
     }
 
 
@@ -1304,10 +1308,10 @@ namespace ETL::Math
     template<typename Type>
     inline void Scale(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat, const Vector2<double>& scale)
     {
-        outResult.setRawValue(0, 0, static_cast<Type>(mat.getRawValue(0, 0) * scale.x()));
-        outResult.setRawValue(1, 0, static_cast<Type>(mat.getRawValue(1, 0) * scale.x()));
-        outResult.setRawValue(0, 1, static_cast<Type>(mat.getRawValue(0, 1) * scale.y()));
-        outResult.setRawValue(1, 1, static_cast<Type>(mat.getRawValue(1, 1) * scale.y()));
+        outResult.setRawValue(0, 0, static_cast<Type>(mat.getRawValue(0, 0) * scale.getRawValue(0)));
+        outResult.setRawValue(1, 0, static_cast<Type>(mat.getRawValue(1, 0) * scale.getRawValue(0)));
+        outResult.setRawValue(0, 1, static_cast<Type>(mat.getRawValue(0, 1) * scale.getRawValue(1)));
+        outResult.setRawValue(1, 1, static_cast<Type>(mat.getRawValue(1, 1) * scale.getRawValue(1)));
 
         if (&outResult != &mat)
         {
@@ -1336,10 +1340,10 @@ namespace ETL::Math
         const double c = std::cos(rotation);
         const double s = std::sin(rotation);
 
-        outResult.setRawValue(0, 0, EncodeValue<Type>( c * scale.x()));
-        outResult.setRawValue(1, 0, EncodeValue<Type>( s * scale.x()));
-        outResult.setRawValue(0, 1, EncodeValue<Type>(-s * scale.y()));
-        outResult.setRawValue(1, 1, EncodeValue<Type>( c * scale.y()));
+        outResult.setRawValue(0, 0, EncodeValue<Type>( c * scale.getRawValue(0)));
+        outResult.setRawValue(1, 0, EncodeValue<Type>( s * scale.getRawValue(0)));
+        outResult.setRawValue(0, 1, EncodeValue<Type>(-s * scale.getRawValue(1)));
+        outResult.setRawValue(1, 1, EncodeValue<Type>( c * scale.getRawValue(1)));
 
         if (&outResult != &mat)
         {
@@ -1367,8 +1371,8 @@ namespace ETL::Math
         const double yBasis_x = DecodeValue<double>(mat.getRawValue(0, 1));
         const double yBasis_y = DecodeValue<double>(mat.getRawValue(1, 1));
 
-        outResult[0] = Vector2<double>{ xBasis_x, xBasis_y }.length();
-        outResult[1] = Vector2<double>{ yBasis_x, yBasis_y }.length();
+        outResult.setRawValue(0, Vector2<double>{ xBasis_x, xBasis_y }.length());
+        outResult.setRawValue(1, Vector2<double>{ yBasis_x, yBasis_y }.length());
     }
 
 
