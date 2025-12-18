@@ -323,7 +323,7 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> Vector2<Type>::componentMul(const Vector2<Type>& other) const
+    inline Vector2<Type> Vector2<Type>::componentMul(const Vector2<Type>& other) const
     {
         Vector2<Type> result;
         ComponentMul(result, *this, other);
@@ -338,7 +338,7 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> Vector2<Type>::componentDiv(const Vector2<Type>& other) const
+    inline Vector2<Type> Vector2<Type>::componentDiv(const Vector2<Type>& other) const
     {
         Vector2<Type> result;
         ComponentDiv(result, *this, other);
@@ -352,7 +352,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="other"></param>
     template<typename Type>
-    void Vector2<Type>::componentMulInPlace(const Vector2<Type>& other)
+    inline void Vector2<Type>::componentMulInPlace(const Vector2<Type>& other)
     {
         ComponentMul(*this, *this, other);
     }
@@ -364,7 +364,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <param name="other"></param>
     template<typename Type>
-    void Vector2<Type>::componentDivInPlace(const Vector2<Type>& other)
+    inline void Vector2<Type>::componentDivInPlace(const Vector2<Type>& other)
     {
         ComponentDiv(*this, *this, other);
     }
@@ -406,7 +406,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    Type Vector2<Type>::length() const
+    inline Type Vector2<Type>::length() const
     {
         Type result;
         Length(result, *this);
@@ -434,7 +434,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type> Vector2<Type>::normalize() const
+    inline Vector2<Type> Vector2<Type>::normalize() const
     {
         Vector2<Type> result;
         Normalize(result, *this);
@@ -448,7 +448,7 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    Vector2<Type>& Vector2<Type>::makeNormalize()
+    inline Vector2<Type>& Vector2<Type>::makeNormalize()
     {
         Normalize(*this, *this);
         return *this;
@@ -462,9 +462,9 @@ namespace ETL::Math
     /// <param name="index"></param>
     /// <returns></returns>
     template<typename Type>
-    Type Vector2<Type>::getRawValue(int index) const
+    inline Type Vector2<Type>::getRawValue(int index) const
     {
-        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds index access");
+        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds raw access");
         return mData[index];
     }
 
@@ -476,9 +476,9 @@ namespace ETL::Math
     /// <param name="index"></param>
     /// <param name="value"></param>
     template<typename Type>
-    void Vector2<Type>::setRawValue(int index, Type value)
+    inline void Vector2<Type>::setRawValue(int index, Type value)
     {
-        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds index access");
+        ETLMATH_ASSERT(index >= 0 && index < 2, "Vector2 out of bounds raw access");
         mData[index] = value;
     }
 
@@ -595,9 +595,8 @@ namespace ETL::Math
     template<typename Type>
     inline void Length(Type& outResult, const Vector2<Type>& vec)
     {
-        Type lengthSq;
-        LengthSquared(lengthSq, vec);
-        outResult = static_cast<Type>(std::sqrt(lengthSq));
+        LengthSquared(outResult, vec);
+        outResult = static_cast<Type>(std::sqrt(outResult));
     }
 
 
