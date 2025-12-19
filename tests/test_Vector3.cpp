@@ -107,13 +107,13 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
 
     SECTION("Subtraction")
     {
-        const Vector res = v2 - v1;
+        const Vector res = v1 - v2;
         REQUIRE(res.x() == TestType(2));
         REQUIRE(res.y() == TestType(3));
         REQUIRE(res.z() == TestType(4));
 
-        Vector res2 = v2;
-        res2 -= v1;
+        Vector res2 = v1;
+        res2 -= v2;
         REQUIRE(res2 == res);
     }
 
@@ -149,14 +149,14 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
         Vector res1 = v1.componentMul(v2);
         REQUIRE(res1.x() == TestType(8));
         REQUIRE(res1.y() == TestType(18));
-        REQUIRE(res1.y() == TestType(32));
+        REQUIRE(res1.z() == TestType(32));
         res1.componentDivInPlace(v2);
         REQUIRE(res1 == v1);
 
         Vector res2 = v1.componentDiv(v2);
         REQUIRE(res2.x() == TestType(2));
         REQUIRE(res2.y() == TestType(2));
-        REQUIRE(res2.y() == TestType(2));
+        REQUIRE(res2.z() == TestType(2));
         res2.componentMulInPlace(v2);
         REQUIRE(res2 == v1);
     }
@@ -167,7 +167,7 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
         REQUIRE(d1 == TestType(58)); /// d = 4*2 + 6*3 + 8*4
 
         const TestType d2 = v1.dot(Vector{ TestType(3), TestType(2), TestType(1) });
-        REQUIRE(d1 == TestType(32)); /// d = 4*3 + 6*2 + 8*1
+        REQUIRE(d2 == TestType(32)); /// d = 4*3 + 6*2 + 8*1
     }
 
     SECTION("Cross Product")
@@ -190,12 +190,12 @@ TEMPLATE_TEST_CASE("Vector3 Length", "[Vector3][geo]", VECTOR3_TYPES)
     SECTION("Length")
     {
         const Vector v1{ TestType(3), TestType(0), TestType(4) }; /// 3-4-5 triangle logic
-        REQUIRE(v1.lengthSquared() == TestType(25));
-        REQUIRE(v1.length() == TestType(5));
+        REQUIRE(v1.lengthSquared() == 25.0);
+        REQUIRE(v1.length() == 5.0);
 
         const Vector v2{ TestType(1), TestType(2), TestType(3) };
-        REQUIRE(v2.lengthSquared() == TestType(12));
-        REQUIRE(v2.length() == TestType(std::sqrt(12)));
+        REQUIRE(v2.lengthSquared() == 14.0);
+        REQUIRE(v2.length() == std::sqrt(14.0));
     }
 }
 
@@ -211,9 +211,9 @@ TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", float, double)
         const Vector vn = v.normalize();
         REQUIRE(vn.lengthSquared() == Catch::Approx(1.0));
         REQUIRE(vn.length() == Catch::Approx(1.0));
-        REQUIRE(vn.x() == Catch::Approx(0.6)); // 3/5
-        REQUIRE(vn.y() == Catch::Approx(0.0)); // 0/5
-        REQUIRE(vn.z() == Catch::Approx(0.8)); // 4/5
+        REQUIRE(vn.x() == Catch::Approx(TestType(0.6))); // 3/5
+        REQUIRE(vn.y() == Catch::Approx(TestType(0.0))); // 0/5
+        REQUIRE(vn.z() == Catch::Approx(TestType(0.8))); // 4/5
 
         v.makeNormalize();
         REQUIRE(v.length() == Catch::Approx(1.0));
@@ -232,17 +232,17 @@ TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", int)
         Vector v{ TestType(3), TestType(0), TestType(4) }; /// 3-4-5 triangle logic
 
         const Vector vn = v.normalize();
-        REQUIRE(vn.lengthSquared() == Catch::Approx(1.0));
-        REQUIRE(vn.length() == Catch::Approx(1.0));
-        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<int>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
-        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<int>(0.0 * ETL::Math::FIXED_ONE))); // 0/5
-        REQUIRE(vn.getRawValue(2) == Catch::Approx(static_cast<int>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
+        REQUIRE(ETL::Math::isEqual(vn.lengthSquared(), 1.0, 0.0001));
+        REQUIRE(ETL::Math::isEqual(vn.length(), 1.0, 0.0001));
+        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<TestType>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
+        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<TestType>(0.0 * ETL::Math::FIXED_ONE))); // 0/5
+        REQUIRE(vn.getRawValue(2) == Catch::Approx(static_cast<TestType>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
 
         v.makeNormalize();
-        REQUIRE(v.length() == Catch::Approx(1.0));
-        REQUIRE(v.x() == Catch::Approx(vn.x()));
-        REQUIRE(v.y() == Catch::Approx(vn.y()));
-        REQUIRE(v.z() == Catch::Approx(vn.z()));
+        REQUIRE(ETL::Math::isEqual(v.length(), 1.0, 0.0001));
+        REQUIRE(v.getRawValue(0) == Catch::Approx(vn.getRawValue(0)));
+        REQUIRE(v.getRawValue(1) == Catch::Approx(vn.getRawValue(1)));
+        REQUIRE(v.getRawValue(2) == Catch::Approx(vn.getRawValue(2)));
     }
 }
 
