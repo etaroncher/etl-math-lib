@@ -218,6 +218,18 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Minus operator
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Vector2<Type> Vector2<Type>::operator-() const
+    {
+        return Vector2<Type>{ Raw, -mX, -mY };
+    }
+
+
+    /// <summary>
     /// Addition assignment operator
     /// </summary>
     /// <typeparam name="Type"></typeparam>

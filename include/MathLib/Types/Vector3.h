@@ -51,6 +51,7 @@ namespace ETL::Math
         Vector3  operator^(const Vector3& other) const;
         Vector3  operator*(Type scalar) const;
         Vector3  operator/(Type scalar) const;
+        Vector3  operator-() const;
         Vector3& operator+=(const Vector3& other);
         Vector3& operator-=(const Vector3& other);
         Vector3& operator*=(Type scalar);

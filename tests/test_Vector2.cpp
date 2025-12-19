@@ -88,6 +88,13 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
     const Vector v1{ TestType(4), TestType(6) };
     const Vector v2{ TestType(2), TestType(3) };
 
+    SECTION("Minus operator")
+    {
+        const Vector res = -v1;
+        REQUIRE(res.x() == TestType(-4));
+        REQUIRE(res.y() == TestType(-6));
+    }
+
     SECTION("Addition")
     {
         const Vector res = v1 + v2;
