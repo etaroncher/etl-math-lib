@@ -105,8 +105,8 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
         REQUIRE(res.x() == TestType(2));
         REQUIRE(res.y() == TestType(3));
 
-        Vector v3 = v2;
-        v3 -= v1;
+        Vector v3 = v1;
+        v3 -= v2;
         REQUIRE(v3 == res);
     }
 
@@ -140,13 +140,13 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
         Vector res1 = v1.componentMul(v2);
         REQUIRE(res1.x() == TestType(8));
         REQUIRE(res1.y() == TestType(18));
-        res1.componentDivInPlace(v1);
+        res1.componentDivInPlace(v2);
         REQUIRE(res1 == v1);
 
         Vector res2 = v1.componentDiv(v2);
         REQUIRE(res2.x() == TestType(2));
         REQUIRE(res2.y() == TestType(2));
-        res2.componentMulInPlace(v1);
+        res2.componentMulInPlace(v2);
         REQUIRE(res2 == v1);
     }
 
@@ -156,7 +156,7 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
         REQUIRE(d1 == TestType(26)); /// 4*2 + 6*3
 
         const TestType d2 = v1.dot(Vector{ TestType(2), TestType(1) });
-        REQUIRE(d1 == TestType(14)); /// 4*2 + 6*1
+        REQUIRE(d2 == TestType(14)); /// 4*2 + 6*1
     }
 
     SECTION("Cross Product")
@@ -165,7 +165,7 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
         REQUIRE(c1 == TestType(0));  /// 4*3 - 6*2
 
         const TestType c2 = v1.cross(Vector{ TestType(2), TestType(1) });
-        REQUIRE(c1 == TestType(-8)); /// 4*1 - 6*2
+        REQUIRE(c2 == TestType(-8)); /// 4*1 - 6*2
     }
 }
 
@@ -177,12 +177,12 @@ TEMPLATE_TEST_CASE("Vector2 Length", "[Vector2][geo]", VECTOR2_TYPES)
     SECTION("Length")
     {
         const Vector v1{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
-        REQUIRE(v1.lengthSquared() == TestType(25));
-        REQUIRE(v1.length() == TestType(5));
+        REQUIRE(v1.lengthSquared() == 25.0);
+        REQUIRE(v1.length() == 5.0);
 
         const Vector v2{ TestType(1), TestType(2) };
-        REQUIRE(v2.lengthSquared() == TestType(5));
-        REQUIRE(v2.length() == TestType(std::sqrt(5)));
+        REQUIRE(v2.lengthSquared() == 5.0);
+        REQUIRE(v2.length() == std::sqrt(5.0));
     }
 }
 
@@ -196,9 +196,10 @@ TEMPLATE_TEST_CASE("Vector2 Normalization", "[Vector2][geo]", float, double)
         Vector v{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
 
         const Vector vn = v.normalize();
+        REQUIRE(vn.lengthSquared() == Catch::Approx(1.0));
         REQUIRE(vn.length() == Catch::Approx(1.0));
-        REQUIRE(vn.x() == Catch::Approx(0.6)); // 3/5
-        REQUIRE(vn.y() == Catch::Approx(0.8)); // 4/5
+        REQUIRE(vn.x() == Catch::Approx(TestType(0.6))); // 3/5
+        REQUIRE(vn.y() == Catch::Approx(TestType(0.8))); // 4/5
 
         v.makeNormalize();
         REQUIRE(v.length() == Catch::Approx(1.0));
@@ -217,14 +218,16 @@ TEMPLATE_TEST_CASE("Vector2 Normalization", "[Vector2][geo]", int)
         Vector v{ TestType(3), TestType(4) }; /// 3-4-5 triangle logic
 
         const Vector vn = v.normalize();
-        REQUIRE(vn.length() == Catch::Approx(1.0));
-        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<int>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
-        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<int>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
+        REQUIRE(ETL::Math::isEqual(vn.lengthSquared(), 1.0, 0.0001));
+        REQUIRE(ETL::Math::isEqual(vn.length(), 1.0, 0.0001));
+        REQUIRE(vn.getRawValue(0) == Catch::Approx(static_cast<TestType>(0.6 * ETL::Math::FIXED_ONE))); // 3/5
+        REQUIRE(vn.getRawValue(1) == Catch::Approx(static_cast<TestType>(0.8 * ETL::Math::FIXED_ONE))); // 4/5
 
         v.makeNormalize();
-        REQUIRE(v.length() == Catch::Approx(1.0));
+        REQUIRE(ETL::Math::isEqual(v.length(), 1.0, 0.0001));
         REQUIRE(v.getRawValue(0) == Catch::Approx(vn.getRawValue(0)));
         REQUIRE(v.getRawValue(1) == Catch::Approx(vn.getRawValue(1)));
+        REQUIRE(v == vn);
     }
 }
 

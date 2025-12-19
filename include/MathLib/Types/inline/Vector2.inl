@@ -420,9 +420,9 @@ namespace ETL::Math
     /// <typeparam name="Type"></typeparam>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::lengthSquared() const
+    inline double Vector2<Type>::lengthSquared() const
     {
-        Type result;
+        double result;
         LengthSquared(result, *this);
         return result;
     }
@@ -595,9 +595,9 @@ namespace ETL::Math
     template<typename Type>
     inline void Length(double& outResult, const Vector2<Type>& vec)
     {
-        Type lengthSq;
+        double lengthSq;
         LengthSquared(lengthSq, vec);
-        outResult = std::sqrt(static_cast<double>(lengthSq));
+        outResult = std::sqrt(lengthSq);
     }
 
 
@@ -608,19 +608,18 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="vec"></param>
     template<typename Type>
-    inline void LengthSquared(Type& outResult, const Vector2<Type>& vec)
+    inline void LengthSquared(double& outResult, const Vector2<Type>& vec)
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t x = static_cast<int64_t>(vec.getRawValue(0));
-            const int64_t y = static_cast<int64_t>(vec.getRawValue(1));
-            const Type fixedPointResult = static_cast<Type>((x * x + y * y) >> FIXED_SHIFT);
-            outResult = fixedPointResult >> FIXED_SHIFT;
+            const double x = static_cast<double>(vec.getRawValue(0)) / FIXED_ONE;
+            const double y = static_cast<double>(vec.getRawValue(1)) / FIXED_ONE;
+            outResult = x * x + y * y;
         }
         else
         {
-            const Type x = vec.getRawValue(0);
-            const Type y = vec.getRawValue(1);
+            const double x = static_cast<double>(vec.getRawValue(0));
+            const double y = static_cast<double>(vec.getRawValue(1));
             outResult = x * x + y * y;
         }
     }
@@ -635,12 +634,12 @@ namespace ETL::Math
     template<typename Type>
     inline bool Normalize(Vector2<Type>& outResult, const Vector2<Type>& vec)
     {
-        Type lengthSq;
+        double lengthSq;
         LengthSquared(lengthSq, vec);
         if (isZero(lengthSq))
             return false;
 
-        const double invLength = 1.0 / std::sqrt(static_cast<double>(lengthSq));
+        const double invLength = 1.0 / std::sqrt(lengthSq);
 
         outResult.setRawValue(0, static_cast<Type>(vec.getRawValue(0) * invLength));
         outResult.setRawValue(1, static_cast<Type>(vec.getRawValue(1) * invLength));

@@ -35,9 +35,9 @@ namespace ETL::Math
     template void Length(double& outResult, const Vector2<double>& vec);
     template void Length(double& outResult, const Vector2<int>&    vec);
 
-    template void LengthSquared(float&  outResult, const Vector2<float>&  vec);
+    template void LengthSquared(double& outResult, const Vector2<float>&  vec);
     template void LengthSquared(double& outResult, const Vector2<double>& vec);
-    template void LengthSquared(int&    outResult, const Vector2<int>&    vec);
+    template void LengthSquared(double& outResult, const Vector2<int>&    vec);
 
     template bool Normalize(Vector2<float>&  outResult, const Vector2<float>&  vec);
     template bool Normalize(Vector2<double>& outResult, const Vector2<double>& vec);
