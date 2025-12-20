@@ -4,8 +4,6 @@
 ///---------------------------------------------------------------------------- 
 #pragma once
 
-#include <concepts>
-
 namespace ETL::Math
 {
 
@@ -14,35 +12,18 @@ namespace ETL::Math
     {
         /// Absolute value for signed types
         template<typename T>
-        requires (std::signed_integral<T> || std::floating_point<T>)
-        constexpr T abs(T value)
+        inline constexpr T abs(T value)
         {
             return value < T(0) ? -value : value;
         }
 
-        /// "Absolute value" for unsigned types (just return as-is)
-        template<typename T>
-        requires (std::unsigned_integral<T>)
-        constexpr T abs(T value)
-        {
-            return value;  // Already non-negative!
-        }
-
         /// Max of two values
         template<typename T>
-        constexpr T max(T a, T b)
+        inline constexpr T max(T a, T b)
         {
             return a > b ? a : b;
         }
     }
-
-    /// Forward declarations
-
-    template<typename T> class Vector2;
-    template<typename T> class Vector3;
-    template<typename T> class Vector4;
-    template<typename T> class Matrix3x3;
-
 
     /// Default Epsilon Values
 
@@ -87,7 +68,7 @@ namespace ETL::Math
     template<typename T>
     inline bool isEqual(T a, T b, T epsilon = Epsilon<T>::value)
     {
-        return helpers::abs<T>(a - b) < epsilon;
+        return isZero(a - b, epsilon);
     }
 
 
@@ -114,6 +95,15 @@ namespace ETL::Math
             return bIsEqual;
         }
     }
+
+
+
+    /// Forward declarations
+
+    template<typename T> class Vector2;
+    template<typename T> class Vector3;
+    template<typename T> class Vector4;
+    template<typename T> class Matrix3x3;
 
 
     /// Vector2 Comparisons
