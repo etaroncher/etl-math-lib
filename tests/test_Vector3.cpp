@@ -30,7 +30,7 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", VECTOR3_T
 
     SECTION("From-vector2 constructor")
     {
-        ETL::Math::Vector2<Type> vec2{ TestType(3), TestType(4) };
+        ETL::Math::Vector2<TestType> vec2{ TestType(3), TestType(4) };
         Vector v{ vec2, TestType(5) };
         REQUIRE(v.x() == TestType(3));
         REQUIRE(v.y() == TestType(4));
@@ -202,7 +202,7 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
         REQUIRE(c2.y() == TestType( 20)); /// 8*3 - 4*1
         REQUIRE(c2.z() == TestType(-10)); /// 4*2 - 6*3
 
-        const double c3 = v1 ^ v3;
+        const Vector c3 = v1 ^ v3;
         REQUIRE(c2 == c3);
     }
 }
@@ -302,7 +302,7 @@ TEMPLATE_TEST_CASE("Vector3 2D Transform", "[Vector3][utils]", VECTOR3_TYPES)
     using Vector3 = ETL::Math::Vector3<TestType>;
     using Vector2 = ETL::Math::Vector2<TestType>;
 
-    const Vector2 vec2{ Type(4), Type(5) };
+    const Vector2 vec2{ TestType(4), TestType(5) };
 
     SECTION("2D Transform factories")
     {
@@ -319,20 +319,20 @@ TEMPLATE_TEST_CASE("Vector3 2D Transform", "[Vector3][utils]", VECTOR3_TYPES)
 
     SECTION("2D Transform helpers")
     {
-        const Vector3 p{ vec2, Type(1) };
+        const Vector3 p{ vec2, TestType(1) };
         REQUIRE(p.isPoint());
         REQUIRE_FALSE(p.isDirection());
 
-        const Vector3 d{ vec2, Type(0) };
+        const Vector3 d{ vec2, TestType(0) };
         REQUIRE(d.isDirection());
         REQUIRE_FALSE(d.isPoint());
 
         const Vector2 v1 = p.toVector2();
         REQUIRE(v1 == vec2);
 
-        const Vector3 v2{ Type(4), Type(8), Type(2) };
+        const Vector3 v2{ TestType(4), TestType(8), TestType(2) };
         const Vector2 res = v2.perspectiveDivide();
-        REQUIRE(res.x() = Type(2));
-        REQUIRE(res.y() = Type(4));
+        REQUIRE(res.x() == TestType(2));
+        REQUIRE(res.y() == TestType(4));
     }
 }
