@@ -6,6 +6,7 @@
 
 #include "MathLib/Common/ElementProxy.h"
 #include "MathLib/Common/RawTag.h"
+#include "MathLib/Types/Vector2.h"
 
 namespace ETL::Math
 {
@@ -20,10 +21,15 @@ namespace ETL::Math
     {
     public:
 
+        /// Static 2D Transform Factories
+        static constexpr Vector3 MakePoint(const Vector2<Type>& vec);
+        static constexpr Vector3 MakeDirection(const Vector2<Type>& vec);
+
         /// Constructors
         constexpr Vector3() = default;
         explicit constexpr Vector3(Type val);
         constexpr Vector3(Type x, Type y, Type z);
+        constexpr Vector3(const Vector2<Type>& xy, Type z = Type(1));
 
         /// Copy, Move & Destructor (default)
         Vector3(const Vector3&) = default;
@@ -47,7 +53,7 @@ namespace ETL::Math
         /// Operators
         Vector3  operator+(const Vector3& other) const;
         Vector3  operator-(const Vector3& other) const;
-        Type     operator*(const Vector3& other) const;
+        double   operator*(const Vector3& other) const;
         Vector3  operator^(const Vector3& other) const;
         Vector3  operator*(Type scalar) const;
         Vector3  operator/(Type scalar) const;
@@ -65,7 +71,7 @@ namespace ETL::Math
         void     componentDivInPlace(const Vector3& other);
 
         /// Vector methods
-        Type    dot(const Vector3& other) const;
+        double  dot(const Vector3& other) const;
         Vector3 cross(const Vector3& other) const;
 
         double length() const;
@@ -73,6 +79,12 @@ namespace ETL::Math
 
         Vector3  normalize() const;
         Vector3& makeNormalize();
+
+        /// 3D Transform helpers
+        Vector2<Type> toVector2() const;
+        Vector2<Type> perspectiveDivide() const;
+        bool          isPoint() const;
+        bool          isDirection() const;
 
         /// Direct access to internal storage - no conversions applied (use with caution for integral types)
         Type getRawValue(int index) const;
@@ -127,7 +139,7 @@ namespace ETL::Math
 
     /// Dot prod
     template<typename Type>
-    void Dot(Type& outResult, const Vector3<Type>& v1, const Vector3<Type>& v2);
+    void Dot(double& outResult, const Vector3<Type>& v1, const Vector3<Type>& v2);
 
     /// Cross prod
     template<typename Type>
@@ -144,6 +156,14 @@ namespace ETL::Math
     /// Normalize
     template<typename Type>
     bool Normalize(Vector3<Type>& outResult, const Vector3<Type>& vec);
+
+    /// Extract vector3
+    template<typename Type>
+    void ToVector2(Vector2<Type>& outResult, const Vector3<Type>& vec);
+
+    /// Perspective divide
+    template<typename Type>
+    void PerspectiveDivide(Vector2<Type>& outResult, const Vector3<Type>& vec);
 
     /// Scalar * matrix operator (commutative property)
     template<typename Type>
@@ -165,9 +185,9 @@ namespace ETL::Math
     extern template void ComponentDiv(Vector3<double>& outResult, const Vector3<double>& v1, const Vector3<double>& v2);
     extern template void ComponentDiv(Vector3<int>&    outResult, const Vector3<int>&    v1, const Vector3<int>&    v2);
 
-    extern template void Dot(float&  outResult, const Vector3<float>&  v1, const Vector3<float>&  v2);
+    extern template void Dot(double& outResult, const Vector3<float>&  v1, const Vector3<float>&  v2);
     extern template void Dot(double& outResult, const Vector3<double>& v1, const Vector3<double>& v2);
-    extern template void Dot(int&    outResult, const Vector3<int>&    v1, const Vector3<int>&    v2);
+    extern template void Dot(double& outResult, const Vector3<int>&    v1, const Vector3<int>&    v2);
 
     extern template void Cross(Vector3<float>&  outResult, const Vector3<float>&  v1, const Vector3<float>&  v2);
     extern template void Cross(Vector3<double>& outResult, const Vector3<double>& v1, const Vector3<double>& v2);
@@ -184,6 +204,14 @@ namespace ETL::Math
     extern template bool Normalize(Vector3<float>&  outResult, const Vector3<float>&  vec);
     extern template bool Normalize(Vector3<double>& outResult, const Vector3<double>& vec);
     extern template bool Normalize(Vector3<int>&    outResult, const Vector3<int>&    vec);
+
+    extern template void ToVector2(Vector2<float>&  outResult, const Vector3<float>&  vec);
+    extern template void ToVector2(Vector2<double>& outResult, const Vector3<double>& vec);
+    extern template void ToVector2(Vector2<int>&    outResult, const Vector3<int>&    vec);
+
+    extern template void PerspectiveDivide(Vector2<float>&  outResult, const Vector3<float>&  vec);
+    extern template void PerspectiveDivide(Vector2<double>& outResult, const Vector3<double>& vec);
+    extern template void PerspectiveDivide(Vector2<int>&    outResult, const Vector3<int>&    vec);
 
     extern template Vector3<float>  operator*(float  scalar, const Vector3<float>&  vector);
     extern template Vector3<double> operator*(double scalar, const Vector3<double>& vector);

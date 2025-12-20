@@ -12,6 +12,32 @@ namespace ETL::Math
 {
 
     /// <summary>
+    /// Factory - Point from Vector2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="xyz"></param>
+    /// <returns></returns>
+    template<typename Type>
+    constexpr Vector3<Type> Vector3<Type>::MakePoint(const Vector2<Type>& xy)
+    {
+        return Vector3<Type>{ xy, Type(1) };
+    }
+
+
+    /// <summary>
+    /// Factory - Direction from Vector2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="xyz"></param>
+    /// <returns></returns>
+    template<typename Type>
+    constexpr Vector3<Type> Vector3<Type>::MakeDirection(const Vector2<Type>& xy)
+    {
+        return Vector3<Type>{ xy, Type(0) };
+    }
+
+
+    /// <summary>
     /// Same value constructor
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -33,6 +59,19 @@ namespace ETL::Math
     template<typename Type>
     constexpr Vector3<Type>::Vector3(Type x, Type y, Type z)
         : mData{ EncodeValue<Type>(x), EncodeValue<Type>(y), EncodeValue<Type>(z) }
+    {
+    }
+
+
+    /// <summary>
+    /// Constructor from Vector2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="xy"></param>
+    /// <param name="z"></param>
+    template<typename Type>
+    constexpr Vector3<Type>::Vector3(const Vector2<Type>& xy, Type z /*= Type(1)*/)
+        : mData{ xy.getRawValue(0), xy.getRawValue(1), EncodeValue<Type>(z) }
     {
     }
 
@@ -185,9 +224,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector3<Type>::operator*(const Vector3<Type>& other) const
+    inline double Vector3<Type>::operator*(const Vector3<Type>& other) const
     {
-        Type result;
+        double result;
         Dot(result, *this, other);
         return result;
     }
@@ -422,9 +461,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector3<Type>::dot(const Vector3<Type>& other) const
+    inline double Vector3<Type>::dot(const Vector3<Type>& other) const
     {
-        Type result;
+        double result;
         Dot(result, *this, other);
         return result;
     }
@@ -501,6 +540,58 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Extract Vector2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Vector2<Type> Vector3<Type>::toVector2() const
+    {
+        Vector2<Type> result;
+        ToVector2(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Perspective divide
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline Vector2<Type> Vector3<Type>::perspectiveDivide() const
+    {
+        Vector2<Type> result;
+        PerspectiveDivide(result, *this);
+        return result;
+    }
+
+
+    /// <summary>
+    /// Check if is Point
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline bool Vector3<Type>::isPoint() const
+    {
+        return isEqual(mZ, EncodeValue<Type>(Type(1)));
+    }
+
+
+    /// <summary>
+    /// Check if is Direction
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <returns></returns>
+    template<typename Type>
+    inline bool Vector3<Type>::isDirection() const
+    {
+        return isEqual(mZ, EncodeValue<Type>(Type(0)));
+    }
+
+
+    /// <summary>
     /// Raw access to vector elements (no fixed-point conversion)
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -570,7 +661,7 @@ namespace ETL::Math
     inline void ComponentDiv(Vector3<Type>& outResult, const Vector3<Type>& v1, const Vector3<Type>& v2)
     {
         ETLMATH_ASSERT(!isZero(v2.getRawValue(0)) && !isZero(v2.getRawValue(1)) && !isZero(v2.getRawValue(2)),
-                       "Division by 0 in ComponentDiv (Vector2)");
+                       "Division by 0 in ComponentDiv (Vector3)");
 
         if constexpr (std::integral<Type>)
         {
@@ -600,20 +691,27 @@ namespace ETL::Math
     /// <param name="v1"></param>
     /// <param name="v2"></param>
     template<typename Type>
-    inline void Dot(Type& outResult, const Vector3<Type>& v1, const Vector3<Type>& v2)
+    inline void Dot(double& outResult, const Vector3<Type>& v1, const Vector3<Type>& v2)
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t dot = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(0)
-                              + static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(1)
-                              + static_cast<int64_t>(v1.getRawValue(2)) * v2.getRawValue(2);
-            outResult = static_cast<Type>(dot >> (2 * FIXED_SHIFT));
+            const double x1 = static_cast<double>(v1.getRawValue(0)) / FIXED_ONE;
+            const double y1 = static_cast<double>(v1.getRawValue(1)) / FIXED_ONE;
+            const double z1 = static_cast<double>(v1.getRawValue(2)) / FIXED_ONE;
+            const double x2 = static_cast<double>(v2.getRawValue(0)) / FIXED_ONE;
+            const double y2 = static_cast<double>(v2.getRawValue(1)) / FIXED_ONE;
+            const double z2 = static_cast<double>(v2.getRawValue(2)) / FIXED_ONE;
+            outResult = x1 * x2 + y1 * y2 + z1 * z2;
         }
         else
         {
-            outResult = v1.getRawValue(0) * v2.getRawValue(0)
-                      + v1.getRawValue(1) * v2.getRawValue(1)
-                      + v1.getRawValue(2) * v2.getRawValue(2);
+            const double x1 = static_cast<double>(v1.getRawValue(0));
+            const double y1 = static_cast<double>(v1.getRawValue(1));
+            const double z1 = static_cast<double>(v1.getRawValue(2));
+            const double x2 = static_cast<double>(v2.getRawValue(0));
+            const double y2 = static_cast<double>(v2.getRawValue(1));
+            const double z2 = static_cast<double>(v2.getRawValue(2));
+            outResult = x1 * x2 + y1 * y2 + z1 * z2;
         }
     }
 
@@ -678,20 +776,7 @@ namespace ETL::Math
     template<typename Type>
     inline void LengthSquared(double& outResult, const Vector3<Type>& vec)
     {
-        if constexpr (std::integral<Type>)
-        {
-            const double x = static_cast<double>(vec.getRawValue(0)) / FIXED_ONE;
-            const double y = static_cast<double>(vec.getRawValue(1)) / FIXED_ONE;
-            const double z = static_cast<double>(vec.getRawValue(2)) / FIXED_ONE;
-            outResult = x * x + y * y + z * z;
-        }
-        else
-        {
-            const double x = static_cast<double>(vec.getRawValue(0));
-            const double y = static_cast<double>(vec.getRawValue(1));
-            const double z = static_cast<double>(vec.getRawValue(2));
-            outResult = x * x + y * y + z * z;
-        }
+        Dot(outResult, vec, vec);
     }
 
 
@@ -716,6 +801,46 @@ namespace ETL::Math
         outResult.setRawValue(2, static_cast<Type>(vec.getRawValue(2) * invLength));
 
         return true;
+    }
+
+
+    /// <summary>
+    /// Extract Vector2
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="vec"></param>
+    template<typename Type>
+    void ToVector2(Vector2<Type>& outResult, const Vector3<Type>& vec)
+    {
+        outResult.setRawValue(0, vec.getRawValue(0));
+        outResult.setRawValue(1, vec.getRawValue(1));
+    }
+
+
+    /// <summary>
+    /// Pespective Divide (xy / z)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="outResult"></param>
+    /// <param name="vec"></param>
+    template<typename Type>
+    void PerspectiveDivide(Vector2<Type>& outResult, const Vector3<Type>& vec)
+    {
+        if constexpr (std::integral<Type>)
+        {
+            const int64_t z = vec.getRawValue(2);
+            const int64_t x = (vec.getRawValue(0) << FIXED_SHIFT) / z;
+            const int64_t y = (vec.getRawValue(1) << FIXED_SHIFT) / z;
+            outResult.setRawValue(0, static_cast<Type>(x));
+            outResult.setRawValue(1, static_cast<Type>(y));
+        }
+        else
+        {
+            const Type invZ = Type(1) / vec.getRawValue(2);
+            outResult.setRawValue(0, vec.getRawValue(0) * invZ);
+            outResult.setRawValue(1, vec.getRawValue(1) * invZ);
+        }
     }
 
 
