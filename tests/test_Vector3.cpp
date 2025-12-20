@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", VECTOR3_T
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", float, double)
+TEMPLATE_TEST_CASE("Vector3 Raw Access", "[Vector3][core]", float, double)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
@@ -93,7 +93,7 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", float, do
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", int)
+TEMPLATE_TEST_CASE("Vector3 Raw Access", "[Vector3][core]", int)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
@@ -119,7 +119,7 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", int)
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - floating", "[Vector3][utils]", float, double)
+TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon", "[Vector3][utils]", float, double)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
@@ -133,7 +133,7 @@ TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - floating", "[Vector3][utils]"
 }
 
 
-TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon - integers", "[Vector3][utils]", int)
+TEMPLATE_TEST_CASE("Vector3 isEqual with epsilon", "[Vector3][utils]", int)
 {
     using Vector = ETL::Math::Vector3<TestType>;
 
