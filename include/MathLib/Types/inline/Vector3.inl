@@ -803,9 +803,9 @@ namespace ETL::Math
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t z = vec.getRawValue(2);
-            const int64_t x = (vec.getRawValue(0) << FIXED_SHIFT) / z;
-            const int64_t y = (vec.getRawValue(1) << FIXED_SHIFT) / z;
+            const int64_t z = static_cast<int64_t>(vec.getRawValue(2));
+            const int64_t x = (static_cast<int64_t>(vec.getRawValue(0)) << FIXED_SHIFT) / z;
+            const int64_t y = (static_cast<int64_t>(vec.getRawValue(1)) << FIXED_SHIFT) / z;
             outResult.setRawValue(0, static_cast<Type>(x));
             outResult.setRawValue(1, static_cast<Type>(y));
         }
