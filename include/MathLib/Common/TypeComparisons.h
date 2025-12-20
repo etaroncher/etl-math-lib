@@ -97,7 +97,6 @@ namespace ETL::Math
     }
 
 
-
     /// Forward declarations
 
     template<typename T> class Vector2;
