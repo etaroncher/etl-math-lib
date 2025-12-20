@@ -23,13 +23,13 @@ namespace ETL::Math
     template void ComponentDiv(Vector2<double>& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
     template void ComponentDiv(Vector2<int>&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template void Dot(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void Dot(double& outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
     template void Dot(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
-    template void Dot(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template void Dot(double& outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    template void Cross(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    template void Cross(double& outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
     template void Cross(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
-    template void Cross(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
+    template void Cross(double& outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
     template void Length(double& outResult, const Vector2<float>&  vec);
     template void Length(double& outResult, const Vector2<double>& vec);

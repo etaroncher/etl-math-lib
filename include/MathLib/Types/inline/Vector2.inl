@@ -157,9 +157,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::operator*(const Vector2<Type>& other) const
+    inline double Vector2<Type>::operator*(const Vector2<Type>& other) const
     {
-        Type result;
+        double result;
         Dot(result, *this, other);
         return result;
     }
@@ -172,9 +172,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::operator^(const Vector2<Type>& other) const
+    inline double Vector2<Type>::operator^(const Vector2<Type>& other) const
     {
-        Type result;
+        double result;
         Cross(result, *this, other);
         return result;
     }
@@ -389,9 +389,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::dot(const Vector2<Type>& other) const
+    inline double Vector2<Type>::dot(const Vector2<Type>& other) const
     {
-        Type result;
+        double result;
         Dot(result, *this, other);
         return result;
     }
@@ -404,9 +404,9 @@ namespace ETL::Math
     /// <param name="other"></param>
     /// <returns></returns>
     template<typename Type>
-    inline Type Vector2<Type>::cross(const Vector2<Type>& other) const
+    inline double Vector2<Type>::cross(const Vector2<Type>& other) const
     {
-        Type result;
+        double result;
         Cross(result, *this, other);
         return result;
     }
@@ -560,17 +560,30 @@ namespace ETL::Math
     /// <param name="v1"></param>
     /// <param name="v2"></param>
     template<typename Type>
-    inline void Dot(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline void Dot(double& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
+        //constexpr int fixedPointScale = std::integral<Type> ? FIXED_ONE : 1;
+        //const double x1 = static_cast<double>(v1.getRawValue(0)) / fixedPointScale;
+        //const double y1 = static_cast<double>(v1.getRawValue(1)) / fixedPointScale;
+        //const double x2 = static_cast<double>(v2.getRawValue(0)) / fixedPointScale;
+        //const double y2 = static_cast<double>(v2.getRawValue(1)) / fixedPointScale;
+        //outResult = x1 * x2 + y1 * y2;
+
         if constexpr (std::integral<Type>)
         {
-            const int64_t dot = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(0)
-                              + static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(1);
-            outResult = static_cast<Type>(dot >> (2*FIXED_SHIFT));
+            const double x1 = static_cast<double>(v1.getRawValue(0)) / FIXED_ONE;
+            const double y1 = static_cast<double>(v1.getRawValue(1)) / FIXED_ONE;
+            const double x2 = static_cast<double>(v2.getRawValue(0)) / FIXED_ONE;
+            const double y2 = static_cast<double>(v2.getRawValue(1)) / FIXED_ONE;
+            outResult = x1 * x2 + y1 * y2;
         }
         else
         {
-            outResult = v1.getRawValue(0) * v2.getRawValue(0) + v1.getRawValue(1) * v2.getRawValue(1);
+            const double x1 = static_cast<double>(v1.getRawValue(0));
+            const double y1 = static_cast<double>(v1.getRawValue(1));
+            const double x2 = static_cast<double>(v2.getRawValue(0));
+            const double y2 = static_cast<double>(v2.getRawValue(1));
+            outResult = x1 * x2 + y1 * y2;
         }
     }
 
@@ -583,17 +596,23 @@ namespace ETL::Math
     /// <param name="v1"></param>
     /// <param name="v2"></param>
     template<typename Type>
-    inline void Cross(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
+    inline void Cross(double& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2)
     {
         if constexpr (std::integral<Type>)
         {
-            const int64_t cross = static_cast<int64_t>(v1.getRawValue(0)) * v2.getRawValue(1)
-                                - static_cast<int64_t>(v1.getRawValue(1)) * v2.getRawValue(0);
-            outResult = static_cast<Type>(cross >> (2*FIXED_SHIFT));
+            const double x1 = static_cast<double>(v1.getRawValue(0)) / FIXED_ONE;
+            const double y1 = static_cast<double>(v1.getRawValue(1)) / FIXED_ONE;
+            const double x2 = static_cast<double>(v2.getRawValue(0)) / FIXED_ONE;
+            const double y2 = static_cast<double>(v2.getRawValue(1)) / FIXED_ONE;
+            outResult = x1 * y2 - y1 * x2;
         }
         else
         {
-            outResult = v1.getRawValue(0) * v2.getRawValue(1) - v1.getRawValue(1) * v2.getRawValue(0);
+            const double x1 = static_cast<double>(v1.getRawValue(0));
+            const double y1 = static_cast<double>(v1.getRawValue(1));
+            const double x2 = static_cast<double>(v2.getRawValue(0));
+            const double y2 = static_cast<double>(v2.getRawValue(1));
+            outResult = x1 * y2 - y1 * x2;
         }
     }
 
@@ -622,18 +641,7 @@ namespace ETL::Math
     template<typename Type>
     inline void LengthSquared(double& outResult, const Vector2<Type>& vec)
     {
-        if constexpr (std::integral<Type>)
-        {
-            const double x = static_cast<double>(vec.getRawValue(0)) / FIXED_ONE;
-            const double y = static_cast<double>(vec.getRawValue(1)) / FIXED_ONE;
-            outResult = x * x + y * y;
-        }
-        else
-        {
-            const double x = static_cast<double>(vec.getRawValue(0));
-            const double y = static_cast<double>(vec.getRawValue(1));
-            outResult = x * x + y * y;
-        }
+        Dot(outResult, vec, vec);
     }
 
 

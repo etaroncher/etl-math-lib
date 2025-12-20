@@ -46,8 +46,8 @@ namespace ETL::Math
         /// Operators
         Vector2  operator+(const Vector2& other) const;
         Vector2  operator-(const Vector2& other) const;
-        Type     operator*(const Vector2& other) const;
-        Type     operator^(const Vector2& other) const;
+        double   operator*(const Vector2& other) const;
+        double   operator^(const Vector2& other) const;
         Vector2  operator*(Type scalar) const;
         Vector2  operator/(Type scalar) const;
         Vector2  operator-() const;
@@ -64,8 +64,8 @@ namespace ETL::Math
         void     componentDivInPlace(const Vector2& other);
 
         /// Vector methods
-        Type dot(const Vector2& other) const;
-        Type cross(const Vector2& other) const;
+        double dot(const Vector2& other) const;
+        double cross(const Vector2& other) const;
 
         double length() const;
         double lengthSquared() const;
@@ -123,11 +123,11 @@ namespace ETL::Math
 
     /// Dot prod
     template<typename Type>
-    void Dot(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2);
+    void Dot(double& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2);
 
     /// Cross prod
     template<typename Type>
-    void Cross(Type& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2);
+    void Cross(double& outResult, const Vector2<Type>& v1, const Vector2<Type>& v2);
 
     /// Length
     template<typename Type>
@@ -161,13 +161,13 @@ namespace ETL::Math
     extern template void ComponentDiv(Vector2<double>& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
     extern template void ComponentDiv(Vector2<int>&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template void Dot(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template void Dot(double& outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
     extern template void Dot(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template void Dot(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template void Dot(double& outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
-    extern template void Cross(float&  outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
+    extern template void Cross(double& outResult, const Vector2<float>&  v1, const Vector2<float>&  v2);
     extern template void Cross(double& outResult, const Vector2<double>& v1, const Vector2<double>& v2);
-    extern template void Cross(int&    outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
+    extern template void Cross(double& outResult, const Vector2<int>&    v1, const Vector2<int>&    v2);
 
     extern template void Length(double& outResult, const Vector2<float>&  vec);
     extern template void Length(double& outResult, const Vector2<double>& vec);
