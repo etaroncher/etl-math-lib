@@ -1,6 +1,6 @@
 ///----------------------------------------------------------------------------
 /// ETL - MathLib Unit Test
-/// test_Vector2.h
+/// test_Vector2.cpp
 ///----------------------------------------------------------------------------
 #include <catch_amalgamated.hpp>
 #include <MathLib/Common/TypeComparisons.h>
@@ -49,6 +49,50 @@ TEMPLATE_TEST_CASE("Vector2 Construction & Access", "[Vector2][core]", VECTOR2_T
         REQUIRE(vA == vB);
         REQUIRE(vA != vC);
         REQUIRE_FALSE(vA == vC);
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Vector2 Construction & Access", "[Vector2][core]", float, double)
+{
+    using Vector = ETL::Math::Vector2<TestType>;
+
+    SECTION("Raw access")
+    {
+        Vector v{ TestType(10), TestType(20) };
+
+        REQUIRE(v.x() == TestType(10));
+        REQUIRE(v.y() == TestType(20));
+        REQUIRE(v.getRawValue(0) == TestType(10));
+        REQUIRE(v.getRawValue(1) == TestType(20));
+
+        v.setRawValue(0, TestType(100));
+        v.setRawValue(1, TestType(200));
+
+        REQUIRE(v.getRawValue(0) == TestType(100));
+        REQUIRE(v.getRawValue(1) == TestType(200));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Vector2 Construction & Access", "[Vector2][core]", int)
+{
+    using Vector = ETL::Math::Vector2<TestType>;
+
+    SECTION("Raw access")
+    {
+        Vector v{ TestType(10), TestType(20) };
+
+        REQUIRE(v.x() == TestType(10));
+        REQUIRE(v.y() == TestType(20));
+        REQUIRE(v.getRawValue(0) == TestType(10 << ETL::Math::FIXED_SHIFT));
+        REQUIRE(v.getRawValue(1) == TestType(20 << ETL::Math::FIXED_SHIFT));
+
+        v.setRawValue(0, TestType(100));
+        v.setRawValue(1, TestType(200));
+
+        REQUIRE(v.getRawValue(0) == TestType(100));
+        REQUIRE(v.getRawValue(1) == TestType(200));
     }
 }
 

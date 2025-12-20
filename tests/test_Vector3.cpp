@@ -1,6 +1,6 @@
 ///----------------------------------------------------------------------------
 /// ETL - MathLib Unit Test
-/// test_Vector3.h
+/// test_Vector3.cpp
 ///----------------------------------------------------------------------------
 #include <catch_amalgamated.hpp>
 #include <MathLib/Common/TypeComparisons.h>
@@ -63,6 +63,58 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", VECTOR3_T
         REQUIRE(vA == vB);
         REQUIRE(vA != vC);
         REQUIRE_FALSE(vA == vC);
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", float, double)
+{
+    using Vector = ETL::Math::Vector3<TestType>;
+
+    SECTION("Raw access")
+    {
+        Vector v{ TestType(10), TestType(20), TestType(30) };
+
+        REQUIRE(v.x() == TestType(10));
+        REQUIRE(v.y() == TestType(20));
+        REQUIRE(v.z() == TestType(30));
+        REQUIRE(v.getRawValue(0) == TestType(10));
+        REQUIRE(v.getRawValue(1) == TestType(20));
+        REQUIRE(v.getRawValue(2) == TestType(30));
+
+        v.setRawValue(0, TestType(100));
+        v.setRawValue(1, TestType(200));
+        v.setRawValue(2, TestType(300));
+
+        REQUIRE(v.getRawValue(0) == TestType(100));
+        REQUIRE(v.getRawValue(1) == TestType(200));
+        REQUIRE(v.getRawValue(2) == TestType(300));
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", int)
+{
+    using Vector = ETL::Math::Vector3<TestType>;
+
+    SECTION("Raw access")
+    {
+        Vector v{ TestType(10), TestType(20), TestType(30) };
+
+        REQUIRE(v.x() == TestType(10));
+        REQUIRE(v.y() == TestType(20));
+        REQUIRE(v.z() == TestType(30));
+        REQUIRE(v.getRawValue(0) == TestType(10 << ETL::Math::FIXED_SHIFT));
+        REQUIRE(v.getRawValue(1) == TestType(20 << ETL::Math::FIXED_SHIFT));
+        REQUIRE(v.getRawValue(2) == TestType(30 << ETL::Math::FIXED_SHIFT));
+
+        v.setRawValue(0, TestType(100));
+        v.setRawValue(1, TestType(200));
+        v.setRawValue(2, TestType(300));
+
+        REQUIRE(v.getRawValue(0) == TestType(100));
+        REQUIRE(v.getRawValue(1) == TestType(200));
+        REQUIRE(v.getRawValue(2) == TestType(300));
     }
 }
 
@@ -247,6 +299,7 @@ TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", float, double)
         REQUIRE(v.z() == Catch::Approx(vn.z()));
     }
 }
+
 
 TEMPLATE_TEST_CASE("Vector3 Normalization", "[Vector3][geo]", int)
 {

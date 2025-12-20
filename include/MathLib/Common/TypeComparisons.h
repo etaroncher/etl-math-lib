@@ -40,6 +40,7 @@ namespace ETL::Math
 
     template<typename T> class Vector2;
     template<typename T> class Vector3;
+    template<typename T> class Vector4;
     template<typename T> class Matrix3x3;
 
 
@@ -90,34 +91,94 @@ namespace ETL::Math
     }
 
 
+    /// Templated helper checks
+    namespace helpers
+    {
+        template<typename Cont, typename T, int SIZE>
+        inline bool zero(const Cont& container, T epsilon = Epsilon<T>::value)
+        {
+            bool bIsZero = true;
+            for (int i = 0; i < SIZE; ++i)
+                bIsZero = bIsZero && isZero(container[i], epsilon);
+
+            return bIsZero;
+        }
+
+        template<typename Cont, typename T, int SIZE>
+        inline bool equals(const Cont& containerA, const Cont& containerB, T epsilon = Epsilon<T>::value)
+        {
+            bool bIsEqual = true;
+            for (int i = 0; i < SIZE; ++i)
+                bIsEqual = bIsEqual && isEqual(containerA[i], containerB[i], epsilon);
+
+            return bIsEqual;
+        }
+    }
+
+
     /// Vector2 Comparisons
 
     template<typename T>
-    bool isZero(const Vector2<T>& vec, T epsilon = Epsilon<T>::value);
+    inline bool isZero(const Vector2<T>& vec, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::zero<Vector2<T>, T, 2>(vec, epsilon);
+    }
 
     template<typename T>
-    bool isEqual(const Vector2<T>& a, const Vector2<T>& b, T epsilon = Epsilon<T>::value);
+    inline bool isEqual(const Vector2<T>& a, const Vector2<T>& b, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::equals<Vector2<T>, T, 2>(a, b, epsilon);
+    }
 
 
     /// Vector3 Comparisons
 
     template<typename T>
-    bool isZero(const Vector3<T>& vec, T epsilon = Epsilon<T>::value);
+    inline bool isZero(const Vector3<T>& vec, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::zero<Vector3<T>, T, 3>(vec, epsilon);
+    }
 
     template<typename T>
-    bool isEqual(const Vector3<T>& a, const Vector3<T>& b, T epsilon = Epsilon<T>::value);
+    inline bool isEqual(const Vector3<T>& a, const Vector3<T>& b, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::equals<Vector3<T>, T, 3>(a, b, epsilon);
+    }
+
+
+    /// Vector4 Comparisons
+
+    template<typename T>
+    inline bool isZero(const Vector4<T>& vec, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::zero<Vector4<T>, T, 4>(vec, epsilon);
+    }
+
+    template<typename T>
+    inline bool isEqual(const Vector4<T>& a, const Vector4<T>& b, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::equals<Vector4<T>, T, 4>(a, b, epsilon);
+    }
 
 
     /// Matrix3x3 Comparisons
 
     template<typename T>
-    bool isZero(const Matrix3x3<T>& vec, T epsilon = Epsilon<T>::value);
+    inline bool isZero(const Matrix3x3<T>& vec, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::zero<Matrix3x3<T>, T, 9>(vec, epsilon);
+    }
 
     template<typename T>
-    bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, T epsilon = Epsilon<T>::value);
+    inline bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, T epsilon = Epsilon<T>::value)
+    {
+        return helpers::equals<Matrix3x3<T>, T, 9>(a, b, epsilon);
+    }
 
 
-    /// Explicit template instatiation declaration
+    ///------------------------------------------------------------------------------------------
+    /// Explicit template instantiations (precompiled declaration)
+
     /// Vector2
     extern template bool isZero(const Vector2<int>&,    int);
     extern template bool isZero(const Vector2<float>&,  float);
@@ -135,6 +196,15 @@ namespace ETL::Math
     extern template bool isEqual(const Vector3<int>&,    const Vector3<int>&,    int);
     extern template bool isEqual(const Vector3<float>&,  const Vector3<float>&,  float);
     extern template bool isEqual(const Vector3<double>&, const Vector3<double>&, double);
+
+    /// Vector4
+    extern template bool isZero(const Vector4<int>&,    int);
+    extern template bool isZero(const Vector4<float>&,  float);
+    extern template bool isZero(const Vector4<double>&, double);
+
+    extern template bool isEqual(const Vector4<int>&,    const Vector4<int>&,    int);
+    extern template bool isEqual(const Vector4<float>&,  const Vector4<float>&,  float);
+    extern template bool isEqual(const Vector4<double>&, const Vector4<double>&, double);
 
     /// Matrix3x3
     extern template bool isZero(const Matrix3x3<int>&,    int);

@@ -87,7 +87,7 @@ namespace ETL::Math
         void setRawValue(int index, Type value);
 
         /// Static 2D Transform Factories
-        static constexpr Vector3 MakePoint(const Vector2<Type>& xy) { return Vector3<Type>{ xy, Type(1) }; }
+        static constexpr Vector3 MakePoint(const Vector2<Type>& xy)     { return Vector3<Type>{ xy, Type(1) }; }
         static constexpr Vector3 MakeDirection(const Vector2<Type>& xy) { return Vector3<Type>{ xy, Type(0) }; }
 
         /// Common constants
