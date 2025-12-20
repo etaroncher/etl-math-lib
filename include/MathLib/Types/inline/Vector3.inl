@@ -12,32 +12,6 @@ namespace ETL::Math
 {
 
     /// <summary>
-    /// Factory - Point from Vector2
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="xyz"></param>
-    /// <returns></returns>
-    template<typename Type>
-    constexpr Vector3<Type> Vector3<Type>::MakePoint(const Vector2<Type>& xy)
-    {
-        return Vector3<Type>{ xy, Type(1) };
-    }
-
-
-    /// <summary>
-    /// Factory - Direction from Vector2
-    /// </summary>
-    /// <typeparam name="Type"></typeparam>
-    /// <param name="xyz"></param>
-    /// <returns></returns>
-    template<typename Type>
-    constexpr Vector3<Type> Vector3<Type>::MakeDirection(const Vector2<Type>& xy)
-    {
-        return Vector3<Type>{ xy, Type(0) };
-    }
-
-
-    /// <summary>
     /// Same value constructor
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -811,7 +785,7 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="vec"></param>
     template<typename Type>
-    void ToVector2(Vector2<Type>& outResult, const Vector3<Type>& vec)
+    inline void ToVector2(Vector2<Type>& outResult, const Vector3<Type>& vec)
     {
         outResult.setRawValue(0, vec.getRawValue(0));
         outResult.setRawValue(1, vec.getRawValue(1));
@@ -825,7 +799,7 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="vec"></param>
     template<typename Type>
-    void PerspectiveDivide(Vector2<Type>& outResult, const Vector3<Type>& vec)
+    inline void PerspectiveDivide(Vector2<Type>& outResult, const Vector3<Type>& vec)
     {
         if constexpr (std::integral<Type>)
         {

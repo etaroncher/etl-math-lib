@@ -43,13 +43,13 @@ namespace ETL::Math
     template bool Normalize(Vector3<double>& outResult, const Vector3<double>& vec);
     template bool Normalize(Vector3<int>&    outResult, const Vector3<int>&    vec);
 
-    template void ToVector2(Vector2<float>& outResult, const Vector3<float>& vec);
+    template void ToVector2(Vector2<float>&  outResult, const Vector3<float>&  vec);
     template void ToVector2(Vector2<double>& outResult, const Vector3<double>& vec);
-    template void ToVector2(Vector2<int>& outResult, const Vector3<int>& vec);
+    template void ToVector2(Vector2<int>&    outResult, const Vector3<int>&    vec);
 
-    template void PerspectiveDivide(Vector2<float>& outResult, const Vector3<float>& vec);
+    template void PerspectiveDivide(Vector2<float>&  outResult, const Vector3<float>&  vec);
     template void PerspectiveDivide(Vector2<double>& outResult, const Vector3<double>& vec);
-    template void PerspectiveDivide(Vector2<int>& outResult, const Vector3<int>& vec);
+    template void PerspectiveDivide(Vector2<int>&    outResult, const Vector3<int>&    vec);
 
     template Vector3<float>  operator*(float  scalar, const Vector3<float>&  vector);
     template Vector3<double> operator*(double scalar, const Vector3<double>& vector);

@@ -159,20 +159,28 @@ TEMPLATE_TEST_CASE("Vector2 Arithmetic", "[Vector2][math]", VECTOR2_TYPES)
 
     SECTION("Dot Product")
     {
-        const TestType d1 = v1.dot(v2);
-        REQUIRE(d1 == TestType(26)); /// 4*2 + 6*3
+        const double d1 = v1.dot(v2);  /// 4*2 + 6*3
+        REQUIRE(d1 == 26.0);
 
-        const TestType d2 = v1.dot(Vector{ TestType(2), TestType(1) });
-        REQUIRE(d2 == TestType(14)); /// 4*2 + 6*1
+        const Vector v3{ TestType(2), TestType(1) };
+        const double d2 = v1.dot(v3);  /// 4*2 + 6*1
+        REQUIRE(d2 == 14.0);
+
+        const double d3 = v1 * v3;
+        REQUIRE(d2 == d3);
     }
 
     SECTION("Cross Product")
     {
-        const TestType c1 = v1.cross(v2);
-        REQUIRE(c1 == TestType(0));  /// 4*3 - 6*2
+        const double c1 = v1.cross(v2); /// 4*3 - 6*2
+        REQUIRE(c1 == 0.0);
 
-        const TestType c2 = v1.cross(Vector{ TestType(2), TestType(1) });
-        REQUIRE(c2 == TestType(-8)); /// 4*1 - 6*2
+        const Vector v3{ TestType(2), TestType(1) };
+        const double c2 = v1.cross(v3); /// 4*1 - 6*2
+        REQUIRE(c2 == -8.0);
+
+        const double c3 = v1 ^ v3;
+        REQUIRE(c2 == c3);
     }
 }
 

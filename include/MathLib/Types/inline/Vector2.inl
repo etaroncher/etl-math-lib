@@ -35,6 +35,7 @@ namespace ETL::Math
     {
     }
 
+
     /// <summary>
     /// Explicit Raw Constructor
     /// </summary>
@@ -47,6 +48,7 @@ namespace ETL::Math
         : mData{ x, y }
     {
     }
+
 
     /// <summary>
     /// X component getter

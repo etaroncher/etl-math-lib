@@ -28,6 +28,15 @@ TEMPLATE_TEST_CASE("Vector3 Construction & Access", "[Vector3][core]", VECTOR3_T
         REQUIRE(v.z() == TestType(5));
     }
 
+    SECTION("From-vector2 constructor")
+    {
+        ETL::Math::Vector2<Type> vec2{ TestType(3), TestType(4) };
+        Vector v{ vec2, TestType(5) };
+        REQUIRE(v.x() == TestType(3));
+        REQUIRE(v.y() == TestType(4));
+        REQUIRE(v.z() == TestType(5));
+    }
+
     SECTION("Accessors and Mutators") {
         Vector v;
         v.x(TestType(10));
@@ -171,11 +180,15 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
 
     SECTION("Dot Product")
     {
-        const TestType d1 = v1.dot(v2); 
-        REQUIRE(d1 == TestType(58)); /// d = 4*2 + 6*3 + 8*4
+        const double d1 = v1.dot(v2); /// d = 4*2 + 6*3 + 8*4
+        REQUIRE(d1 == 58.0);
 
-        const TestType d2 = v1.dot(Vector{ TestType(3), TestType(2), TestType(1) });
-        REQUIRE(d2 == TestType(32)); /// d = 4*3 + 6*2 + 8*1
+        const Vector v3{ TestType(3), TestType(2), TestType(1) };
+        const double d2 = v1.dot(v3); /// d = 4*3 + 6*2 + 8*1
+        REQUIRE(d2 == 32.0);
+
+        const double d3 = v1 * v3;
+        REQUIRE(d2 == d3);
     }
 
     SECTION("Cross Product")
@@ -183,10 +196,14 @@ TEMPLATE_TEST_CASE("Vector3 Arithmetic", "[Vector3][math]", VECTOR3_TYPES)
         const Vector c1 = v1.cross(v2);
         REQUIRE(isZero(c1));  /// { 6*4-8*3, 8*2-4*4, 4*3-6*2 } = Vector::ZERO
 
-        const Vector c2 = v1.cross(Vector{ TestType(3), TestType(2), TestType(1) });
+        const Vector v3{ TestType(3), TestType(2), TestType(1) };
+        const Vector c2 = v1.cross(v3);
         REQUIRE(c2.x() == TestType(-10)); /// 6*1 - 8*2
         REQUIRE(c2.y() == TestType( 20)); /// 8*3 - 4*1
         REQUIRE(c2.z() == TestType(-10)); /// 4*2 - 6*3
+
+        const double c3 = v1 ^ v3;
+        REQUIRE(c2 == c3);
     }
 }
 
@@ -276,5 +293,46 @@ TEMPLATE_TEST_CASE("Vector3 factories", "[Vector3][utils]", VECTOR3_TYPES)
         REQUIRE(Vector::right()   == Vector{ TestType(1),  TestType(0),  TestType(0)  });
         REQUIRE(Vector::forward() == Vector{ TestType(0),  TestType(0),  TestType(-1) });
         REQUIRE(Vector::back()    == Vector{ TestType(0),  TestType(0),  TestType(1)  });
+    }
+}
+
+
+TEMPLATE_TEST_CASE("Vector3 2D Transform", "[Vector3][utils]", VECTOR3_TYPES)
+{
+    using Vector3 = ETL::Math::Vector3<TestType>;
+    using Vector2 = ETL::Math::Vector2<TestType>;
+
+    const Vector2 vec2{ Type(4), Type(5) };
+
+    SECTION("2D Transform factories")
+    {
+        const Vector3 point = Vector3::MakePoint(vec2);
+        REQUIRE(point.x() == TestType(4));
+        REQUIRE(point.y() == TestType(5));
+        REQUIRE(point.z() == TestType(1));
+
+        const Vector3 dir = Vector3::MakeDirection(vec2);
+        REQUIRE(dir.x() == TestType(4));
+        REQUIRE(dir.y() == TestType(5));
+        REQUIRE(dir.z() == TestType(0));
+    }
+
+    SECTION("2D Transform helpers")
+    {
+        const Vector3 p{ vec2, Type(1) };
+        REQUIRE(p.isPoint());
+        REQUIRE_FALSE(p.isDirection());
+
+        const Vector3 d{ vec2, Type(0) };
+        REQUIRE(d.isDirection());
+        REQUIRE_FALSE(d.isPoint());
+
+        const Vector2 v1 = p.toVector2();
+        REQUIRE(v1 == vec2);
+
+        const Vector3 v2{ Type(4), Type(8), Type(2) };
+        const Vector2 res = v2.perspectiveDivide();
+        REQUIRE(res.x() = Type(2));
+        REQUIRE(res.y() = Type(4));
     }
 }

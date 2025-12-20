@@ -21,10 +21,6 @@ namespace ETL::Math
     {
     public:
 
-        /// Static 2D Transform Factories
-        static constexpr Vector3 MakePoint(const Vector2<Type>& vec);
-        static constexpr Vector3 MakeDirection(const Vector2<Type>& vec);
-
         /// Constructors
         constexpr Vector3() = default;
         explicit constexpr Vector3(Type val);
@@ -89,6 +85,10 @@ namespace ETL::Math
         /// Direct access to internal storage - no conversions applied (use with caution for integral types)
         Type getRawValue(int index) const;
         void setRawValue(int index, Type value);
+
+        /// Static 2D Transform Factories
+        static constexpr Vector3 MakePoint(const Vector2<Type>& xy) { return Vector3<Type>{ xy, Type(1) }; }
+        static constexpr Vector3 MakeDirection(const Vector2<Type>& xy) { return Vector3<Type>{ xy, Type(0) }; }
 
         /// Common constants
         static constexpr Vector3<Type> zero()  { return { Type(0), Type(0), Type(0) }; }
