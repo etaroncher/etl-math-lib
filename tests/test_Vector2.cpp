@@ -297,17 +297,17 @@ TEMPLATE_TEST_CASE("Vector2 factories", "[Vector2][utils]", VECTOR2_TYPES)
 
     SECTION("Common Constants")
     {
-        REQUIRE(Vector::zero()  == Vector{ TestType(0), TestType(0) });
-        REQUIRE(Vector::one()   == Vector{ TestType(1), TestType(1) });
-        REQUIRE(Vector::unitX() == Vector{ TestType(1), TestType(0) });
-        REQUIRE(Vector::unitY() == Vector{ TestType(0), TestType(1) });
+        REQUIRE(Vector::Zero()  == Vector{ TestType(0), TestType(0) });
+        REQUIRE(Vector::One()   == Vector{ TestType(1), TestType(1) });
+        REQUIRE(Vector::UnitX() == Vector{ TestType(1), TestType(0) });
+        REQUIRE(Vector::UnitY() == Vector{ TestType(0), TestType(1) });
     }
 
     SECTION("Semantic aliases")
     {
-        REQUIRE(Vector::up()    == Vector{ TestType(0),  TestType(1)  });
-        REQUIRE(Vector::down()  == Vector{ TestType(0),  TestType(-1) });
-        REQUIRE(Vector::left()  == Vector{ TestType(-1), TestType(0)  });
-        REQUIRE(Vector::right() == Vector{ TestType(1),  TestType(0)  });
+        REQUIRE(Vector::Up()    == Vector{ TestType(0),  TestType(1)  });
+        REQUIRE(Vector::Down()  == Vector{ TestType(0),  TestType(-1) });
+        REQUIRE(Vector::Left()  == Vector{ TestType(-1), TestType(0)  });
+        REQUIRE(Vector::Right() == Vector{ TestType(1),  TestType(0)  });
     }
 }

@@ -91,19 +91,19 @@ namespace ETL::Math
         static constexpr Vector3 MakeDirection(const Vector2<Type>& xy) { return Vector3<Type>{ xy, Type(0) }; }
 
         /// Common constants
-        static constexpr Vector3<Type> zero()  { return { Type(0), Type(0), Type(0) }; }
-        static constexpr Vector3<Type> one()   { return { Type(1), Type(1), Type(1) }; }
-        static constexpr Vector3<Type> unitX() { return { Type(1), Type(0), Type(0) }; }
-        static constexpr Vector3<Type> unitY() { return { Type(0), Type(1), Type(0) }; }
-        static constexpr Vector3<Type> unitZ() { return { Type(0), Type(0), Type(1) }; }
+        static constexpr Vector3<Type> Zero()  { return { Type(0), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> One()   { return { Type(1), Type(1), Type(1) }; }
+        static constexpr Vector3<Type> UnitX() { return { Type(1), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> UnitY() { return { Type(0), Type(1), Type(0) }; }
+        static constexpr Vector3<Type> UnitZ() { return { Type(0), Type(0), Type(1) }; }
 
         /// Semantic aliases
-        static constexpr Vector3<Type> up()      { return unitY(); }
-        static constexpr Vector3<Type> down()    { return { Type(0), Type(-1), Type(0) }; }
-        static constexpr Vector3<Type> left()    { return { Type(-1), Type(0), Type(0) }; }
-        static constexpr Vector3<Type> right()   { return unitX(); }
-        static constexpr Vector3<Type> forward() { return { Type(0), Type(0), Type(-1) }; }
-        static constexpr Vector3<Type> back()    { return unitZ(); }
+        static constexpr Vector3<Type> Up()      { return UnitY(); }
+        static constexpr Vector3<Type> Down()    { return { Type(0), Type(-1), Type(0) }; }
+        static constexpr Vector3<Type> Left()    { return { Type(-1), Type(0), Type(0) }; }
+        static constexpr Vector3<Type> Right()   { return UnitX(); }
+        static constexpr Vector3<Type> Forward() { return { Type(0), Type(0), Type(-1) }; }
+        static constexpr Vector3<Type> Back()    { return UnitZ(); }
 
     private:
         union {

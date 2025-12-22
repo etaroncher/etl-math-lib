@@ -78,16 +78,16 @@ namespace ETL::Math
         void setRawValue(int index, Type value);
 
         /// Common constants
-        static constexpr Vector2<Type> zero()  { return { Type(0), Type(0) }; }
-        static constexpr Vector2<Type> one()   { return { Type(1), Type(1) }; }
-        static constexpr Vector2<Type> unitX() { return { Type(1), Type(0) }; }
-        static constexpr Vector2<Type> unitY() { return { Type(0), Type(1) }; }
+        static constexpr Vector2<Type> Zero()  { return { Type(0), Type(0) }; }
+        static constexpr Vector2<Type> One()   { return { Type(1), Type(1) }; }
+        static constexpr Vector2<Type> UnitX() { return { Type(1), Type(0) }; }
+        static constexpr Vector2<Type> UnitY() { return { Type(0), Type(1) }; }
 
         /// Semantic aliases
-        static constexpr Vector2<Type> up()      { return unitY(); }
-        static constexpr Vector2<Type> down()    { return { Type(0), Type(-1) }; }
-        static constexpr Vector2<Type> left()    { return { Type(-1), Type(0) }; }
-        static constexpr Vector2<Type> right()   { return unitX(); }
+        static constexpr Vector2<Type> Up()      { return UnitY(); }
+        static constexpr Vector2<Type> Down()    { return { Type(0), Type(-1) }; }
+        static constexpr Vector2<Type> Left()    { return { Type(-1), Type(0) }; }
+        static constexpr Vector2<Type> Right()   { return UnitX(); }
 
     private:
         union {

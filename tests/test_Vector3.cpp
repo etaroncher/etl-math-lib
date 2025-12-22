@@ -331,21 +331,21 @@ TEMPLATE_TEST_CASE("Vector3 factories", "[Vector3][utils]", VECTOR3_TYPES)
 
     SECTION("Common Constants")
     {
-        REQUIRE(Vector::zero()  == Vector{ TestType(0), TestType(0), TestType(0) });
-        REQUIRE(Vector::one()   == Vector{ TestType(1), TestType(1), TestType(1) });
-        REQUIRE(Vector::unitX() == Vector{ TestType(1), TestType(0), TestType(0) });
-        REQUIRE(Vector::unitY() == Vector{ TestType(0), TestType(1), TestType(0) });
-        REQUIRE(Vector::unitZ() == Vector{ TestType(0), TestType(0), TestType(1) });
+        REQUIRE(Vector::Zero()  == Vector{ TestType(0), TestType(0), TestType(0) });
+        REQUIRE(Vector::One()   == Vector{ TestType(1), TestType(1), TestType(1) });
+        REQUIRE(Vector::UnitX() == Vector{ TestType(1), TestType(0), TestType(0) });
+        REQUIRE(Vector::UnitY() == Vector{ TestType(0), TestType(1), TestType(0) });
+        REQUIRE(Vector::UnitZ() == Vector{ TestType(0), TestType(0), TestType(1) });
     }
 
     SECTION("Semantic aliases")
     {
-        REQUIRE(Vector::up()      == Vector{ TestType(0),  TestType(1),  TestType(0)  });
-        REQUIRE(Vector::down()    == Vector{ TestType(0),  TestType(-1), TestType(0)  });
-        REQUIRE(Vector::left()    == Vector{ TestType(-1), TestType(0),  TestType(0)  });
-        REQUIRE(Vector::right()   == Vector{ TestType(1),  TestType(0),  TestType(0)  });
-        REQUIRE(Vector::forward() == Vector{ TestType(0),  TestType(0),  TestType(-1) });
-        REQUIRE(Vector::back()    == Vector{ TestType(0),  TestType(0),  TestType(1)  });
+        REQUIRE(Vector::Up()      == Vector{ TestType(0),  TestType(1),  TestType(0)  });
+        REQUIRE(Vector::Down()    == Vector{ TestType(0),  TestType(-1), TestType(0)  });
+        REQUIRE(Vector::Left()    == Vector{ TestType(-1), TestType(0),  TestType(0)  });
+        REQUIRE(Vector::Right()   == Vector{ TestType(1),  TestType(0),  TestType(0)  });
+        REQUIRE(Vector::Forward() == Vector{ TestType(0),  TestType(0),  TestType(-1) });
+        REQUIRE(Vector::Back()    == Vector{ TestType(0),  TestType(0),  TestType(1)  });
     }
 }
 
