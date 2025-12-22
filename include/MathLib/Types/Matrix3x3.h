@@ -40,6 +40,9 @@ namespace ETL::Math
         constexpr Matrix3x3(Type v00, Type v01, Type v02,
                             Type v10, Type v11, Type v12,
                             Type v20, Type v21, Type v22);
+        constexpr Matrix3x3(RawTag, Type v00, Type v01, Type v02,
+                                    Type v10, Type v11, Type v12,
+                                    Type v20, Type v21, Type v22);
 
         /// Copy, Move & Destructor (default)
         Matrix3x3(const Matrix3x3&) = default;
@@ -134,12 +137,6 @@ namespace ETL::Math
             Type m[3][3];                                                 /// 2D access [COL][ROW]
             Type mData[9];                                                /// 1D access
         };
-
-
-        /// Raw constructor
-        constexpr Matrix3x3(RawTag, Type v00, Type v01, Type v02,
-                                    Type v10, Type v11, Type v12,
-                                    Type v20, Type v21, Type v22);
     };
 
 
@@ -234,7 +231,7 @@ namespace ETL::Math
 
     /// Inverse
     template<typename Type>
-    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
+    bool Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat);
 
     /// Transpose
     template<typename Type>
@@ -324,9 +321,9 @@ namespace ETL::Math
     extern template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
     extern template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
 
-    extern template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    extern template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    extern template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    extern template bool Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    extern template bool Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    extern template bool Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
     extern template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
     extern template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);

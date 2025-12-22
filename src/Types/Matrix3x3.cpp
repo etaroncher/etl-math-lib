@@ -149,33 +149,28 @@ namespace ETL::Math
     /// <param name="outResult"></param>
     /// <param name="mat"></param>
     template<typename Type>
-    void Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
+    bool Inverse(Matrix3x3<Type>& outResult, const Matrix3x3<Type>& mat)
     {
+        Type det;
+        Determinant(det, mat, true);
+        if (isZero(det, EncodeValue<Type>(0.001)))
+            return false;
+
         /// --- SAFETY CHECK FOR ALIASING ---
         /// If outResult is the same object as mat, we must use a temporary buffer.
         if (&outResult == &mat)
         {
             Matrix3x3<Type> temp;
-            Inverse(temp, mat);
+            bool ok = Inverse(temp, mat);
 
-            outResult = temp;
-            return;
+            if (ok)
+                outResult = temp;
+
+            return ok;
         }
 
         if constexpr (std::integral<Type>)
         {
-            static constexpr bool bFixedPoint = true;
-            Type det{ Type(0) };
-            Determinant(det, mat, bFixedPoint);
-
-            /// Use epsilon of 0.001 in fixed-point terms
-            constexpr Type fixedEpsilon = EncodeValue<Type>(0.001);
-            if (isZero(det, fixedEpsilon))
-            {
-                outResult = Matrix3x3<Type>::Zero();
-                return;
-            }
-
             /// Calculate Adjugate elements safely using 64-bit integers.
             /// This array of int64 is ESSENTIAL to prevent overflow (FX * FX = FX^2) due to double scale
             const int64_t adjugate_64[Matrix3x3<Type>::NUM_ELEM]{
@@ -204,15 +199,6 @@ namespace ETL::Math
         }
         else
         {
-            Type det{ Type(0) };
-            Determinant(det, mat);
-
-            if (isZero(det))
-            {
-                outResult = Matrix3x3<Type>::Zero();
-                return;
-            }
-
             /// adjugate
             outResult(0, 0) = mat(1,1) * mat(2,2) - mat(1,2) * mat(2,1);
             outResult(0, 1) = mat(0,2) * mat(2,1) - mat(0,1) * mat(2,2);
@@ -227,6 +213,8 @@ namespace ETL::Math
             /// apply det
             outResult /= det;
         }
+
+        return true;
     }
 
 
@@ -341,9 +329,9 @@ namespace ETL::Math
     template void Determinant(double& outResult, const Matrix3x3<double>& mat, bool bFixedPoint);
     template void Determinant(int&    outResult, const Matrix3x3<int>&    mat, bool bFixedPoint);
 
-    template void Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
-    template void Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
-    template void Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
+    template bool Inverse(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
+    template bool Inverse(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
+    template bool Inverse(Matrix3x3<int>&    outResult, const Matrix3x3<int>&    mat);
 
     template void Transpose(Matrix3x3<float>&  outResult, const Matrix3x3<float>&  mat);
     template void Transpose(Matrix3x3<double>& outResult, const Matrix3x3<double>& mat);
