@@ -80,7 +80,7 @@ namespace ETL::Math
         {
             bool bIsZero = true;
             for (int i = 0; i < SIZE; ++i)
-                bIsZero = bIsZero && isZero(container[i], epsilon);
+                bIsZero = bIsZero && isZero(container.getRawValue(i), epsilon);
 
             return bIsZero;
         }
@@ -90,7 +90,7 @@ namespace ETL::Math
         {
             bool bIsEqual = true;
             for (int i = 0; i < SIZE; ++i)
-                bIsEqual = bIsEqual && isEqual(containerA[i], containerB[i], epsilon);
+                bIsEqual = bIsEqual && isEqual(containerA.getRawValue(i), containerB.getRawValue(i), epsilon);
 
             return bIsEqual;
         }
