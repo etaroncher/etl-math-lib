@@ -115,20 +115,16 @@ namespace ETL::Math
         {
             /// 1. Calculate the determinant components using 64-bit integers.
             /// Each term is scaled by FIXED_ONE, so the determinant ->
-            /// (FIXED_ONE * FIXED_ONE * FIXED_ONE) = FIXED_ONE^3. -> is scaled thrice.
-            const int64_t det_cubed = static_cast<int64_t>(mat.getRawValue(0,0)) * mat.getRawValue(1,1) * mat.getRawValue(2,2)
-                                    + static_cast<int64_t>(mat.getRawValue(0,1)) * mat.getRawValue(1,2) * mat.getRawValue(2,0)
-                                    + static_cast<int64_t>(mat.getRawValue(0,2)) * mat.getRawValue(1,0) * mat.getRawValue(2,1)
-                                    - static_cast<int64_t>(mat.getRawValue(0,2)) * mat.getRawValue(1,1) * mat.getRawValue(2,0)
-                                    - static_cast<int64_t>(mat.getRawValue(0,0)) * mat.getRawValue(1,2) * mat.getRawValue(2,1)
-                                    - static_cast<int64_t>(mat.getRawValue(0,1)) * mat.getRawValue(1,0) * mat.getRawValue(2,2);
+            /// (FIXED_ONE * FIXED_ONE * FIXED_ONE) = FIXED_ONE^3. -> is scaled thrice, but 
+            /// we de-scale after each multiply to avoid overflows
+            const int64_t det_fixed = ((((static_cast<int64_t>(mat.getRawValue(0,0)) * mat.getRawValue(1,1)) >> FIXED_SHIFT) * mat.getRawValue(2,2)) >> FIXED_SHIFT)
+                                    + ((((static_cast<int64_t>(mat.getRawValue(0,1)) * mat.getRawValue(1,2)) >> FIXED_SHIFT) * mat.getRawValue(2,0)) >> FIXED_SHIFT)
+                                    + ((((static_cast<int64_t>(mat.getRawValue(0,2)) * mat.getRawValue(1,0)) >> FIXED_SHIFT) * mat.getRawValue(2,1)) >> FIXED_SHIFT)
+                                    - ((((static_cast<int64_t>(mat.getRawValue(0,2)) * mat.getRawValue(1,1)) >> FIXED_SHIFT) * mat.getRawValue(2,0)) >> FIXED_SHIFT)
+                                    - ((((static_cast<int64_t>(mat.getRawValue(0,0)) * mat.getRawValue(1,2)) >> FIXED_SHIFT) * mat.getRawValue(2,1)) >> FIXED_SHIFT)
+                                    - ((((static_cast<int64_t>(mat.getRawValue(0,1)) * mat.getRawValue(1,0)) >> FIXED_SHIFT) * mat.getRawValue(2,2)) >> FIXED_SHIFT);
 
-
-            /// if bFixedPoint, return fixed-point determinant (de-scale twice),
-            /// otherwise return raw value (de-scale thrice)
-            const int det_shift = (bFixedPoint ? 2 : 3) * FIXED_SHIFT;
-
-            outResult = static_cast<Type>(det_cubed >> det_shift);
+            outResult = static_cast<Type>(bFixedPoint ? det_fixed : det_fixed >> FIXED_SHIFT);
         }
         else
         {
