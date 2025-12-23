@@ -134,31 +134,17 @@ TEMPLATE_TEST_CASE("Vector4 Raw Access", "[Vector4][core]", int)
 }
 
 
-TEMPLATE_TEST_CASE("Vector4 isEqual with epsilon", "[Vector4][utils]", float, double)
+TEMPLATE_TEST_CASE("Vector4 isEqual with epsilon", "[Vector4][utils]", VECTOR4_TYPES)
 {
     using Vector = ETL::Math::Vector4<TestType>;
 
-    const Vector v1{ TestType(1),      TestType(2)     , TestType(3)     , TestType(4) };
-    const Vector v2{ TestType(1.0001), TestType(2.0001), TestType(3.0001), TestType(4.0001) };
-    const Vector v3{ TestType(1.1),    TestType(2.1)   , TestType(3.1)   , TestType(4.1) };
+    const Vector v1{ 1.0,    2.0,    3.0,    4.0    };
+    const Vector v2{ 1.0001, 2.0001, 3.0001, 4.0001 };
+    const Vector v3{ 1.1,    2.1,    3.1,    4.1    };
 
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(0.001)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(0.001)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(0.15)));
-}
-
-
-TEMPLATE_TEST_CASE("Vector4 isEqual with epsilon", "[Vector4][utils]", int)
-{
-    using Vector = ETL::Math::Vector4<TestType>;
-
-    const Vector v1{ TestType(1), TestType(2), TestType(3), TestType(4) };
-    const Vector v2{ TestType(1), TestType(2), TestType(3), TestType(4) };
-    const Vector v3{ TestType(2), TestType(3), TestType(4), TestType(4) };
-
-    REQUIRE(ETL::Math::isEqual(v1, v2, TestType(1)));
-    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, TestType(1)));
-    REQUIRE(ETL::Math::isEqual(v1, v3, TestType(2)));
+    REQUIRE(ETL::Math::isEqual(v1, v2, 0.001));
+    REQUIRE_FALSE(ETL::Math::isEqual(v1, v3, 0.001));
+    REQUIRE(ETL::Math::isEqual(v1, v3, 0.15));
 }
 
 

@@ -4,10 +4,41 @@
 ///---------------------------------------------------------------------------- 
 #pragma once
 
+#include "MathLib/Common/FixedPointHelpers.h"
+
 namespace ETL::Math
 {
+    ///------------------------------------------------------------------------------------------
+    /// Default Epsilon Values
 
-    /// Internal helper namespace
+    template<typename T>
+    struct Epsilon
+    {
+        static constexpr double value = 1e-6;  /// Default for general use
+    };
+
+    template<>
+    struct Epsilon<int>
+    {
+        static constexpr double value = 0.0001;  /// min value in fixed point 16
+    };
+
+    template<>
+    struct Epsilon<float>
+    {
+        static constexpr double value = 1e-5;  /// Looser for float
+    };
+
+    template<>
+    struct Epsilon<double>
+    {
+        static constexpr double value = 1e-10;  /// Tighter for double
+    };
+
+
+    ///------------------------------------------------------------------------------------------
+    /// Internal helper
+
     namespace helpers
     {
         /// Absolute value for signed types
@@ -23,145 +54,112 @@ namespace ETL::Math
         {
             return a > b ? a : b;
         }
-    }
 
-    /// Default Epsilon Values
+        template<typename T>
+        inline bool zeroElement(T value, double epsilon)
+        {
+            return abs<T>(value) < EncodeValue<T>(epsilon);
+        }
 
-    template<typename T>
-    struct Epsilon
-    {
-        static constexpr T value = T(1e-6);  /// Default for general use
-    };
-
-    template<>
-    struct Epsilon<int>
-    {
-        static constexpr int value = 1;  /// Epsilon = 1 for ints
-    };
-
-    template<>
-    struct Epsilon<unsigned int>
-    {
-        static constexpr unsigned int value = 1;  /// Epsilon = 1 for unsigned ints
-    };
-
-    template<>
-    struct Epsilon<float>
-    {
-        static constexpr float value = 1e-5f;  /// Looser for float
-    };
-
-    template<>
-    struct Epsilon<double>
-    {
-        static constexpr double value = 1e-10;  /// Tighter for double
-    };
-
-    /// Scalar Comparisons
-
-    template<typename T>
-    inline bool isZero(T value, T epsilon = Epsilon<T>::value)
-    {
-        return helpers::abs<T>(value) < epsilon;
-    }
-
-    template<typename T>
-    inline bool isEqual(T a, T b, T epsilon = Epsilon<T>::value)
-    {
-        return isZero(a - b, epsilon);
-    }
-
-
-    /// Templated helper checks
-    namespace helpers
-    {
         template<typename Cont, typename T, int SIZE>
-        inline bool zero(const Cont& container, T epsilon = Epsilon<T>::value)
+        inline bool zeroContainer(const Cont& container, double epsilon)
         {
             bool bIsZero = true;
             for (int i = 0; i < SIZE; ++i)
-                bIsZero = bIsZero && isZero(container.getRawValue(i), epsilon);
+                bIsZero = bIsZero && zeroElement<T>(container.getRawValue(i), epsilon);
 
             return bIsZero;
-        }
-
-        template<typename Cont, typename T, int SIZE>
-        inline bool equals(const Cont& containerA, const Cont& containerB, T epsilon = Epsilon<T>::value)
-        {
-            bool bIsEqual = true;
-            for (int i = 0; i < SIZE; ++i)
-                bIsEqual = bIsEqual && isEqual(containerA.getRawValue(i), containerB.getRawValue(i), epsilon);
-
-            return bIsEqual;
         }
     }
 
 
+    ///------------------------------------------------------------------------------------------
     /// Forward declarations
 
     template<typename T> class Vector2;
     template<typename T> class Vector3;
     template<typename T> class Vector4;
     template<typename T> class Matrix3x3;
+    template<typename T> class Matrix4x4;
 
+
+    ///------------------------------------------------------------------------------------------
+    /// Type Comparison API - integers are interpreted as fixed point 16.16
+
+    /// Element comparison
+    template<typename T>
+    inline bool isZeroRaw(T value, T epsilon = static_cast<T>(Epsilon<T>::value))
+    {
+        return helpers::abs<T>(value) < epsilon;
+    }
+
+
+    template<typename T>
+    inline bool isZero(T value, double epsilon = Epsilon<T>::value)
+    {
+        return helpers::zeroElement<T>(value, epsilon);
+    }
+
+    template<typename T>
+    inline bool isEqual(T a, T b, double epsilon = Epsilon<T>::value)
+    {
+        return helpers::zeroElement<T>(a - b, epsilon);
+    }
 
     /// Vector2 Comparisons
 
     template<typename T>
-    inline bool isZero(const Vector2<T>& vec, T epsilon = Epsilon<T>::value)
+    inline bool isZero(const Vector2<T>& vec, double epsilon = Epsilon<T>::value)
     {
-        return helpers::zero<Vector2<T>, T, 2>(vec, epsilon);
+        return helpers::zeroContainer<Vector2<T>, T, 2>(vec, epsilon);
     }
 
     template<typename T>
-    inline bool isEqual(const Vector2<T>& a, const Vector2<T>& b, T epsilon = Epsilon<T>::value)
+    inline bool isEqual(const Vector2<T>& a, const Vector2<T>& b, double epsilon = Epsilon<T>::value)
     {
-        return helpers::equals<Vector2<T>, T, 2>(a, b, epsilon);
+        return helpers::zeroContainer<Vector2<T>, T, 2>(a - b, epsilon);
     }
-
 
     /// Vector3 Comparisons
 
     template<typename T>
-    inline bool isZero(const Vector3<T>& vec, T epsilon = Epsilon<T>::value)
+    inline bool isZero(const Vector3<T>& vec, double epsilon = Epsilon<T>::value)
     {
-        return helpers::zero<Vector3<T>, T, 3>(vec, epsilon);
+        return helpers::zeroContainer<Vector3<T>, T, 3>(vec, epsilon);
     }
 
     template<typename T>
-    inline bool isEqual(const Vector3<T>& a, const Vector3<T>& b, T epsilon = Epsilon<T>::value)
+    inline bool isEqual(const Vector3<T>& a, const Vector3<T>& b, double epsilon = Epsilon<T>::value)
     {
-        return helpers::equals<Vector3<T>, T, 3>(a, b, epsilon);
+        return helpers::zeroContainer<Vector3<T>, T, 3>(a - b, epsilon);
     }
-
 
     /// Vector4 Comparisons
 
     template<typename T>
-    inline bool isZero(const Vector4<T>& vec, T epsilon = Epsilon<T>::value)
+    inline bool isZero(const Vector4<T>& vec, double epsilon = Epsilon<T>::value)
     {
-        return helpers::zero<Vector4<T>, T, 4>(vec, epsilon);
+        return helpers::zeroContainer<Vector4<T>, T, 4>(vec, epsilon);
     }
 
     template<typename T>
-    inline bool isEqual(const Vector4<T>& a, const Vector4<T>& b, T epsilon = Epsilon<T>::value)
+    inline bool isEqual(const Vector4<T>& a, const Vector4<T>& b, double epsilon = Epsilon<T>::value)
     {
-        return helpers::equals<Vector4<T>, T, 4>(a, b, epsilon);
+        return helpers::zeroContainer<Vector4<T>, T, 4>(a - b, epsilon);
     }
-
 
     /// Matrix3x3 Comparisons
 
     template<typename T>
-    inline bool isZero(const Matrix3x3<T>& vec, T epsilon = Epsilon<T>::value)
+    inline bool isZero(const Matrix3x3<T>& vec, double epsilon = Epsilon<T>::value)
     {
-        return helpers::zero<Matrix3x3<T>, T, 9>(vec, epsilon);
+        return helpers::zeroContainer<Matrix3x3<T>, T, 9>(vec, epsilon);
     }
 
     template<typename T>
-    inline bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, T epsilon = Epsilon<T>::value)
+    inline bool isEqual(const Matrix3x3<T>& a, const Matrix3x3<T>& b, double epsilon = Epsilon<T>::value)
     {
-        return helpers::equals<Matrix3x3<T>, T, 9>(a, b, epsilon);
+        return helpers::zeroContainer<Matrix3x3<T>, T, 9>(a - b, epsilon);
     }
 
 
@@ -169,39 +167,39 @@ namespace ETL::Math
     /// Explicit template instantiations (precompiled declaration)
 
     /// Vector2
-    extern template bool isZero(const Vector2<int>&,    int);
-    extern template bool isZero(const Vector2<float>&,  float);
+    extern template bool isZero(const Vector2<int>&,    double);
+    extern template bool isZero(const Vector2<float>&,  double);
     extern template bool isZero(const Vector2<double>&, double);
 
-    extern template bool isEqual(const Vector2<int>&,    const Vector2<int>&,    int);
-    extern template bool isEqual(const Vector2<float>&,  const Vector2<float>&,  float);
+    extern template bool isEqual(const Vector2<int>&,    const Vector2<int>&,    double);
+    extern template bool isEqual(const Vector2<float>&,  const Vector2<float>&,  double);
     extern template bool isEqual(const Vector2<double>&, const Vector2<double>&, double);
 
     /// Vector3
-    extern template bool isZero(const Vector3<int>&,    int);
-    extern template bool isZero(const Vector3<float>&,  float);
+    extern template bool isZero(const Vector3<int>&,    double);
+    extern template bool isZero(const Vector3<float>&,  double);
     extern template bool isZero(const Vector3<double>&, double);
 
-    extern template bool isEqual(const Vector3<int>&,    const Vector3<int>&,    int);
-    extern template bool isEqual(const Vector3<float>&,  const Vector3<float>&,  float);
+    extern template bool isEqual(const Vector3<int>&,    const Vector3<int>&,    double);
+    extern template bool isEqual(const Vector3<float>&,  const Vector3<float>&,  double);
     extern template bool isEqual(const Vector3<double>&, const Vector3<double>&, double);
 
     /// Vector4
-    extern template bool isZero(const Vector4<int>&,    int);
-    extern template bool isZero(const Vector4<float>&,  float);
+    extern template bool isZero(const Vector4<int>&,    double);
+    extern template bool isZero(const Vector4<float>&,  double);
     extern template bool isZero(const Vector4<double>&, double);
 
-    extern template bool isEqual(const Vector4<int>&,    const Vector4<int>&,    int);
-    extern template bool isEqual(const Vector4<float>&,  const Vector4<float>&,  float);
+    extern template bool isEqual(const Vector4<int>&,    const Vector4<int>&,    double);
+    extern template bool isEqual(const Vector4<float>&,  const Vector4<float>&,  double);
     extern template bool isEqual(const Vector4<double>&, const Vector4<double>&, double);
 
     /// Matrix3x3
-    extern template bool isZero(const Matrix3x3<int>&,    int);
-    extern template bool isZero(const Matrix3x3<float>&,  float);
+    extern template bool isZero(const Matrix3x3<int>&,    double);
+    extern template bool isZero(const Matrix3x3<float>&,  double);
     extern template bool isZero(const Matrix3x3<double>&, double);
 
-    extern template bool isEqual(const Matrix3x3<int>&,    const Matrix3x3<int>&,    int);
-    extern template bool isEqual(const Matrix3x3<float>&,  const Matrix3x3<float>&,  float);
+    extern template bool isEqual(const Matrix3x3<int>&,    const Matrix3x3<int>&,    double);
+    extern template bool isEqual(const Matrix3x3<float>&,  const Matrix3x3<float>&,  double);
     extern template bool isEqual(const Matrix3x3<double>&, const Matrix3x3<double>&, double);
 
 } /// namespace ETL::Math

@@ -4,6 +4,7 @@
 ///----------------------------------------------------------------------------
 #include <catch_amalgamated.hpp>
 #include <MathLib/Common/TypeComparisons.h>
+#include <MathLib/Common/FixedPointHelpers.h>
 #include <MathLib/Types/Matrix3x3.h>
 
 #define MATRIX3x3_TYPES int, float, double
@@ -275,31 +276,17 @@ TEMPLATE_TEST_CASE("Matrix3x3 Arithmetic", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 }
 
 
-TEMPLATE_TEST_CASE("Matrix3x3 isEqual with epsilon - floating", "[Matrix3x3][utils]", float, double)
+TEMPLATE_TEST_CASE("Matrix3x3 isEqual with epsilon", "[Matrix3x3][utils]", MATRIX3x3_TYPES)
 {
     using Matrix = ETL::Math::Matrix3x3<TestType>;
 
-    const Matrix mA{ TestType(1) };
-    const Matrix mB{ TestType(1.0001) };
-    const Matrix mC{ TestType(1.1) };
+    const Matrix mA{ 1.0,    0.0, 0.0, 0.0, 1.0,    0.0, 0.0, 0.0, 1.0    };
+    const Matrix mB{ 1.0001, 0.0, 0.0, 0.0, 1.0001, 0.0, 0.0, 0.0, 1.0001 };
+    const Matrix mC{ 1.1,    0.0, 0.0, 0.0, 1.1,    0.0, 0.0, 0.0, 1.1    };
 
-    REQUIRE(ETL::Math::isEqual(mA, mB, TestType(0.001)));
-    REQUIRE_FALSE(ETL::Math::isEqual(mA, mC, TestType(0.001)));
-    REQUIRE(ETL::Math::isEqual(mA, mC, TestType(0.15)));
-}
-
-
-TEMPLATE_TEST_CASE("Matrix3x3 isEqual with epsilon - integers", "[Matrix3x3][utils]", int)
-{
-    using Matrix = ETL::Math::Matrix3x3<TestType>;
-
-    const Matrix mA{ TestType(1) };
-    const Matrix mB{ TestType(1) };
-    const Matrix mC{ TestType(2) };
-
-    REQUIRE(ETL::Math::isEqual(mA, mB, TestType(1)));
-    REQUIRE_FALSE(ETL::Math::isEqual(mA, mC, TestType(1)));
-    //REQUIRE(ETL::Math::isEqual(mA, mC, TestType(3)));
+    REQUIRE(ETL::Math::isEqual(mA, mB, 0.001));
+    REQUIRE_FALSE(ETL::Math::isEqual(mA, mC, 0.001));
+    REQUIRE(ETL::Math::isEqual(mA, mC, 0.15));
 }
 
 
@@ -408,11 +395,11 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", MATRIX3x3_TYPES
     SECTION("Identity determinant")
     {
         const Matrix m = Matrix::Identity();
-        REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(1)));
+        REQUIRE(m.determinant(true) == ETL::Math::EncodeValue<TestType>(1));
 
         TestType det;
-        m.determinantTo(det);
-        REQUIRE(ETL::Math::isEqual(det, TestType(1)));
+        m.determinantTo(det, true);
+        REQUIRE(det == ETL::Math::EncodeValue<TestType>(1));
     }
 
     SECTION("Zero determinant (singular matrix)")
@@ -422,11 +409,11 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", MATRIX3x3_TYPES
                         TestType(2), TestType(4), TestType(6),
                         TestType(3), TestType(6), TestType(9) };
 
-        REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(0)));
+        REQUIRE(m.determinant(true) == ETL::Math::EncodeValue<TestType>(0));
 
         TestType det;
-        m.determinantTo(det);
-        REQUIRE(ETL::Math::isEqual(det, TestType(0)));
+        m.determinantTo(det, true);
+        REQUIRE(det == ETL::Math::EncodeValue<TestType>(0));
     }
 
     SECTION("Non-zero determinant")
@@ -439,11 +426,11 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", MATRIX3x3_TYPES
                         TestType(0), TestType(1), TestType(4),
                         TestType(0), TestType(5), TestType(8) };
 
-        REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(-12)));
+        REQUIRE(m.determinant(true) == ETL::Math::EncodeValue<TestType>(-12));
 
         TestType det;
-        m.determinantTo(det);
-        REQUIRE(ETL::Math::isEqual(det, TestType(-12)));
+        m.determinantTo(det, true);
+        REQUIRE(det == ETL::Math::EncodeValue<TestType>(-12));
     }
 
     SECTION("Diagonal matrix determinant")
@@ -452,11 +439,11 @@ TEMPLATE_TEST_CASE("Matrix3x3 Determinant", "[Matrix3x3][math]", MATRIX3x3_TYPES
                         TestType(0), TestType(3), TestType(0),
                         TestType(0), TestType(0), TestType(4) };
 
-        REQUIRE(ETL::Math::isEqual(m.determinant(), TestType(24)));
+        REQUIRE(m.determinant(true) == ETL::Math::EncodeValue<TestType>(24));
 
         TestType det;
-        m.determinantTo(det);
-        REQUIRE(ETL::Math::isEqual(det, TestType(24)));
+        m.determinantTo(det, true);
+        REQUIRE(det == ETL::Math::EncodeValue<TestType>(24));
     }
 }
 
@@ -478,7 +465,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", MATRIX3x3_TYPES)
         Matrix mResult;
         m.transposeTo(mResult);
 
-        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
+        REQUIRE(mResult == mExpected);
     }
 
     SECTION("Transpose - return value")
@@ -493,7 +480,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 
         const Matrix mResult = m.transpose();
 
-        REQUIRE(ETL::Math::isEqual(mResult, mExpected));
+        REQUIRE(mResult == mExpected);
     }
 
     SECTION("MakeTranspose - in-place")
@@ -508,7 +495,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 Transpose", "[Matrix3x3][math]", MATRIX3x3_TYPES)
 
         m.makeTranspose();
 
-        REQUIRE(ETL::Math::isEqual(m, mExpected));
+        REQUIRE(m == mExpected);
     }
 
     SECTION("Double transpose returns original")
@@ -616,7 +603,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
                                 TestType(0), TestType(3), TestType(0),
                                 TestType(0), TestType(0), TestType(1) };
 
-        REQUIRE(ETL::Math::isEqual(mScale, mExpected));
+        REQUIRE(mScale == mExpected);
     }
 
     SECTION("Rotation static factory")
@@ -636,7 +623,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transformations Factories", "[Matrix3x3][transf
                                 TestType(0), TestType(1), TestType(20),
                                 TestType(0), TestType(0), TestType(1) };
 
-        REQUIRE(ETL::Math::isEqual(mTrans, mExpected));;
+        REQUIRE(mTrans == mExpected);
     }
 }
 
@@ -759,7 +746,7 @@ TEMPLATE_TEST_CASE("Matrix3x3 2D Transform - Rotation uncommon angle", "[Matrix3
 
         const Vec2 vResult = mRot.transformDirection(vDirection);
 
-        REQUIRE(ETL::Math::isEqual(vResult, vExpected, TestType(0.001)));
+        REQUIRE(ETL::Math::isEqual(vResult, vExpected, 0.001));
     }
 }
 

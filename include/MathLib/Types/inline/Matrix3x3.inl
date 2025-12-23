@@ -120,6 +120,30 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Explicit constructor from double
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="v00"></param>
+    /// <param name="v01"></param>
+    /// <param name="v02"></param>
+    /// <param name="v10"></param>
+    /// <param name="v11"></param>
+    /// <param name="v12"></param>
+    /// <param name="v20"></param>
+    /// <param name="v21"></param>
+    /// <param name="v22"></param>
+    template<typename Type>
+    constexpr Matrix3x3<Type>::Matrix3x3(double v00, double v01, double v02,
+                                         double v10, double v11, double v12,
+                                         double v20, double v21, double v22) requires (!std::same_as<Type, double>)
+        : mData{ EncodeValue<Type>(v00), EncodeValue<Type>(v10), EncodeValue<Type>(v20),
+                 EncodeValue<Type>(v01), EncodeValue<Type>(v11), EncodeValue<Type>(v21),
+                 EncodeValue<Type>(v02), EncodeValue<Type>(v12), EncodeValue<Type>(v22) }
+    {
+    }
+
+
+    /// <summary>
     /// Explicit Raw Constructor
     /// </summary>
     /// <param name=""></param>
@@ -399,7 +423,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type> Matrix3x3<Type>::operator/(Type scalar) const
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Matrix3x3 division by 0");
 
         if constexpr (std::integral<Type>)
         {
@@ -490,7 +514,7 @@ namespace ETL::Math
     template<typename Type>
     inline Matrix3x3<Type>& Matrix3x3<Type>::operator/=(Type scalar)
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Matrix3x3 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Matrix3x3 division by 0");
 
         if constexpr (std::integral<Type>)
         {

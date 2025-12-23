@@ -40,6 +40,9 @@ namespace ETL::Math
         constexpr Matrix3x3(Type v00, Type v01, Type v02,
                             Type v10, Type v11, Type v12,
                             Type v20, Type v21, Type v22);
+        constexpr Matrix3x3(double v00, double v01, double v02,
+                            double v10, double v11, double v12,
+                            double v20, double v21, double v22) requires (!std::same_as<Type, double>);
         constexpr Matrix3x3(RawTag, Type v00, Type v01, Type v02,
                                     Type v10, Type v11, Type v12,
                                     Type v20, Type v21, Type v22);

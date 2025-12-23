@@ -38,6 +38,19 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Explicit constructor from double (allows fixed point setup to non integral values)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    template<typename Type>
+    constexpr Vector3<Type>::Vector3(double x, double y, double z) requires (!std::same_as<Type, double>)
+        : mData{ EncodeValue<Type>(x), EncodeValue<Type>(y), EncodeValue<Type>(z) }
+    {
+    }
+
+    /// <summary>
     /// Constructor from Vector2
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -243,7 +256,7 @@ namespace ETL::Math
     template<typename Type>
     inline Vector3<Type> Vector3<Type>::operator/(Type scalar) const
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Vector3 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Vector3 division by 0");
 
         if constexpr (std::integral<Type>)
         {
@@ -327,7 +340,7 @@ namespace ETL::Math
     template<typename Type>
     inline Vector3<Type>& Vector3<Type>::operator/=(Type scalar)
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Vector3 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Vector3 division by 0");
 
         if constexpr (std::integral<Type>)
         {
@@ -801,6 +814,8 @@ namespace ETL::Math
     template<typename Type>
     inline void PerspectiveDivide(Vector2<Type>& outResult, const Vector3<Type>& vec)
     {
+        ETLMATH_ASSERT(!isZero(vec.getRawValue(2)), "Division by 0 in PerspectiveDivide (Vector3 to Vector2)");
+
         if constexpr (std::integral<Type>)
         {
             const int64_t z = static_cast<int64_t>(vec.getRawValue(2));

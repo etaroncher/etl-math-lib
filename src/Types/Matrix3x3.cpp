@@ -153,7 +153,7 @@ namespace ETL::Math
     {
         Type det;
         Determinant(det, mat, true);
-        if (isZero(det, EncodeValue<Type>(0.001)))
+        if (isZero(det))
             return false;
 
         /// --- SAFETY CHECK FOR ALIASING ---

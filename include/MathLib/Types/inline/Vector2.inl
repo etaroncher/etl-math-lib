@@ -37,6 +37,19 @@ namespace ETL::Math
 
 
     /// <summary>
+    /// Explicit constructor from double (allows fixed point setup to non integral values)
+    /// </summary>
+    /// <typeparam name="Type"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    template<typename Type>
+    constexpr Vector2<Type>::Vector2(double x, double y) requires (!std::same_as<Type, double>)
+        : mData{ EncodeValue<Type>(x), EncodeValue<Type>(y) }
+    {
+    }
+
+
+    /// <summary>
     /// Explicit Raw Constructor
     /// </summary>
     /// <typeparam name="Type"></typeparam>
@@ -204,7 +217,7 @@ namespace ETL::Math
     template<typename Type>
     inline Vector2<Type> Vector2<Type>::operator/(Type scalar) const
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Vector2 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Vector2 division by 0");
 
         if constexpr (std::integral<Type>)
         {
@@ -285,7 +298,7 @@ namespace ETL::Math
     template<typename Type>
     inline Vector2<Type>& Vector2<Type>::operator/=(Type scalar)
     {
-        ETLMATH_ASSERT(!isZero(scalar), "Vector2 division by 0");
+        ETLMATH_ASSERT(!isZeroRaw(scalar), "Vector2 division by 0");
 
         if constexpr (std::integral<Type>)
         {

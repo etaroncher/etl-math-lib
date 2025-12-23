@@ -25,6 +25,7 @@ namespace ETL::Math
         constexpr Vector3() = default;
         explicit constexpr Vector3(Type val);
         constexpr Vector3(Type x, Type y, Type z);
+        constexpr Vector3(double x, double y, double z) requires (!std::same_as<Type, double>);
         constexpr Vector3(const Vector2<Type>& xy, Type z = Type(1));
 
         /// Copy, Move & Destructor (default)
