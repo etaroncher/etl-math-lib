@@ -95,7 +95,7 @@ namespace ETL::Math
                 }
                 else
                 {
-                    outResult(row, col) = mA(row,0) * mB(0,col) + mA(row,1) * mB(1,col) + mA(row,2) * mB(2,col);
+                    outResult.setRawValue(row, col, mA(row,0) * mB(0,col) + mA(row,1) * mB(1,col) + mA(row,2) * mB(2,col));
                 }
             }
         }
