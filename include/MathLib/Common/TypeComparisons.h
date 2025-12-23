@@ -162,6 +162,20 @@ namespace ETL::Math
         return helpers::zeroContainer<Matrix3x3<T>, T, 9>(a - b, epsilon);
     }
 
+    /// Matrix4x4 Comparisons
+
+    template<typename T>
+    inline bool isZero(const Matrix4x4<T>& vec, double epsilon = Epsilon<T>::value)
+    {
+        return helpers::zeroContainer<Matrix4x4<T>, T, 16>(vec, epsilon);
+    }
+
+    template<typename T>
+    inline bool isEqual(const Matrix4x4<T>& a, const Matrix4x4<T>& b, double epsilon = Epsilon<T>::value)
+    {
+        return helpers::zeroContainer<Matrix4x4<T>, T, 16>(a - b, epsilon);
+    }
+
 
     ///------------------------------------------------------------------------------------------
     /// Explicit template instantiations (precompiled declaration)
@@ -201,5 +215,14 @@ namespace ETL::Math
     extern template bool isEqual(const Matrix3x3<int>&,    const Matrix3x3<int>&,    double);
     extern template bool isEqual(const Matrix3x3<float>&,  const Matrix3x3<float>&,  double);
     extern template bool isEqual(const Matrix3x3<double>&, const Matrix3x3<double>&, double);
+
+    /// Matrix4x4
+    extern template bool isZero(const Matrix4x4<int>&, double);
+    extern template bool isZero(const Matrix4x4<float>&, double);
+    extern template bool isZero(const Matrix4x4<double>&, double);
+
+    extern template bool isEqual(const Matrix4x4<int>&, const Matrix4x4<int>&, double);
+    extern template bool isEqual(const Matrix4x4<float>&, const Matrix4x4<float>&, double);
+    extern template bool isEqual(const Matrix4x4<double>&, const Matrix4x4<double>&, double);
 
 } /// namespace ETL::Math

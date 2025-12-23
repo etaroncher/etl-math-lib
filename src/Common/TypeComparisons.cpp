@@ -8,6 +8,7 @@
 #include "MathLib/Types/Vector3.h"
 #include "MathLib/Types/Vector4.h"
 #include "MathLib/Types/Matrix3x3.h"
+#include "MathLib/Types/Matrix4x4.h"
 
 namespace ETL::Math
 {
@@ -49,5 +50,14 @@ namespace ETL::Math
     template bool isEqual(const Matrix3x3<int>&,    const Matrix3x3<int>&,    double);
     template bool isEqual(const Matrix3x3<float>&,  const Matrix3x3<float>&,  double);
     template bool isEqual(const Matrix3x3<double>&, const Matrix3x3<double>&, double);
+
+    /// Matrix4x4
+    template bool isZero(const Matrix4x4<int>&,    double);
+    template bool isZero(const Matrix4x4<float>&,  double);
+    template bool isZero(const Matrix4x4<double>&, double);
+
+    template bool isEqual(const Matrix4x4<int>&,    const Matrix4x4<int>&,    double);
+    template bool isEqual(const Matrix4x4<float>&,  const Matrix4x4<float>&,  double);
+    template bool isEqual(const Matrix4x4<double>&, const Matrix4x4<double>&, double);
 
 } /// namespace ETL::Math
