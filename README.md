@@ -15,27 +15,34 @@ Unlike general-purpose linear algebra libraries, this library is optimized for t
 ## ✨ Key Features
 
 ### 🔧 2D and 3D Transform Support
-- **Vectors**: Fundamental building blocks for positions, directions, and displacements (Vector2, Vector3)
-- **Matrices**: Matrix-based transformations for rotation, scaling, and translation (Matrix3x3, with Matrix4x4 planned)
+- **Vectors**: Fundamental building blocks for positions, directions, and displacements (`Vector2`, `Vector3`, `Vector4`)
+- **Matrices**: Specialized Matrix-based transformations for rotation, scaling, and translation (`Matrix3x3`, `Matrix4x4`)
 - **Quaternions**: Efficient and stable 3D rotation representation (planned)
-- **Transform Objects**: High-level transform representation combining position (vector), rotation (quaternion), and scale (vector) (planned)
+- **Transform Objects**: High-level transform representation combining position, rotation, and scale (planned)
 - **Transform Hierarchies**: Parent-child transform relationships for scene graphs (planned)
 - **Dual Quaternions**: Advanced skinning and blending support (planned)
+
+### 🎨 User-friendly API design
+- Order-independent transform methods
+- Return-value and Output-parameter methods provided to facilitate seamless integration into existing codebase styles and patterns.
+- Common transform functionality also provided in free function form
+- Row-first user-facing API in matrices to facilitate usage (note column-first internal storage and management)
+- Internal Fixed-point arithmetic abstracted away from user
 
 ### 🎨 Template-Based Architecture
 Flexible type support through template implementation with intuitive aliases and deduction guides:
 ```cpp
-Vector2<float>  → Vec2
-Vector2<double> → Vec2d
-Vector2<int>    → Vec2i
+Vector3<float>  → Vec3
+Vector3<double> → Vec3d
+Vector3<int>    → Vec3i
 
-Vector2{2.0f, 1.0f} -> Vector2<float>
-Vector2{2.0, 1.0}   -> Vector2<double>
-Vector2{2, 1}       -> Vector2<int>
+Vector3{2.0f, 1.0f} -> Vector3<float>
+Vector3{2.0, 1.0}   -> Vector3<double>
+Vector3{2, 1}       -> Vector3<int>
 ```
 
-### 📊 Precision Versatility
-Supports both standard floating-point (`float`, `double`) and fixed-point arithmetic. Matrix operations over integral types enable fixed-point transformations, providing deterministic behavior for networked games and embedded systems.
+### 📊 Type and Precision Versatility
+Supports both standard floating-point (`float`, `double`) and 16.16 fixed-point (`int`) arithmetic in Vectors and Matrices
 
 ### ⚡ Performance-First Design
 - **Zero-cost abstractions** through modern C++ features
@@ -159,7 +166,6 @@ MathLib/
 
 ## 🚀 Roadmap
 
-- [ ] **Matrix4x4**: Full 3D transformation support
 - [ ] **Quaternions**: Efficient 3D rotation representation
 - [ ] **Transforms**: High-level transformation objects and arithmetic
 - [ ] **SIMD Optimizations**: AVX/SSE vectorization
