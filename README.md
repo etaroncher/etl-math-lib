@@ -22,7 +22,7 @@ Unlike general-purpose linear algebra libraries, this library is optimized for t
 - **Transform Hierarchies**: Parent-child transform relationships for scene graphs (planned)
 - **Dual Quaternions**: Advanced skinning and blending support (planned)
 
-### 🎨 User-friendly API design
+### 💎 User-friendly API design
 - Order-independent transform methods
 - Return-value and Output-parameter methods provided to facilitate seamless integration into existing codebase styles and patterns.
 - Common transform functionality also provided in free function form
